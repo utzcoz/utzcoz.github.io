@@ -60,7 +60,7 @@ download page, so we can only use the `y` version `Houdini`.
 After download, we should use following command to unzip `houdini.sfs` to our `nativebridge` directory:
 
 ```shell
-sudo unsquashfs -d device/generic/common/nativebridge/system/lib/arm houdini.sfs
+unsquashfs -d device/generic/common/nativebridge/system/lib/arm houdini.sfs
 ```
 
 Then we needs copy it to the `$OUT/system/lib`, so should add copy command to `nativebridge.mk`:
