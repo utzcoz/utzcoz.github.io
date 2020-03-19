@@ -168,6 +168,20 @@ And then we should include sepolicy directory in emulator's `BoardConfig.mk`:
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/generic/common/nativebridge/sepolicy/plat_private
 ```
 
+## Add `Houdini` lib files to ld serach path
+
+The default ld search path list doesn't include `system/lib/arm` and `system/lib/arm/nb`, so
+we should add them to the default search path list to ensure the system can find the
+`Houdini` lib files.
+
+We can add following snippet to `system/core/rootdir/etc/ld.config.txt` after `namespace.default.search.paths =`:
+
+```
++# Add houdini directory to default search paths
++namespace.default.search.paths += /system/${LIB}/arm
++namespace.default.search.paths += /system/${LIB}/arm/nb
+```
+
 ## Configure `Houdini`
 
 The last thing we should do it to configure `Houdini` in our emulator device.
