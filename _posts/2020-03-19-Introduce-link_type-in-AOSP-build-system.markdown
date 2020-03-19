@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "link_type in AOSP build system"
+title:  "Introduce link_type in AOSP build system"
 date:   2020-03-19 12:39 +0800
 categories: aosp
 ---
