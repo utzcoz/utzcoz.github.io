@@ -3,4 +3,4 @@
 sudo apt install ruby ruby-dev
 sudo gem install jekyll bundler
 sudo gem update jekyll
-sudo bundle update
+bundle update
