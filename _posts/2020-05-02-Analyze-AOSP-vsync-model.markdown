@@ -740,9 +740,7 @@ int MessageQueue::cb_eventReceiver(int fd, int events, void* data) {
 }
 
 int MessageQueue::eventReceiver(int /*fd*/, int /*events*/) {
-    ssiz
-Recently, `Android` posts an article about [
-High refresh rate rendering on Android ](https://android-developers.googleblog.com/2020/04/high-refresh-rate-rendering-on-android.html), and it shows the new API added in `R` to change for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
             if (buffer[i].header.type == DisplayEventReceiver::DISPLAY_EVENT_VSYNC) {
                 mHandler->dispatchInvalidate();
                 break;
