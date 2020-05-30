@@ -492,6 +492,43 @@ stopDragging(minimized
 
 In `DividerView.injectDependencies`, we know `mSnapTargetBeforeMinimized = mSnapAlgorithm.getMiddleTarget()`. So if we click recents button after clicking home buffer when system is in split screen mode, the divider window will be the middle of screen.
 
+### Recents button changing
+
+`NavigationBarView.onFinishInflate` will register its docked listener to `DockedStackExistsListener`.
+
+```java
+NavigationBarView.onFinishInflate
+
+DockedStackExistsListener.register(mDockedListener);
+```
+
+And `DockedStackExistsListener` will register itself to `WindowManagerService` to receive docked stack state event.
+
+```java
+DockedStackExistsListener
+
+static {
+    try {
+        WindowManagerGlobal.getWindowManagerService().registerDockedStackListener(
+                new IDockedStackListener.Stub() {
+                    // Other code
+                    @Override
+                    public void onDockedStackExistsChanged(boolean exists)
+                            throws RemoteException {
+                        DockedStackExistsListener.onDockedStackExistsChanged(exists);
+                    }
+                    // Other code
+                });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed registering docked stack exists listener", e);
+    }
+}
+```
+
+We have seen `IDockedStackListener` before, and it will be called in `DockedStackDividerController.notifyDockedStackExistsChanged`.
+
+When docked stack existing state changed, `NavigationBarView.updateRecentsIcon` will be called to update recents button icon. The icon for docked stack existing state is retrieved by code `mDockedIcon = getDrawable(lightContext, darkContext, R.drawable.ic_sysbar_docked)`. So if we want to change default docked icon of recents button, we can change the `ic_sysbar_docked`.
+
 ## Bring home stack to front
 
 If we start app from recents, the system will try to move home stack to front.
