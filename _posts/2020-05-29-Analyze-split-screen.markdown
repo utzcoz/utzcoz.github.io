@@ -388,6 +388,110 @@ if (splitScreenStack == this && windowingMode == WINDOWING_MODE_SPLIT_SCREEN_SEC
 
 It will change the split screen primary stack windowing mode to `WINDOWING_MODE_FULLSCREEN`, although the `ActivityDisplay.resolveWindowingMode` changes it to `WINDOWING_MODE_SPLIT_SCREEN_SECONDARY`, when `ActivityManagerService` wants to dismiss split screen mode. What's a fucking but useful logic.
 
+### Click home button when system is in split screen mode
+
+If we click the home button when the system is in split screen mode, the system will looks like following screenshot:
+
+![split screen after clicked home button](./..images/../../images/split-screen-clicked-home.png)
+
+Clicking home button will start launcher to front, and then `WindowManagerService.performSurfacePlacement` will trigger `DockedStackDividerController.checkMinimizeChanged`.
+
+```java
+DockedStackDividerController.checkMinimizeChanged
+
+final TaskStack topSecondaryStack = mDisplayContent.getTopStackInWindowingMode(
+        WINDOWING_MODE_SPLIT_SCREEN_SECONDARY);
+final RecentsAnimationController recentsAnim = mService.getRecentsAnimationController();
+final boolean minimizedForRecentsAnimation = recentsAnim != null &&
+        recentsAnim.isSplitScreenMinimized();
+boolean homeVisible = homeTask.getTopVisibleAppToken() != null;
+if (homeVisible && topSecondaryStack != null) {
+    // Home should only be considered visible if it is greater or equal to the top secondary
+    // stack in terms of z-order.
+    homeVisible = homeStack.compareTo(topSecondaryStack) >= 0;
+}
+setMinimizedDockedStack(homeVisible || minimizedForRecentsAnimation, animate);
+```
+
+If home stack is visible, and its stack is on the top of top split screen secondary stack, the `DockedStackDividerController.checkMinimizeChanged` will call `DockedStackDividerController.setMinimizedDockedStack` to set minimized docked state.
+
+```java
+DockedStackDividerController.setMinimizedDockedStack
+
+if (isHomeStackResizable()) {
+    notifyDockedStackMinimizedChanged(minimizedDock, animate,
+            true /* isHomeStackResizable */);
+    minimizedChange = true;
+}
+```
+
+If home stack is resizeable, it will call `DockedStackDividerController.notifyDockedStackMinimizedChanged` to notify `Divider` minimized docked state based on `IDockedStackListener`.
+
+In `DividerView.setMinimizedDockStack`, it will set the divider window position to `mMinimizedSnapAlgorithm.getMiddleTarget().position` if the minimized state is true:
+
+```java
+DividerView.setMinimizedDockStack
+
+stopDragging(minimized
+                ? mSnapTargetBeforeMinimized.position
+                : getCurrentPosition(),
+        minimized
+                ? mMinimizedSnapAlgorithm.getMiddleTarget()
+                : mSnapTargetBeforeMinimized,
+        animDuration, Interpolators.FAST_OUT_SLOW_IN, 0);
+```
+
+The `mMinimizedSnapAlgorithm.getMiddleTarget()` is added by `DividerSnapAlgorithm.addMinimizedTarget`:
+
+```java
+private void addMinimizedTarget(boolean isHorizontalDivision, int dockedSide) {
+    // In portrait offset the position by the statusbar height, in landscape add the statusbar
+    // height as well to match portrait offset
+    int position = mTaskHeightInMinimizedMode + mInsets.top;
+    if (!isHorizontalDivision) {
+        if (dockedSide == DOCKED_LEFT) {
+            position += mInsets.left;
+        } else if (dockedSide == DOCKED_RIGHT) {
+            position = mDisplayWidth - position - mInsets.right - mDividerSize;
+        }
+    }
+    mTargets.add(new SnapTarget(position, position, SnapTarget.FLAG_NONE));
+}
+```
+
+In our landscape occasion, the position is `mTaskHeightInMinimizedMode + mInsets.top`, and the `mTaskHeightInMinimizedMode` is read from resource:
+
+```java
+DividerSnapAlgorithm.DividerSnapAlgorithm
+
+mTaskHeightInMinimizedMode = res.getDimensionPixelSize(
+        com.android.internal.R.dimen.task_height_of_minimized_mode);
+```
+
+So the `DividerView` will resize split screen primary width to `mTaskHeightInMinimizedMode + mInsets.top`, and we can change `com.android.internal.R.dimen.task_height_of_minimized_mode` to chagne its default size.
+
+### Click recents button when system is in split screen mode
+
+If we click the recents button when the system is in split screen mode with minimized state, the state after clicking home button, the system will looks like following screenshot:
+
+![split screen after clicked recents button](./../images/split-screen-clicked-recents.png)
+
+The calling chain is the same as clicking home button when system is in split screen mode, but with the `false` value for minimized state. From the `DividerView.setMinimizedDockStack`, we know if the `minimized` is `false`, the position will be `mSnapTargetBeforeMinimized.position`:
+
+```java
+DividerView.setMinimizedDockStack
+
+stopDragging(minimized
+                ? mSnapTargetBeforeMinimized.position
+                : getCurrentPosition(),
+        minimized
+                ? mMinimizedSnapAlgorithm.getMiddleTarget()
+                : mSnapTargetBeforeMinimized,
+        animDuration, Interpolators.FAST_OUT_SLOW_IN, 0);
+```
+
+In `DividerView.injectDependencies`, we know `mSnapTargetBeforeMinimized = mSnapAlgorithm.getMiddleTarget()`. So if we click recents button after clicking home buffer when system is in split screen mode, the divider window will be the middle of screen.
+
 ## Bring home stack to front
 
 If we start app from recents, the system will try to move home stack to front.
