@@ -153,7 +153,7 @@ The `ActivityStack.postAddToDisplay` will add itself to `ActivityDisplay` firstl
 
 The following is a screenshot after starting split screen primary:
 
-![starting split screen primary](./../images/split-screen-started-primary.png)
+![starting split screen primary](/images/split-screen-started-primary.png)
 
 ### Starting split screen secondary
 
@@ -180,7 +180,7 @@ If there is split screen primary stack, and windowing mode is `WINDOWING_MODE_FU
 
 The following is a screenshot after starting another fullscreen app from recents:
 
-![starting split screen secondary](./../images/split-screen-started-secondary.png)
+![starting split screen secondary](/images/split-screen-started-secondary.png)
 
 ### Resize docked stack
 
@@ -392,7 +392,7 @@ It will change the split screen primary stack windowing mode to `WINDOWING_MODE_
 
 If we click the home button when the system is in split screen mode, the system will looks like following screenshot:
 
-![split screen after clicked home button](./..images/../../images/split-screen-clicked-home.png)
+![split screen after clicked home button](/images/split-screen-clicked-home.png)
 
 Clicking home button will start launcher to front, and then `WindowManagerService.performSurfacePlacement` will trigger `DockedStackDividerController.checkMinimizeChanged`.
 
@@ -474,7 +474,7 @@ So the `DividerView` will resize split screen primary width to `mTaskHeightInMin
 
 If we click the recents button when the system is in split screen mode with minimized state, the state after clicking home button, the system will looks like following screenshot:
 
-![split screen after clicked recents button](./../images/split-screen-clicked-recents.png)
+![split screen after clicked recents button](/images/split-screen-clicked-recents.png)
 
 The calling chain is the same as clicking home button when system is in split screen mode, but with the `false` value for minimized state. From the `DividerView.setMinimizedDockStack`, we know if the `minimized` is `false`, the position will be `mSnapTargetBeforeMinimized.position`:
 
