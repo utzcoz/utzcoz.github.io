@@ -181,7 +181,7 @@ public class TunerServiceImpl extends TunerService {
 
 ```
 
-The `TunerServiceImpl` will store setting value to `Settings.Secure`, and the setting value is the user's tuning selection. And it uses the `ContentObserver` to observe the setting value changed, and if it receives the value changed event, it will invoke the `onTuningChanged` of `Tunable` instance that combined with the setting key.
+The `TunerServiceImpl` will store setting value to `Settings.Secure`, and the setting value is the user's tuning selection. And it uses the `ContentObserver` to observe the setting value changed, and if it receives the value changed event, it will invoke the `onTuningChanged` of `Tunable` instance that combined with the setting key. So if we want to listen the tuner settings key, and response to its changing, we can use `ContentResolver` to do it. For example, I did it for the BoringdroidSystemUI to reload it after tuner keys changed in commit [ Reload BoringdroidSystemUI after tuner changed ](https://github.com/boringdroid/vendor_packages_apps_BoringdroidSystemUI/commit/5e9c5a7e5658c2c2fba0bd64d47380fa4f92fd67).
 
 ### `Tunable`
 
