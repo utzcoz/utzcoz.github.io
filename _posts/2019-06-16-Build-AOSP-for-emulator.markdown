@@ -23,3 +23,8 @@ Please don't build `eng` variant for `emulator`, it will cause `Developer Optioi
 Screenshot:
 
 ![emulator-with-target-aosp_x86_64](/images/emulator-with-target-aosp_x86_64.png "emulator with target aosp_x86_64")
+
+
+## Update
+
+In `AOSP` master, we should change build target to `sdk_phone_x86_64-userdebug` based on the [official instruction](https://source.android.com/setup/create/avd); otherwise the `emulator` will be blank.
