@@ -40,7 +40,7 @@ mRecentsComponentName = ComponentName.unflattenFromString(context.getString(
 
 The default `config_recentsComponentName` is `com.android.launcher3/com.android.quickstep.RecentsActivity`, the `RecentsActivity` in `Launcher3`.
 
-And then use got component name to create qucik step service `Intent`:
+And then use got component name to create quick step service `Intent`:
 
 ```java
 private static final String ACTION_QUICKSTEP = "android.intent.action.QUICKSTEP_SERVICE";
@@ -73,7 +73,7 @@ if (Intent.ACTION_USER_UNLOCKED.equals(action)) {
 
 ### `OverviewProxyService`
 
-The `OverviewProxyService.startConnectionToCurrentUser` will use normal method to bind qucik step service:
+The `OverviewProxyService.startConnectionToCurrentUser` will use normal method to bind quick step service:
 
 ```java
 Intent launcherServiceIntent = new Intent(ACTION_QUICKSTEP)
@@ -88,7 +88,7 @@ try {
 }
 ```
 
-If it is failed to bind qucik step service, it will try again later; If it is sucessfully to bind quick step service, it will cast the received `IBinder` service to `IOverviewProxy`:
+If it is failed to bind quick step service, it will try again later; If it is successfully to bind quick step service, it will cast the received `IBinder` service to `IOverviewProxy`:
 
 ```java
 private final ServiceConnection mOverviewServiceConnection = new ServiceConnection() {
@@ -126,7 +126,7 @@ interface ISystemUiProxy {
 }
 ```
 
-Let' do a summary of definite period, when the user unlocked, the `OverviewProxyService` will connect to quick step service, defined in pre-defined `RecentsActivity` package, in our ocassion is `Launcher3`. The quick step service should receive the action `android.intent.action.QUICKSTEP_SERVICE`, and return `IOverviewProxy` instance as `onBind` method result. The `OverviewProxyService` will use `IOverviewProxy`'s `onBind` method to pass `ISystemUiProxy` instance to quick step service. In `Launcher3`, the quick step service is called `TouchInteractionService`. So the sequence of communication is as following graph:
+Let' do a summary of definite period, when the user unlocked, the `OverviewProxyService` will connect to quick step service, defined in pre-defined `RecentsActivity` package, in our occasion is `Launcher3`. The quick step service should receive the action `android.intent.action.QUICKSTEP_SERVICE`, and return `IOverviewProxy` instance as `onBind` method result. The `OverviewProxyService` will use `IOverviewProxy`'s `onBind` method to pass `ISystemUiProxy` instance to quick step service. In `Launcher3`, the quick step service is called `TouchInteractionService`. So the sequence of communication is as following graph:
 
 ```
      ,--------------------.                          ,-----------------------.
@@ -149,7 +149,7 @@ Now the `OverviewProxyService` in `SystemUI` has a proxy called `IOverviewProxy`
 
 ## Show recents
 
-Desipte of using `ALT + TAB`, or clicking recents app button in navigation bar to show recents app, they will call the `PhoneWindowManager.showRecentApps(boolean)` to show the recents app. And later sequence is as following diagram:
+Despite of using `ALT + TAB`, or clicking recents app button in navigation bar to show recents app, they will call the `PhoneWindowManager.showRecentApps(boolean)` to show the recents app. And later sequence is as following diagram:
 
 ```
      ,------------------.          ,----------.          ,------------.          ,-------.          ,------------------------------.

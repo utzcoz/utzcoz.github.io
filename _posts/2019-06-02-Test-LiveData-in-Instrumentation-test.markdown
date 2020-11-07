@@ -7,7 +7,7 @@ categories: aosp test
 
 The `LiveData.observe` method should run in main thread, but our test methods run in background thread, so we should use some tricks to avoid it if we want to test `LiveData` in Instrumentation tests.
 
-There is a method to use `InstantTaskExecutorRule` in library `androidx.arch.core:core-testing` to hook `DefaultTaskExecutor` to a normal `TaskExecutor` which pretends to run main thread. But it works fine when we use it with `testImplementation` for unit tests, but not for `androidTestImplmentation` for Instrumentation tests becuase of test runner(maybe). But we can fix it to imitate `InstantTaskExecutorRule`, like below code snipped:
+There is a method to use `InstantTaskExecutorRule` in library `androidx.arch.core:core-testing` to hook `DefaultTaskExecutor` to a normal `TaskExecutor` which pretends to run main thread. But it works fine when we use it with `testImplementation` for unit tests, but not for `androidTestImplementation` for Instrumentation tests because of test runner(maybe). But we can fix it to imitate `InstantTaskExecutorRule`, like below code snipped:
 
 ```java
 public static void hookMainThreadForLiveData() {

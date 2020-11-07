@@ -7,7 +7,7 @@ categories: aosp
 
 ## Code base
 
-AOSP 9.0
+`AOSP` 9.0
 
 ## Preview
 
@@ -187,7 +187,7 @@ The `TunerServiceImpl` will store setting value to `Settings.Secure`, and the se
 
 From `TunerServiceImpl`, we know we someone invoke the `TunerService.addTunable`, it will pass the setting keys it wants to listen. So who is the invoker?
 
-This is `NavigationBarInflaterView` for natigation bar layout.
+This is `NavigationBarInflaterView` for navigation bar layout.
 
 ```java
 @Override

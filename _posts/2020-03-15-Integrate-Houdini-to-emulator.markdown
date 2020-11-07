@@ -5,8 +5,8 @@ date:   2020-03-15 20:38 +0800
 categories: aosp
 ---
 
-In `x86` architecture device, we build the emulator with product target `aosp_x86_64`, which is the `x86_64` architure Android variant.
-So it can only run apks without so libraries and with `x86` and `x86_64` architure variant libraries. But it can't run apks with
+In `x86` architecture device, we build the emulator with product target `aosp_x86_64`, which is the `x86_64` architecture Android variant.
+So it can only run apks without so libraries and with `x86` and `x86_64` architecture variant libraries. But it can't run apks with
 `armhf` architecture or `arm64` architecture libraries. But if we can integrate `Houdini` to emulator, it will
 help emulator to run apks with `armhf` architecture libraries, not for `arm64` architecture, 
 because of `Intel` doesn't provide `Houdini` to support it.
@@ -26,7 +26,7 @@ Android.mk  OEMBlackList  OEMWhiteList  ThirdPartySO  bin  nativebridge.mk  src
 
 1. The `Android.mk` and `src` defines the module `libnb`, what is the wrapper of `libhoudini`. 
 `android-x86` doesn't provide `Houdini` in its source code, and it provides a switch button in
-`Settings` to enable `nativebridge`. When the user enables it, it will tirgger `init` to
+`Settings` to enable `nativebridge`. When the user enables it, it will trigger `init` to
 download `Houdini` from its download page, and mount it to system to use it. To make sure
 the system can work without `libhoudini` and with `libhoudini`, it creates the module `libnb`
 to wrap the `libhoudini`.
@@ -53,7 +53,7 @@ wget http://dl.android-x86.org/houdini/9_y/houdini.sfs
 ```
 
 We can use preceding command to download `9_y` version `Houdini` files. `y` represents it supports
-`x86_64` kernerl and `armhf` userspace. We can see the version `z` represents the `x86_64` kernel
+`x86_64` kernel and `armhf` userspace. We can see the version `z` represents the `x86_64` kernel
 and `arm64` userspace, but the `Intel` doesn't provide it, so we can't download it from `android-x86`
 download page, so we can only use the `y` version `Houdini`.
 
@@ -168,7 +168,7 @@ And then we should include sepolicy directory in emulator's `BoardConfig.mk`:
 BOARD_PLAT_PRIVATE_SEPOLICY_DIR += device/generic/common/nativebridge/sepolicy/plat_private
 ```
 
-## Add `Houdini` lib files to ld serach path
+## Add `Houdini` lib files to ld search path
 
 The default ld search path list doesn't include `system/lib/arm` and `system/lib/arm/nb`, so
 we should add them to the default search path list to ensure the system can find the
@@ -198,14 +198,14 @@ BUILD_ARM_FOR_X86 := $(WITH_NATIVE_BRIDGE)
 
 ## Build and test
 
-Now we can build the emulator again, and test it with install some apks with `armhf` achitecture
+Now we can build the emulator again, and test it with install some apks with `armhf` architecture
 libraries only, and run them on emulator. In most case, they can run correctly.
 
 ## Notice
 
 1. The `Houdini` is `Intel`'s proprietary project, you can't release it with your system images.
 If you want to deploy it, maybe you should use the same method as `android-x86` project to download
-files from network after user selectes to enable `nativebridge` function.
+files from network after user selects to enable `nativebridge` function.
 
 2. This article is based on the `Android 9.0`.
 

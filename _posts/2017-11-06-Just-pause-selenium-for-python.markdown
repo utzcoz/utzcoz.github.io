@@ -19,6 +19,6 @@ def just_wait(driver, seconds):
         print('Yes after %s seconds pause, %s' % (seconds, e)) 
 ```
 
-Above code is a template to pause when I use `selenium`. The `WebDriverWait` is the explicit wait solution for finding elements of `selenium`, so if I use it to find a not-exisited element with some seconds, it will timeout and failed after these seconds, which can achieve a pause and the `selenium`
+Above code is a template to pause when I use `selenium`. The `WebDriverWait` is the explicit wait solution for finding elements of `selenium`, so if I use it to find a not-existed element with some seconds, it will timeout and failed after these seconds, which can achieve a pause and the `selenium`
 will work correctly. In the project, above code works fine.
 

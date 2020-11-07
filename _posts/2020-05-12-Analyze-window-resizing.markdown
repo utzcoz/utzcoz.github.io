@@ -65,7 +65,7 @@ If the window is freeform, the `getTouchableRegion` will add shadow size to wind
 
 ## WMS and AMS
 
-The `InputDispatcher.cpp`'s dispatch will trigger `android_view_InputEventReceiver.cpp` to dipstach input event to java
+The `InputDispatcher.cpp`'s dispatch will trigger `android_view_InputEventReceiver.cpp` to dispatch input event to java
 part. The `android_view_InputEventReceiver.cpp` will invoke `InputEventReceiver.java`'s `dispatchInputEvent` to dispatch
 input event. But there are many `InputEventReceiver` implementation, such as `PointerEventDispatcher.java`,
 `WindowInputEventReceiver` in `ViewRootImpl.java`. Who will be invoked? The answer is all of them. Their 
@@ -314,7 +314,7 @@ The `resizeDrag` is a pure calculating method, and it will calculate the distanc
 
 `AMS.resizeTask` notifies the `TaskRecord` to change its size, and use its `WindowContainerController` to notify the window container in WMS space, which will notify the layer in `SurfaceFlinger`.
 
-If `TaskPositioner` reeceives the `ACTION_UP` or `ACTION_CANCEL` event, it will invoke `AMS.resizeTask` to notify `TaskRecord` the last time, and invoke `TaskPositioningController.finishTaskPositioning` to finish drag resizing. Also it will notify the `Task` the drag resizing finished.
+If `TaskPositioner` receives the `ACTION_UP` or `ACTION_CANCEL` event, it will invoke `AMS.resizeTask` to notify `TaskRecord` the last time, and invoke `TaskPositioningController.finishTaskPositioning` to finish drag resizing. Also it will notify the `Task` the drag resizing finished.
 
 The `finishTaskPositioning` in `TaskPositioningController` is just to unregister `TaskPositioner` from system, and remove it from InputWindow list.
 
@@ -342,7 +342,7 @@ private void dispatchResized(Rect frame, Rect overscanInsets, Rect contentInsets
 
 The `mClient` is `W` in `ViewRootImpl`, and it is passed to `WMS` by `Session.addToDisplay` in `ViewRootImpl.addView`.
 
-In `WindowState.dispatchResized`, it will invok `mClinet.resized` method to notify the resize event, actually `W.resized` method. `W.resized` will invoke `ViewRootImpl.disptachResized` method dispatch resized event continually.
+In `WindowState.dispatchResized`, it will invok `mClinet.resized` method to notify the resize event, actually `W.resized` method. `W.resized` will invoke `ViewRootImpl.dispatchResized` method dispatch resized event continually.
 
 ```java
 private void dispatchResized(Rect frame, Rect overscanInsets, Rect contentInsets,
@@ -470,7 +470,7 @@ public class BackdropFrameRenderer extends Thread implements Choreographer.Frame
 }
 ```
 
-The `BackdropFrameRenderer` is just a `Thread`, keeps the `ThreadedRenderer` instance of window, and creates its `RenderNode` called `FrameAndBackdropNode`. When window says it wants to use hardware accelerated by `WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED`, the ViewRootImpl will create a `ThreadedRenderer` instance to it, and use it to render window content by `skia` based on `OpenGL` or directly `OpenGL` to utilize hardware to speed up the rendering. And `ThreadedRenderer` uses `RenderNode` inner too. So `BackdropFrameRenderer`'s `mFrameAndBackdropNode` will use `skia` based on `OpenGL` or directly `OpenGL` to draw content too to utilize hareware.
+The `BackdropFrameRenderer` is just a `Thread`, keeps the `ThreadedRenderer` instance of window, and creates its `RenderNode` called `FrameAndBackdropNode`. When window says it wants to use hardware accelerated by `WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED`, the ViewRootImpl will create a `ThreadedRenderer` instance to it, and use it to render window content by `skia` based on `OpenGL` or directly `OpenGL` to utilize hardware to speed up the rendering. And `ThreadedRenderer` uses `RenderNode` inner too. So `BackdropFrameRenderer`'s `mFrameAndBackdropNode` will use `skia` based on `OpenGL` or directly `OpenGL` to draw content too to utilize hardware.
 
 From above code, we know `DecorView` will invoke `BackdropFrameRenderer.setTargetRect` to update the target resizing window information, including window bounds, when window drag resizing. The `BackdropFrameRenderer.setTargetRect` will trigger its `redrawLocked` method to update the bounds of `mFrameAndBackdropNode`. And when `ViewRootImpl` starts to draw the content, it will invoke `DecorView.onContentDrawn` to update its size, and will trigger `mBackdropFrameRenderer.onContentDrawn` to update the `mRenderer`'s bounds, if `mBackdropFrameRenderer` is not null, in other word, the window is resizing. Its two route to update the `mBackdropFrameNode` and `mRenderer` bounds.
 
@@ -563,6 +563,6 @@ In `AOSP` 9.0, when we drag to resize the window, the window will jump to the ri
 
 ## Summary
 
-When resizing, the input flinger will use touchable region to find the window to receive the input event. In `WindowState`, if the window is freeform, it will add shadow size to its touchable region. So when drag the shadow of freeform window to resize the window, the window will be selected as input target for starting draging. The WMS will analyze the input event firstly to check whether the user is trying to resize the window, and if yes, it will create a new fullscreen input target to receive the coming input events and transfer current input focus to new input target. The new input target will calculate the commint input events location with origin location to calculate the new window size, and notify the `WMS` and `AMS` to update it. For better resizing effects, the `DecorView` creates `BackdropFrameRenderer` to draw the dim layer under window. After resizing, the `WMS` will destroy the new input target.
+When resizing, the input flinger will use touchable region to find the window to receive the input event. In `WindowState`, if the window is freeform, it will add shadow size to its touchable region. So when drag the shadow of freeform window to resize the window, the window will be selected as input target for starting dragging. The WMS will analyze the input event firstly to check whether the user is trying to resize the window, and if yes, it will create a new fullscreen input target to receive the coming input events and transfer current input focus to new input target. The new input target will calculate the commit input events location with origin location to calculate the new window size, and notify the `WMS` and `AMS` to update it. For better resizing effects, the `DecorView` creates `BackdropFrameRenderer` to draw the dim layer under window. After resizing, the `WMS` will destroy the new input target.
 
 In `AOSP` 9.0, the `WMS` sets the new input target to input flinger directly, but in `master`, the setting is done by `SurfaceFlinger`. The `WMS` will create a new surface for new input target, and set the input target to the new surface. And then notifying the `SurfaceFlinger` to add the new input target to input flinger.

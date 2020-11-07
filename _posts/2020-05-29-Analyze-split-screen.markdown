@@ -30,7 +30,7 @@ The `ActivityManagerWrapper.startActivityFromRecents` calls `ActivityManagerServ
 
 The `ActivityManagerService.startActivityFromRecents` calls `ActivityStackSupervisor.startActivityFromRecents` directly. The starting activity from recents logic is the same as normal starting activity in most occasion. We will show the important points for recents and split screen.
 
-### Restore task fron recent_tasks files
+### Restore task from recent_tasks files
 
 The `RecentsView` passes the task id of app to the `ActivityManagerService`, and `ActivityStackSupervisor.startActivityFromRecents` will try to restore the task with the specified id from recent_tasks if the task with the same id doesn't exist. The work is done by `ActivityStackSupervisor.anyTaskForIdLocked`:
 
@@ -68,7 +68,7 @@ TaskRecord getTask(int id) {
 After getting restored task from recent_tasks files, `ActivityStackSupervisor.anyTaskForIdLocked` will call `ActivityStackSupervisor.restoreRecentTaskLocked` to assign launch stack for restored task.
 
 ```java
-ActivityStacksupervisor.restoreRecentTaskLocked
+ActivityStackSupervisor.restoreRecentTaskLocked
 
 final ActivityStack stack = getLaunchStack(null, aOptions, task, onTop);
 
@@ -91,9 +91,9 @@ return (T) new ActivityStack(
                 this, stackId, mSupervisor, windowingMode, activityType, onTop);
 ```
 
-The `ActivityStackSupervisor.restoreRecentTaskLocked` invoking chain will call `ActivityDisplay.createStackUnchecked` to create an instance of `ActivityStack` with the stack id and windoing mode.
+The `ActivityStackSupervisor.restoreRecentTaskLocked` invoking chain will call `ActivityDisplay.createStackUnchecked` to create an instance of `ActivityStack` with the stack id and windowing mode.
 
-In `ActivityStack` initialization method, there is an important invocking:
+In `ActivityStack` initialization method, there is an important invoking:
 
 ```java
 ActivityStack.ActivityStack
@@ -192,7 +192,7 @@ The process chain of creating `StackWindowController` will call `TaskStack.onDis
 ->`DisplayContent.createStack`->`DisplayContent.TaskStackContainers.addStackToDisplay`
 ->`TaskStack.onDisplayChanged`.
 
-The `TaskStack.onDisplayChanged` will call `TaskStack.getStackDockedModeBounds` to calcualte bounds for current windowing mode, through `TaskStack.updateBoundsForWindowModeChange` and `TaskStack.calculateBoundsForWindowModeChange` for docked stack or split screen stacks.
+The `TaskStack.onDisplayChanged` will call `TaskStack.getStackDockedModeBounds` to calculate bounds for current windowing mode, through `TaskStack.updateBoundsForWindowModeChange` and `TaskStack.calculateBoundsForWindowModeChange` for docked stack or split screen stacks.
 
 ```java
 TaskStack.getStackDockedModeBounds
@@ -243,7 +243,7 @@ The above code snippet will calculate stack bounds for split screen secondary st
 
 ## Divider
 
-From the above two diagrams, we can see a divider between split screen primary and split screen secondary. It's a special window with type `TYPE_DOCK_DIVIDER`. The `DividerWindowManager.add` in system ui will help to add divier window to system. The window content is `DividerView` in systemui. The `DividerView` will help to response to drag divider to change split screen size.
+From the above two diagrams, we can see a divider between split screen primary and split screen secondary. It's a special window with type `TYPE_DOCK_DIVIDER`. The `DividerWindowManager.add` in system ui will help to add divider window to system. The window content is `DividerView` in systemui. The `DividerView` will help to response to drag divider to change split screen size.
 
 ### Layer
 
@@ -326,7 +326,7 @@ if (mVisible != visible) {
 }
 ```
 
-The `mView` is `DividerView`. So there is a new conclusion: **when the system enters split screen mode, it will trigger Divider in systemui to show divier window with type TYPE_DOCK_DIVIDER; otherwise it will trigger Divider to dismiss divider window**.
+The `mView` is `DividerView`. So there is a new conclusion: **when the system enters split screen mode, it will trigger Divider in systemui to show divider window with type TYPE_DOCK_DIVIDER; otherwise it will trigger Divider to dismiss divider window**.
 
 ### Resize
 
@@ -348,7 +348,7 @@ mWindowManagerProxy.resizeDockedStack(/* different input parameters*/);
 
 When dragging divider, the `DividerView` will call `WindowManagerProxy.resizeDockedStack` to resize dock stacks or split screen stacks. The final worker for resizing docked stack is `ActivityManagerService.resizeDockedStackLocked`. It will resize split screen primary stack, and resize other split screen secondary stacks to the left bounds of screen with `ActivityManagerService.resizeStackLocked`. So **the resizing of docked stack only focused on split screen primary stack, and split screen secondary will change based on the split screen primary stack size**.
 
-If we drag divider to the left edge or right edge of screen, the `DividerView` will dimiss split screen primary stack or maximize split screen primary stack.
+If we drag divider to the left edge or right edge of screen, the `DividerView` will dismiss split screen primary stack or maximize split screen primary stack.
 
 ```java
 DividerView.commitSnapFlags
@@ -374,7 +374,7 @@ private void commitSnapFlags(SnapTarget target) {
 }
 ```
 
-Whether dimiss/maximize split screen primary stack, the `WindowManagerProxy` will invoke `ActivityManagerService.dismissSplitScreenMode` to handle the request. The `ActivityManagerService.dismissSplitScreenMode` just sets the split screen stack windowing mode to `WINDOWING_MODE_FULLSCREEN` by invoking `ActivityStack.setWindowingMode`. From the above analyzing, we know if there is split screen primary stack, the `ActivityDisplay.resolveWindowingMode` will change windowing mode `WINDOWING_MODE_FULLSCREEN` to `WINDOWING_MODE_SPLIT_SCREEN_SECONDARY`. In `ActivityStack.setWindowingMode`, there is a rigid but useful logic to handle it:
+Whether dismiss/maximize split screen primary stack, the `WindowManagerProxy` will invoke `ActivityManagerService.dismissSplitScreenMode` to handle the request. The `ActivityManagerService.dismissSplitScreenMode` just sets the split screen stack windowing mode to `WINDOWING_MODE_FULLSCREEN` by invoking `ActivityStack.setWindowingMode`. From the above analyzing, we know if there is split screen primary stack, the `ActivityDisplay.resolveWindowingMode` will change windowing mode `WINDOWING_MODE_FULLSCREEN` to `WINDOWING_MODE_SPLIT_SCREEN_SECONDARY`. In `ActivityStack.setWindowingMode`, there is a rigid but useful logic to handle it:
 
 ```java
 ActivityStack.setWindowingMode
@@ -425,7 +425,7 @@ if (isHomeStackResizable()) {
 }
 ```
 
-If home stack is resizeable, it will call `DockedStackDividerController.notifyDockedStackMinimizedChanged` to notify `Divider` minimized docked state based on `IDockedStackListener`.
+If home stack is resizable, it will call `DockedStackDividerController.notifyDockedStackMinimizedChanged` to notify `Divider` minimized docked state based on `IDockedStackListener`.
 
 In `DividerView.setMinimizedDockStack`, it will set the divider window position to `mMinimizedSnapAlgorithm.getMiddleTarget().position` if the minimized state is true:
 
@@ -468,7 +468,7 @@ mTaskHeightInMinimizedMode = res.getDimensionPixelSize(
         com.android.internal.R.dimen.task_height_of_minimized_mode);
 ```
 
-So the `DividerView` will resize split screen primary width to `mTaskHeightInMinimizedMode + mInsets.top`, and we can change `com.android.internal.R.dimen.task_height_of_minimized_mode` to chagne its default size.
+So the `DividerView` will resize split screen primary width to `mTaskHeightInMinimizedMode + mInsets.top`, and we can change `com.android.internal.R.dimen.task_height_of_minimized_mode` to change its default size.
 
 ### Click recents button when system is in split screen mode
 
@@ -563,7 +563,7 @@ if (windowingMode != WINDOWING_MODE_SPLIT_SCREEN_PRIMARY) {
 
 There are three occasion to bring home stack to front when starting app from recents:
 
-1. If we move one stack to front, and it is not home type, and it wants to return to home stack. When we starts recents, the system will move recents stack to front. Because the recents has the type recents, and it will pass the `ActivityStack.returnsToHomeStack` checking, so the recents will bring home stack to front. If there are many visible freeform windows before starting recents, other freeform windows will be invisble if we start one freeform window from recents, because home stack is over other freeform window stacks.
+1. If we move one stack to front, and it is not home type, and it wants to return to home stack. When we starts recents, the system will move recents stack to front. Because the recents has the type recents, and it will pass the `ActivityStack.returnsToHomeStack` checking, so the recents will bring home stack to front. If there are many visible freeform windows before starting recents, other freeform windows will be invisible if we start one freeform window from recents, because home stack is over other freeform window stacks.
 2. If previous task is recents type, the `ActivityStackSupervisor.findTaskToMoveFront` will bring home stack to front.
 3. If we start an app from recents with non-`WINDOWING_MODE_SPLIT_SCREEN_PRIMARY` windowing mode, the `ActivityStackSupervisor.startActivityFrontRecents` will bring home stack to front.
 

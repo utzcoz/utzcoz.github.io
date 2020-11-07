@@ -7,7 +7,7 @@ categories: aosp
 
 ## Code base
 
-AOSP 9.0
+`AOSP` 9.0
 
 ## How to use `ContextMenu`
 
@@ -22,7 +22,7 @@ public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMen
 }
 ```
 
-And then use `registerForContextMenu` to register the `ContextMenu` for specific view. After that, when the user long clicks this specific view, system will show the `ContextMenu` with the items added by the logic in `onCreateContextMenu`. And then, we overrie the `Activity`'s `onContextItemSelected` to response the item selected event.
+And then use `registerForContextMenu` to register the `ContextMenu` for specific view. After that, when the user long clicks this specific view, system will show the `ContextMenu` with the items added by the logic in `onCreateContextMenu`. And then, we override the `Activity`'s `onContextItemSelected` to response the item selected event.
 
 ```Java
 @Override
@@ -125,7 +125,7 @@ void makeVisible() {
 
 And this method invoking chain will add `ViewRootImpl` as `DecorView` parent. So the `ViewRootImpl`'s the final parent of the `View`s.
 
-But the `ViewRootImpl.showContextMenuForChild` returns false defaultly, so it doesn't do the showing work. If we looks into the `DecorView`'s `showContextViewMenuForChild`, we will find it does the work, and doesn't use parent to pass it to upper hierachy.
+But the `ViewRootImpl.showContextMenuForChild` returns false default, so it doesn't do the showing work. If we looks into the `DecorView`'s `showContextViewMenuForChild`, we will find it does the work, and doesn't use parent to pass it to upper hierachy.
 
 ## `DecorView.showContextMenuForChildInternal`
 
@@ -199,7 +199,7 @@ public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 }
 ```
 
-The `performItemAction` in `MenuBuilder` will dispatch item click to `Activity` by a long invoking chain, and `Activity` will call the `onContextMenuItemSelected` method. The `MenuBuilder` in this ocassion is the `ContextMenuBuilder` we introduce before. The `MenuBuilder` will use its `Callback` instance to dispatch the item clicked event, which is set by `DecorView` in its `showContextMenuForChildInternal` with the value `mWindow.mContextMenucallback`. Every `Activity` has a `PhoneWindow`, and its `PhoneWindow` instance will dispatch item clicked event to it when menu item clicked.
+The `performItemAction` in `MenuBuilder` will dispatch item click to `Activity` by a long invoking chain, and `Activity` will call the `onContextMenuItemSelected` method. The `MenuBuilder` in this occasion is the `ContextMenuBuilder` we introduce before. The `MenuBuilder` will use its `Callback` instance to dispatch the item clicked event, which is set by `DecorView` in its `showContextMenuForChildInternal` with the value `mWindow.mContextMenucallback`. Every `Activity` has a `PhoneWindow`, and its `PhoneWindow` instance will dispatch item clicked event to it when menu item clicked.
 
 Now, when to show `ContextMenu` and how to pass menu item clicked event analyzing is finished.
 

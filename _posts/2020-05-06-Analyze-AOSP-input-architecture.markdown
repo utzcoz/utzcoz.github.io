@@ -11,14 +11,14 @@ categories: aosp
 
 ## Preface
 
-This article is based on [Jonathan Levin](http://newandroidbook.com/)'s [presentation about `Android` input architecture](http://newandroidbook.com/files/AndroidInput.pdf). It's an excellent presentation for `Android` input architecutre.
+This article is based on [Jonathan Levin](http://newandroidbook.com/)'s [presentation about `Android` input architecture](http://newandroidbook.com/files/AndroidInput.pdf). It's an excellent presentation for `Android` input architecture.
 
 The following diagrams are copied from presentation:
 
 ![The Android input architecture from device to application](/images/android-input-architecture-p1.png)
 ![The Android input architecture from application to View](/images/android-input-architecture-p2.png)
 
-The first diagram shows the `Android` input architecutre from device to application, and the second diagram shows the `Android` input architecture from application to view. The following parts will present the architecutre based on above two diagrams, and then append some important contents but doesn't show on them.
+The first diagram shows the `Android` input architecture from device to application, and the second diagram shows the `Android` input architecture from application to view. The following parts will present the architecture based on above two diagrams, and then append some important contents but doesn't show on them.
 
 ## Jonathan Levin's presentation
 
@@ -90,7 +90,7 @@ When `WindowManagerService` uses `WindowState.openInputChannel` to create `Input
 
 After calling `Session.addToDisplay`, it will opened `InputChannel` to create `ViewRootImpl.WindowInputEventReceiver`, that is an implementation of `InputEventReceiver`. Its initialization method will use `JNI` to create `NativeInputEventReceiver` in `android_view_InputEventReceiver.cpp` to consume the data from `socketpair`. The `NativeInputEventReceiver::consumeEvents` will call `InputEventReceiver.dispatchInputEvent` to dispatch input event to java part, and it will call `onInputEvent` to process input event. The `WindowInputEventReceiver.onInputEvent` will dispatch input event to application. Before we analyze the following dispatching, we will analyze the `FINISHED` callback.
 
-If the java part consumes the input event, and it will set the input event to be `FINISHED`. `WindowState.openInputChannel` registes receiver fd with `InputWindowHandle` to `InputDispatcher`. The `InputDispatcher` use looper to listen the receiver fd, and read data from socket after receiving notifying to send to java part.
+If the java part consumes the input event, and it will set the input event to be `FINISHED`. `WindowState.openInputChannel` registers receiver fd with `InputWindowHandle` to `InputDispatcher`. The `InputDispatcher` use looper to listen the receiver fd, and read data from socket after receiving notifying to send to java part.
 
 `WindowState.openInputChannel`
 ->`InputManagerService.registerInputChannel`
@@ -454,7 +454,7 @@ If the input event is key event or non-touch event, such as trackball, the `Inpu
 
 The focused window is set by `NativeInputManager::setInputWindows`, called by `InputManagerService` in java part. When one window becomes focused, it will set itself as focused window to input flinger.
 
-When we send key event to the input flinger, if the `PhoneWindowManager` intercepts it, the `PhoneWindowManager` consumes it; otherwise the focused window will consume it. If we want to use key to change the focused window, the `PhoneWindowManager` should consume key and do it. The `InputDispatcher` just needs to request whehter to intercept, if not just dispatch it to focused window, and doesn't need to consider whether
+When we send key event to the input flinger, if the `PhoneWindowManager` intercepts it, the `PhoneWindowManager` consumes it; otherwise the focused window will consume it. If we want to use key to change the focused window, the `PhoneWindowManager` should consume key and do it. The `InputDispatcher` just needs to request whether to intercept, if not just dispatch it to focused window, and doesn't need to consider whether
 the un-focused window should consume it.
 
 ### Touchable region
@@ -583,6 +583,6 @@ while (target != null) {
 }
 ```
 
-The `mFirstTouchTarget` can help to optimize the performance of touch event dispatching. Also it can help to keep the touch event dispatching stable. If view A consumes the `DOWN` event, and view B says it will consume `UP` event, one touch is dispatched to multi targets, what causes inconsistence.
+The `mFirstTouchTarget` can help to optimize the performance of touch event dispatching. Also it can help to keep the touch event dispatching stable. If view A consumes the `DOWN` event, and view B says it will consume `UP` event, one touch is dispatched to multi targets, what causes inconsistent.
 
 The `ViewGroup.dispatchTransformedTouchEvent` will call child's `dispatchTouchEvent` to try to dispatch touch event to child. If the child is `ViewGroup` instance, it will do the similar work as above description; otherwise it will call `View`'s `onTouchListener`, `onTouchEvent` with order to check whether it wants to consume touch event.

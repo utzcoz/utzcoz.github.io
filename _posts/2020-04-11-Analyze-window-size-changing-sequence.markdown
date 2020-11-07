@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Analyze window size changing sequnce"
+title:  "Analyze window size changing sequence"
 date:   2020-04-11 21:14 +0800
 categories: aosp
 ---
@@ -45,19 +45,19 @@ categories: aosp
 
 In `ActivityManager` space, there are four important classes, that represents the application object:
 
-1. `ActivityDisplay`: reprensts display in the system. It will use display size as its size bounds. It holds zeor or more attached `ActivityStack`s to the display it represents.
+1. `ActivityDisplay`: represents display in the system. It will use display size as its size bounds. It holds zero or more attached `ActivityStack`s to the display it represents.
 2. `ActivityStack`: It holds zero or more attached `TaskRecord`s that exist in it. There are many stacks for different usage. For example, home stack for home app or apps started from home app, and want to exist in home stack; fullscreen stack for normal fullscreen apps.
-3. `TaskRecord`: It holds zeor or more attached `ActivityRecord`s that exist in it. The initial `ActivityRecord` in `TaskRecord` is `realActivity`, and it can start other `ActivityRecord`. If the flag indicates that it want to create a new task for new `ActivityRecord`, the created `ActivityRecord` will be stored in the same `TaskRecord`.
+3. `TaskRecord`: It holds zero or more attached `ActivityRecord`s that exist in it. The initial `ActivityRecord` in `TaskRecord` is `realActivity`, and it can start other `ActivityRecord`. If the flag indicates that it want to create a new task for new `ActivityRecord`, the created `ActivityRecord` will be stored in the same `TaskRecord`.
 4. `ActivityRecord`: represents the `Activity` instance.
 
 The four classes represents the critical concept of application in `ActivityManager` space. The `ActivityManager` space has its rules to calculate and change `Activity` or window size. For example, in multi-window mode, there are many codes to change window size from `ActivityManager` space. We know, the `ActivityManager` space is the pure abstract of application lifecycle. It doesn't render the window actually. So it should notify the window attributes, such as window size to `WindowManager` space, and let it to do left things.
 
-From the preceding diagram, we can find there is a `WindowContainerController` instance in every level. They will notify the window attribute to corresponding level in `WindowManager` space. And following diagram shows the relathionship:
+From the preceding diagram, we can find there is a `WindowContainerController` instance in every level. They will notify the window attribute to corresponding level in `WindowManager` space. And following diagram shows the relationship:
 
 ```
 DisplayWindowController -> DisplayContent
 
-StackWindowControlerController -> TaskStack
+StackWindowContainerController -> TaskStack
 
 TaskWindowContainerController -> Task
 
@@ -115,7 +115,7 @@ From the above `WindowContainer` code snippet, we can find every `WindowContaine
 
 1. `AboveAppWindowContainers mAboveAppWindowContainers`: The container to store all non-app window containers that should be displayed above the app containers, e.g. Status bar.
 2. `NonAppWindowContainers mBelowAppWindowsContainers`: The container to store all non-app window containers that should be displayed below the app containers, e.g. Wallpaper.
-3. `NonMagnifiableWindowContainers mImeWindowContainers`: The container to store all IME window containers. Note that the z-ordering of the IME windows will depend on the IME target. We mainly have this container grouping so we can keep track of all the IME window contianers together and move them in-sync if/when needed. We use a sublcass of WindowContainer which is omitted from screen magnification, as the IME is never magnified.
+3. `NonMagnifiableWindowContainers mImeWindowContainers`: The container to store all IME window containers. Note that the z-ordering of the IME windows will depend on the IME target. We mainly have this container grouping so we can keep track of all the IME window containers together and move them in-sync if/when needed. We use a subclass of WindowContainer which is omitted from screen magnification, as the IME is never magnified.
 4. `SurfaceControl mOverlayLayer`: We organize all top-level Surfaces in to the following layers. mOverlayLayer contains a few Surfaces which are always on top of others and omitted from Screen-Magnification, for example the strict mode flash or the magnification overlay itself.
 
 ### `AppWindowToken`
@@ -130,7 +130,7 @@ protected final WindowList<WindowState> mChildren = new WindowList<WindowState>(
 
 From above `WindowContainer` code snippet, we can find that `WindowContainer` holds its parent `WindowContainer`, and its children `WindowContainer`. In `ActivityManager` space, we know `WindowContainerController` has a parent/children relationship, also their corresponding `WindowContainer`s in `WindowManager` space have the same parent/children relationship.
 
-`AppWindowToken` in `WindowManager` space is corresponding to `ActivytRecord` in `ActivityManager` space to represent the actual `Activity` or window(in most ocassion, one `Activity` has one window). And `AppWindowToken` uses `WindowState` to store the window attribute, and calculate window frame based on current system and window state.
+`AppWindowToken` in `WindowManager` space is corresponding to `ActivytRecord` in `ActivityManager` space to represent the actual `Activity` or window(in most occasion, one `Activity` has one window). And `AppWindowToken` uses `WindowState` to store the window attribute, and calculate window frame based on current system and window state.
 
 From the above `WindowContainer` code snippet, we can also find that there is field called `mSurfaceControl`. It will create a `Layer` in `SurfaceFlinger` space, and update window size to `Layer`. The `SurfaceFlinger` will render window content to display by `HWC` or `GPU` based on `Layer` content.
 
@@ -162,7 +162,7 @@ For example, preceding code snippet is copied from `WindowState`, and it invokes
 
 ### Create `WindowState`
 
-From the above analyzing, we know when `ActivityManager` space creates specific `WindowContainerController`, the `WindowContainerController` will create specific `WindowContainer`. The `AppWindowToken` is the `WindowContainer` correpsonding to `ActivityRecord`, not `WindowState`. And `AppWindowToken` holds the `WindowState`. So when to create `WindowState` and bind it to `AppWindowToken`?
+From the above analyzing, we know when `ActivityManager` space creates specific `WindowContainerController`, the `WindowContainerController` will create specific `WindowContainer`. The `AppWindowToken` is the `WindowContainer` corresponding to `ActivityRecord`, not `WindowState`. And `AppWindowToken` holds the `WindowState`. So when to create `WindowState` and bind it to `AppWindowToken`?
 
 When `ActivityManager` space initializes `Activity`, it will create `ViewRootImpl` for it, and invoke `ViewRootImpl`'s `setView` to initialize layout. In `ViewRootImpl`'s `setView` will use global window session(`WindowManagerGlobal.getWindowSession()`) to pass the window attribute from `ActivityManager` space to `WindowManager` space by its method `addToDisplay`. Then `WindowManagerService` will use passed window attribute to create `WindowState`, and add it to the `AppWindowToken` bound to specific `ActivityRecord`.
 
@@ -208,7 +208,7 @@ FloatRect Layer::computeBounds(const Region& activeTransparentRegion) const {
 }
 ```
 
-If we use [dumpsys-parser](https://github.com/utzcoz/dumpsys-parser) to parse the `adb shell dumpsy SurfaceFlinger` result, we will see the result likes following content:
+If we use [dumpsys-parser](https://github.com/utzcoz/dumpsys-parser) to parse the `adb shell dumpsys SurfaceFlinger` result, we will see the result likes following content:
 
 ```
 |-- Display Overlays#0, isOpaque false, region Rect(0, 0, 3840, 3840)

@@ -81,7 +81,7 @@ void SurfaceFlinger::onVsyncReceived(int32_t sequenceId, hwc2_display_t displayI
 }
 ```
 
-The `SurfaceFlinger` will invoke `mPrimaryDispSync`(type is `DispSync`)'s `addResyncSample` to notify the `vsync` event. If the `DispSync` thinks its internal model matches the `HWC` `vsync` events, it will retturn `false` to notify the `SurfaceFlinger` to disable `HWC` `vsync` events generation. Otherwise, it will return true to notify the `SurfaceFlinger` to receive `HWC` `vsync` events again, and use later `vsync` events to correct its internal model. We will analyze it later.
+The `SurfaceFlinger` will invoke `mPrimaryDispSync`(type is `DispSync`)'s `addResyncSample` to notify the `vsync` event. If the `DispSync` thinks its internal model matches the `HWC` `vsync` events, it will return `false` to notify the `SurfaceFlinger` to disable `HWC` `vsync` events generation. Otherwise, it will return true to notify the `SurfaceFlinger` to receive `HWC` `vsync` events again, and use later `vsync` events to correct its internal model. We will analyze it later.
 
 ## `DispSync`
 
@@ -90,7 +90,7 @@ The `DispSync` is a very important utility class.
 > It maintains a model of the periodic hardware-based `vsync` events of a display and uses that model to execute period callbacks at specific phase offsets from the hardware `vsync` events. The model is constructed by feeding consecutive hardware event timestamps to the `DispSync` object via the `addResyncSample` method.
 > The model is validated using timestaps from `Fence` objects that are passed to the `DispSync` object via the `addPresentFence` method. These fence timestamps should correspond to a hardware `vsync` event, but they need not be consecutive hardware `vsync` times. If this method determines that the current model accurately represents the hardware `vsync` event times it will return `false` to indicate that a resynchronization (vai `addResyncSample`) is not needed.
 
-The above description of `DispSync` is copied from `DispSync.h` comments. It illustrates the function of `DispSync`. It uses the hardware-base `vsync` events to constrcut its internal model, and then notifying callback the `vsync` event periodly based on its internal model. Also the `SurfaceFlinger` will check `DispSync`'s internal model's accuracy, and use `addResyncSample` to re-construct its internal model if `SurfaceFlinger` thinks `DispSync`'s internal model's accuracy is not enough.
+The above description of `DispSync` is copied from `DispSync.h` comments. It illustrates the function of `DispSync`. It uses the hardware-base `vsync` events to construct its internal model, and then notifying callback the `vsync` event periodic based on its internal model. Also the `SurfaceFlinger` will check `DispSync`'s internal model's accuracy, and use `addResyncSample` to re-construct its internal model if `SurfaceFlinger` thinks `DispSync`'s internal model's accuracy is not enough.
 
 In other word, the `DispSync` is the middle level of real hardware-based `vsync` events, and received `vsync` events of callback. It will feed hardware-based `vsync` events, and simulate it in software. Also there is a mechanism to correct its simulated model.
 
@@ -102,7 +102,7 @@ There are three important fields for internal model:
 2. `mPhase`: The `mPhase` is the phase offset of the modeled `vsync` events. It is the number of nanoseconds from time 0 to the first `vsync` event. The first `vsync` event in this sentence is the first resync event added by `addResyncSample`.
 3. `mReferenceTime`: The `mReferenceTime` is the reference time of the modeled `vsync` events. It is the nanosecond timestamp of the first `vsync` event after a resync.
 
-The `DispSync` also has a internal thread class called `DispSyncThread` to use calculated model fields to notify the callbacks the `vsync` event periodly.
+The `DispSync` also has a internal thread class called `DispSyncThread` to use calculated model fields to notify the callbacks the `vsync` event periodic.
 
 When the `SurfaceFlinger` calls `DispSync::addResyncSample` to feed hardware-based `vsync` event to `DispSync`, it will use them to simulate its internal model. 
 
@@ -304,7 +304,7 @@ virtual bool threadLoop() {
     return false;
 }
 ```
-The `DispSyncThread::computeNextEventTimeLocked` is to find the nearest next target time of all callbacks, and check the target time to select whether to sleep to wait. If it sleeps to wait and wakups with timeout, it will add wakup latency to the later calculation. And then it will use `gatherCallbackInvocationsLocked` to collect callbacks that next target time is less than now now. Lastly, the `DispSyncThread::threadLoop` will use `fireCallbackInvocations` to notify the `vsync` event to callbacks. And then, the `threadLoop` enters to next loop.
+The `DispSyncThread::computeNextEventTimeLocked` is to find the nearest next target time of all callbacks, and check the target time to select whether to sleep to wait. If it sleeps to wait and wakeups with timeout, it will add wakeup latency to the later calculation. And then it will use `gatherCallbackInvocationsLocked` to collect callbacks that next target time is less than now now. Lastly, the `DispSyncThread::threadLoop` will use `fireCallbackInvocations` to notify the `vsync` event to callbacks. And then, the `threadLoop` enters to next loop.
 
 ```c++
 nsecs_t computeListenerNextEventTimeLocked(const EventListener& listener, nsecs_t baseTime) {

@@ -58,7 +58,7 @@ private void updateElevation() {
 }
 ```
 
-When `DecorView` imporantant states are changed, it will invoke its `updateElevation` to update its elevation based on its current states. And it will invoke `View.setElevation(float)`:
+When `DecorView` important states are changed, it will invoke its `updateElevation` to update its elevation based on its current states. And it will invoke `View.setElevation(float)`:
 
 ```java
 public void setElevation(float elevation) {
@@ -297,7 +297,7 @@ static void renderShadow(BakedOpRenderer& renderer, const BakedOpState& state, f
 }
 ```
 
-The `renderShadow` uses `SkPaint` to customize the shadow attribute. The default `SkPaint` fill color is balck, so the shadow color is black. If we change the paint color in this method, we will see some rigid but funny result ![opengl-pipeline-shadow-after-modifying](/images/opengl-pipeline-shadow-after-modifying.png)
+The `renderShadow` uses `SkPaint` to customize the shadow attribute. The default `SkPaint` fill color is black, so the shadow color is black. If we change the paint color in this method, we will see some rigid but funny result ![opengl-pipeline-shadow-after-modifying](/images/opengl-pipeline-shadow-after-modifying.png)
 
 The above graph is the result after I set ambient color to green, and spot color to red. It affects the global, if we want to get more fine control, we should add method to pass the wanted shadow color of every render node to there.
 
