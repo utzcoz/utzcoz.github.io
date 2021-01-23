@@ -6,9 +6,9 @@ categories: aosp
 ---
 
 ```
-. build/envsetup.sh
-lunch aosp_x86_64-userdebug
-make
+source build/envsetup.sh
+lunch sdk_phone_x86_64-userdebug
+m
 emulator
 ```
 
@@ -19,12 +19,3 @@ If you want to show the debug information of `emulator`, you can use the command
 Tips:
 
 Please don't build `eng` variant for `emulator`, it will cause `Developer Optioins` crash, because of the lack of `oem_lock` service.
-
-Screenshot:
-
-![emulator-with-target-aosp_x86_64](/images/emulator-with-target-aosp_x86_64.png "emulator with target aosp_x86_64")
-
-
-## Update
-
-In `AOSP` master, we should change build target to `sdk_phone_x86_64-userdebug` based on the [official instruction](https://source.android.com/setup/create/avd); otherwise the `emulator` will be blank.
