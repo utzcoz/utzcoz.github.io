@@ -1,0 +1,19 @@
+name: Spellcheck Action
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  build:
+    name: Spellcheck
+    runs-on: ubuntu-latest
+    steps:
+    # The checkout step
+    - uses: actions/checkout@master
+    - uses: rojopolis/spellcheck-github-actions@0.10.0
+      name: Spellcheck
+      with:
+        config_path: spellcheck-config/spellcheck.yml
