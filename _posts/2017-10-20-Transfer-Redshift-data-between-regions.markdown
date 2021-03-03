@@ -48,7 +48,7 @@ DATEFORMAT 'auto'
 TIMEFORMAT 'auto' 
 ESCAPE 
 GZIP 
-REMOVEQUOTE;
+REMOVEQUOTES;
 ```
 
 1. Use `MANIFEST` to tell the `COPY` command use manifest file to find the files to import.
@@ -59,7 +59,7 @@ REMOVEQUOTE;
 
 4. Use `GZIP` to uncompressed gzip file.
 
-5. Use `REMOVEQUOTE` to remove quotes added by `UNLOAD` command.
+5. Use `REMOVEQUOTES` to remove quotes added by `UNLOAD` command.
 
 The entire process is that save one region redshift data to s3 in the same region, then download s3 data in this region and upload it to s3 in another region, lastly just copy s3 data in another region to redshift in the same region. But there are something need to be focused.
 
