@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze window size changing sequence"
 date:   2020-04-11 21:14 +0800
-categories: aosp
 ---
 
 ## Code base

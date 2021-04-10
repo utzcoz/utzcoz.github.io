@@ -2,7 +2,6 @@
 layout: post
 title:  "Integrate Houdini to emulator"
 date:   2020-03-15 20:38 +0800
-categories: aosp
 ---
 
 In `x86` architecture device, we build the emulator with product target `aosp_x86_64`, which is the `x86_64` architecture Android variant.

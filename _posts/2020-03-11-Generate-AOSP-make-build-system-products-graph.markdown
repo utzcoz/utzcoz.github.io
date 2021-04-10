@@ -2,7 +2,6 @@
 layout: post
 title:  "Generate AOSP make build system products graph"
 date:   2020-03-11 17:23 +0800
-categories: aosp
 ---
 
 The `AOSP` build system provides a make target called `product-graph` to generate products graph files. 

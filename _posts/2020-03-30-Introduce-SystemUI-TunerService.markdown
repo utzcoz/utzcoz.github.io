@@ -2,7 +2,6 @@
 layout: post
 title:  "Introduce SystemUI TunerService"
 date:   2020-03-30 14:20 +0800
-categories: aosp
 ---
 
 ## Code base

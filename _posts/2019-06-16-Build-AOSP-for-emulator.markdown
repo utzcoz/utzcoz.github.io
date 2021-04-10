@@ -2,7 +2,6 @@
 layout: post
 title:  "Build AOSP for emulator"
 date:   2019-06-16 18:20 +0800
-categories: aosp
 ---
 
 ```

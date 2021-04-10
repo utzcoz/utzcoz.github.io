@@ -2,7 +2,6 @@
 layout: post
 title:  "Compile adb for Android device"
 date:   2018-03-08 21:24 +0800
-categories: aosp adb
 ---
 
 Actually, before `Android 6.0`, there is a `adb` in `system/bin`, which can be used in `Android`, and we can use this `adb` to connect itself or other `Android device`. But from `Android 6.0`, the `Android` official remove the build script for `adb` used in `Android` from `system/core/adb/Android.mk` because of the building problem. 

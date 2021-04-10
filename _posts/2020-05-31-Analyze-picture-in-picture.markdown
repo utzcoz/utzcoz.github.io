@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze picture in picture"
 date:   2020-05-31 13:49 +0800
-categories: aosp
 ---
 
 ## Code base
