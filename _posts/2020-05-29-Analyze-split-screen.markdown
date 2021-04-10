@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze split screen"
 date:   2020-05-29 13:36 +0800
-categories: aosp
 ---
 
 ## Code base

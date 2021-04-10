@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze AOSP input architecture"
 date:   2020-05-06 20:05 +0800
-categories: aosp
 ---
 
 ## Code base

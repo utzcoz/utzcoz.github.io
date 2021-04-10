@@ -2,7 +2,6 @@
 layout: post
 title:  "Exclude Android resource generated classes from Instrumentation target makefile"
 date:   2019-06-01 10:53 +0800
-categories: aosp test
 ---
 
 There are so many instrumentation tests created by Google in `AOSP`, and they will test basic function of app and ui function based on `Activity`. It works fine for many occasions, but it doesn't process correctly, when your instrumentation target app uses third-part libraries with resources, and uses `aapt` flags to extra `R` for those packages.

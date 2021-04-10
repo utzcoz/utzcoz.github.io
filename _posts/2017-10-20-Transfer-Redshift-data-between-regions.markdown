@@ -2,7 +2,6 @@
 layout: post
 title:  "Transfer Redshift data between regions"
 date:   2017-10-11 23:22 +0800
-categories: aws redshift
 ---
 
 Firstly, use aws's `UNLOAD` command to save your redshift data to s3.
@@ -30,11 +29,11 @@ There are some extra command flags need explained:
 
 3. `ESCAPE` : Add `\` before some specific characters for `CHAR` and `VARCHAR` columns in unload files, such as: `\r`, `\n`, delimited character in unloaded data, `\`,  `"` and `'`.
 
-3. `PARALLEL` : The redishfit will split saved data to multi files, but I think it is not useful if we want to download saved data files in s3 of one region to another region. So just use off to close it, and redshift will save data in one file as far as possible, if the data content is not exceed `6.2GB`. It will helpful if you want to decrease data files number.
+4. `PARALLEL` : The redishfit will split saved data to multi files, but I think it is not useful if we want to download saved data files in s3 of one region to another region. So just use off to close it, and redshift will save data in one file as far as possible, if the data content is not exceed `6.2GB`. It will helpful if you want to decrease data files number.
 
-4. `GZIP` : Use `gzip` compression to compress the saved data file to save s3 storage and decrease download bandwidth price.
+5. `GZIP` : Use `gzip` compression to compress the saved data file to save s3 storage and decrease download bandwidth price.
 
-5. `MANIFEST` : Use a manifest file to save the saved data files url. 
+6. `MANIFEST` : Use a manifest file to save the saved data files url. 
 
 And then download the manifest and saved data files to your local computer, and upload these files to your s3 in another region. Lastly, use below template code to insert data to your redshift in your new region.
 

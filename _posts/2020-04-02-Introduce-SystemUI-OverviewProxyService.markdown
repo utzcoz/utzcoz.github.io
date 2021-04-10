@@ -2,7 +2,6 @@
 layout: post
 title:  "Introduce SystemUI OverviewProxyService"
 date:   2020-04-02 14:20 +0800
-categories: aosp
 ---
 
 ## Code base

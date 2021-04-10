@@ -2,7 +2,6 @@
 layout: post
 title:  "Use EXTRA_SETTINGS to split custom settings from official settings"
 date:   2020-11-07 12:00 +0800
-categories: aosp
 ---
 
 If you are a ROM developer/maintainer, you maybe need to add some setting item to the official settings app for your custom configuration. For example, I need to add switch for user to enable/disable multi-window and [BoringdroidSystemUI](https://github.com/boringdroid/vendor_packages_apps_BoringdroidSystemUI) based on his/her need. If I add those switch to official settings app, I will manage the fork of official settings app, and apply patches when I upgrade based `AOSP` version, for example, upgrade from `Android` 10 to `Android` 11. So if there is a mechanism to plugin custom settings app to official settings app, it will help to release myself from annoying patch work. Fortunately, the official settings app provide a mechanism called for `EXTRA_SETTINGS` to help us to make it come true. The following first diagram is the official settings app dashboard page, and it loads the [BoringdroidSettings](https://github.com/boringdroid/vendor_packages_apps_BoringdroidSettings) dynamically, and the second diagram is the result after clicking the `BoringdroidSettings` dashboard entry, the shown `BoringdroidSettings` app page.

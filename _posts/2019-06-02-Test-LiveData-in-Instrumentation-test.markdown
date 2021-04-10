@@ -2,7 +2,6 @@
 layout: post
 title:  "Test LiveData in Instrumentation tests"
 date:   2019-06-02 23:23 +0800
-categories: aosp test
 ---
 
 The `LiveData.observe` method should run in main thread, but our test methods run in background thread, so we should use some tricks to avoid it if we want to test `LiveData` in Instrumentation tests.
