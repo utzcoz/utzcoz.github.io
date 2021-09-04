@@ -4,7 +4,7 @@ title:  "[deprecated]Bliss OS: How to install Bliss OS on VirtualBox"
 date:   2020-08-27 23:17 +0800
 ---
 
-**The manual has been moved to [Bliss Wiki](https://wiki.blissroms.org/index.php?title=Bliss_OS/Installation/VirtualBox), that will be maintained.**
+**The manual has been moved to [Bliss Wiki](https://docs.blissos.org/install-bliss-os/install-in-a-virtual-machine/install-in-virtualbox), that will be maintained.**
 
 This article is a draft content to describe how to install `Bliss OS` on `VirtualBox`. It combines [`android-x86` `VirtualBox` howto](https://www.android-x86.org/documentation/virtualbox.html) and [`Bliss OS` Install Bliss OS on a VM (`virtualbox`) part](https://docs.blissroms.com/Bliss%20OS/installation-guide-misc/).
 
