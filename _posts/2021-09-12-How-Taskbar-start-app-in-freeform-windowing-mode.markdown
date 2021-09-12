@@ -4,7 +4,7 @@ title:  "How Taskbar start app in freeform windowing mode"
 date:   2021-09-12 17:34 +0800
 ---
 
-[Taskbar][1] is a awesome Android launcher which supports start app to [freefrom][3] windowing mode directly to provide desktop UI for Android user. And it is integrated into [Android-x86][6] and [BlissOS][7] as alternative launcher to provide desktop experience for users. If you are not familiar with it, you can visit [Taskbar's Google Play Store page][2] to download and experience it. This article is mainly used to introduce how Taskbar implements this feature, and which requirements of Android system needs to support Taskbar to start app in freeform windowing mode.
+[Taskbar][1] is an awesome Android launcher which supports start app to [freefrom][3] windowing mode directly to provide desktop UI for Android user. And it is integrated into [Android-x86][6] and [BlissOS][7] as alternative launcher to provide desktop experience for users. If you are not familiar with it, you can visit [Taskbar's Google Play Store page][2] to download and experience it. This article is mainly used to introduce how Taskbar implements this feature, and which requirements of Android system needs to support Taskbar to start app in freeform windowing mode.
 
 ## It needs Android device supports freeform
 
