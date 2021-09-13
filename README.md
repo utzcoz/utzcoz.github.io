@@ -1,5 +1,3 @@
 ## utzcoz.github.io
 
-Self page site.
-
-Support by [Jekyll](https://jekyllrb.com/)
+ Personal blog powered by [Jekyll](https://jekyllrb.com/).
