@@ -4,16 +4,11 @@ title:  "Introduce SystemUI OverviewProxyService"
 date:   2020-04-02 14:20 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Preview
+> This article based on `AOSP` 9.0
 
 From `AOSP` 9.0, if we click the recents button in navigation bar, the `Launcher3` will show its recents view, instead of `SystemUI`. In another word, from `AOSP` 9.0, the `SystemUI` provide a method to implement recents out the `SystemUI`. And if there is an another implementation, the `SystemUI` will use its fallback implementation. The bridge that permits to implement another recents is `OverviewProxyService` in `SystemUI`.
 
 ## Initialize `OverviewProxyService`
-
 
 ### `Dependency`
 

@@ -4,11 +4,7 @@ title:  "Analyze window shadow"
 date:   2020-04-13 16:31 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Preview
+> This article based on `AOSP` 9.0.
 
 The Android uses Z value of view to calculate the view hierarchy, and shadow size of view. And the Z is the plus result of view's elevation and view's  translation Z. So if we change any of them, and the final Z value of view will change.
 

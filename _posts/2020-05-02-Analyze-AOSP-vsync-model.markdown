@@ -4,11 +4,7 @@ title:  "Analyze AOSP vsync model"
 date:   2020-05-02 13:14 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Preface
+> This article based on `AOSP` 9.0.
 
 [The `Android` UI rendering pipeline has following five stages](https://android-developers.googleblog.com/2020/04/high-refresh-rate-rendering-on-android.html):
 

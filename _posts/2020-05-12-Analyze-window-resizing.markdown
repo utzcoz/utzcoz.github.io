@@ -4,13 +4,9 @@ title:  "Analyze window resizing"
 date:   2020-05-12 13:36 +0800
 ---
 
-## Code base
+> This article based on `AOSP` 9.0.
 
-`AOSP` 9.0
-
-## Usage
-
-We click the shadow of freeform window, and drag it to resize window.
+We click the shadow of freeform window, and drag it to resize window. And this article will analyze window resizing logic to show how Android window handling resizing actions.
 
 ## Input flinger
 

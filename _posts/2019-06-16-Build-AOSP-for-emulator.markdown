@@ -4,6 +4,10 @@ title:  "Build AOSP for emulator"
 date:   2019-06-16 18:20 +0800
 ---
 
+The emulator is good tool to test and prototype your product, and this article will show how to build it locally from your `AOSP` source code for your `x86` architecture develop machine.
+
+The building commands are very simple, and we can use following commands to build emulator:
+
 ```
 source build/envsetup.sh
 lunch sdk_phone_x86_64-userdebug

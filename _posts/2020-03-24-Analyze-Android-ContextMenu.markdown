@@ -4,9 +4,9 @@ title:  "Analyze Android ContextMenu"
 date:   2020-03-24 22:15 +0800
 ---
 
-## Code base
+> This article based on `AOSP` 9.0.
 
-`AOSP` 9.0
+`ContextMenu` is very useful UI item to show menu based on your event context, for example showing power menu around of power button when clicking it. This article will analyze the implementation of Android's `ContextMenu` to provide information to implement custom floating context window.
 
 ## How to use `ContextMenu`
 

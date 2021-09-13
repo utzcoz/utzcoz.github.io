@@ -4,11 +4,7 @@ title:  "Introduce SystemUI TunerService"
 date:   2020-03-30 14:20 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Preview
+> This article based on `AOSP` 9.0
 
 If you use pure `AOSP` built image,  we can use following command to enable the `TunerActivity`:
 
