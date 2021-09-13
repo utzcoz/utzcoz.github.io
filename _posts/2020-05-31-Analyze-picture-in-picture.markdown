@@ -4,9 +4,9 @@ title:  "Analyze picture in picture"
 date:   2020-05-31 13:49 +0800
 ---
 
-## Code base
+> This article based on `AOSP` 9.0.
 
-`AOSP` 9.0
+PIP is another multi-window feature I used very much when watching videos. This article will analyze its logic to show its details. 
 
 ## Enter picture-in-picture(pip)
 

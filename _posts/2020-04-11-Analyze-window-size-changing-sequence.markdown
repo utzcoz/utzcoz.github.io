@@ -4,9 +4,9 @@ title:  "Analyze window size changing sequence"
 date:   2020-04-11 21:14 +0800
 ---
 
-## Code base
+> This article based on `AOSP` 9.0
 
-`AOSP` 9.0
+It's important to learn the changing sequence of window size from `ActivityManager` space to `WindowManager` space. This article will analyze this sequence to learn some important data structures of Android window system.
 
 ## `ActivityManager` space
 

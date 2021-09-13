@@ -4,9 +4,9 @@ title:  "Analyze split screen"
 date:   2020-05-29 13:36 +0800
 ---
 
-## Code base
+> This article based on `AOSP` 9.0.
 
-`AOSP` 9.0
+Split screen is my best favorite multi-window feature when I use Android phone. This article will analyze its logic show how this awesome feature is implemented.
 
 ## SystemUI
 

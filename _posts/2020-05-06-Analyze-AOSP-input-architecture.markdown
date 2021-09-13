@@ -4,11 +4,7 @@ title:  "Analyze AOSP input architecture"
 date:   2020-05-06 20:05 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Preface
+> This article based on `AOSP` 9.0.
 
 This article is based on [Jonathan Levin](http://newandroidbook.com/)'s [presentation about `Android` input architecture](http://newandroidbook.com/files/AndroidInput.pdf). It's an excellent presentation for `Android` input architecture.
 

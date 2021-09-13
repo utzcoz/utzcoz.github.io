@@ -4,11 +4,7 @@ title:  "Print call stack in AOSP native code"
 date:   2020-04-29 23:59 +0800
 ---
 
-## Code base
-
-`AOSP` 9.0
-
-## Steps
+> This article based on `AOSP` 9.0.
 
 1. Add `libutilscallstack` to your `shared_libs` of `Android.bp`.
 2. Add `#include <utils/CallStack.h>` to your c++ code.
