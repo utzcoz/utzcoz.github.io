@@ -239,10 +239,6 @@ The tree liking result is compatible to the above analyzing. So if we found wind
 
 ## Summary
 
-<div class="mermaid">
-sequenceDiagram
-    
-</dive>
 ```
      ,--------------------------------------------------.                                               
      |ActivityDisplay                                   |     
