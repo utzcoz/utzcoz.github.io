@@ -10,37 +10,24 @@ It's important to learn the changing sequence of window size from `ActivityManag
 
 ## `ActivityManager` space
 
-```
-   ,--------------------------------------------------.   
-   |ActivityDisplay                                   |   
-   |--------------------------------------------------|   
-   |DisplayWindowController mWindowContainerController|   
-   |--------------------------------------------------|   
-   `--------------------------------------------------'   
-                             |                            
-                             |                            
-    ,------------------------------------------------.    
-    |ActivityStack                                   |    
-    |------------------------------------------------|    
-    |StackWindowController mWindowContainerController|    
-    |------------------------------------------------|    
-    `------------------------------------------------'    
-                             |                            
-,--------------------------------------------------------.
-|TaskRecord                                              |
-|--------------------------------------------------------|
-|TaskWindowContainerController mWindowContainerController|
-|--------------------------------------------------------|
-`--------------------------------------------------------'
-                             |                            
-                                                          
-,-------------------------------------------------------. 
-|ActivityRecord                                         | 
-|-------------------------------------------------------| 
-|AppWindowContainerController mWindowContainerController| 
-|-------------------------------------------------------| 
-`-------------------------------------------------------' 
-```
+<div class="mermaid">
+classDiagram
+    class ActivityDisplay {
+        -DisplayWindowController mWindowContainerController
+    }
+    class ActivityStack {
+        -StackWindowController mWindowContainerController
+    }
+    class TaskRecord {
+        -TaskWindowContainerController mWindowContainerController
+    }
+    class ActivityRecord {
+        -AppWindowContainerController mWindowContainerController
+    }
+    ActivityDisplay *-- ActivityStack : contains && restricts bounds
+    ActivityStack *-- TaskRecord : contains && restricts bounds
+    TaskRecord *-- ActivityRecord : contains && restricts bounds
+</div>
 
 In `ActivityManager` space, there are four important classes, that represents the application object:
 
@@ -252,6 +239,10 @@ The tree liking result is compatible to the above analyzing. So if we found wind
 
 ## Summary
 
+<div class="mermaid">
+sequenceDiagram
+    
+</dive>
 ```
      ,--------------------------------------------------.                                               
      |ActivityDisplay                                   |     
