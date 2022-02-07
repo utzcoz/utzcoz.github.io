@@ -8,7 +8,7 @@ date:   2022-01-01 12:47 +0800
 
 # Test Pyramid
 
-![Test pyramid](/images/android-test-pyramid.png)
+![Test pyramid](/images/android-test-development-cycle.png)
 
 ![TEST-DRIVEN DEVELOPMENT BY EXAMPLE by KENT BECK](https://images-na.ssl-images-amazon.com/images/I/41pO5GqNtzL._SX258_BO1,204,203,200_.jpg)
 
