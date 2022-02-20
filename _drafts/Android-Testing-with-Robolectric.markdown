@@ -105,14 +105,71 @@ With six lines of test code, we can test the response of one button's clicking l
 
 # Core features
 
-## Real sources
+// TODO add description for core features
 
+## Real resources
+
+The supporting of real resources is one of my favorite core feature of Robolectric. We can test logic with resources very easily with enabling `unitTests.includeAndroidResources` for project:
+
+```groovy
+android {
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+```
+
+After that, we can access resources directly in our tests with Robolectric:
+
+```Kotlin
+val button = activity.findViewById<Button>(R.id.btn_show_hint)
+button.performClick()
+val tvHint = activity.findViewById<TextView>(R.id.tv_hint)
+assertThat(tvHint.text).isEqualTo(MainActivity.HINT_HINT)
+```
+
+It's not recommended to use legacy resources supporting, because it's not maintained and supported with high priority by Robolectric team now.
 
 ## Configure SDK
 
+Robolectric supports Android SDK from 16-31 now if we use Robolectric 4.7.3(the latest version that recommended to use). We can use configurable SDK to control test's testing range. Although almost of all APIs of Android SDK are stable, but there are some changes between different SDKs. For example, [`Activity#onMultiWindowModeChanged(boolean)`][25] is added from SDK 24, and deprecated from SDK 26 with added replacement [`onMultiWindowModeChanged (boolean isInMultiWindowMode, Configuration newConfig)`][26]. Many apps need support many Android versions, and have compatible behaviors on different Android versions. If you have this need, Robolectric's configurable SDK can help a lot.
+
+The following test is used to test `Activity#onMultiWindowModeChanged(boolean)` from SDK `N` to `N_MR1`:
+
+```Kotlin
+@Config(minSdk = N, maxSdk = N_MR1)
+@Test
+fun `old multi window mode changed and hint view should update content with text old-multi-window`() {
+   rule.scenario.use { scenario: ActivityScenario<MainActivity> ->
+       scenario.onActivity { activity: MainActivity ->
+           // Deprecated from SDK 26
+           activity.onMultiWindowModeChanged(true)
+           val tvHint = activity.findViewById<TextView>(R.id.tv_hint)
+           assertThat(tvHint.text).isEqualTo(MainActivity.HINT_OLD_MULTI_WINDOW)
+       }
+   }
+}
+```
+
+And the next test is used to test `onMultiWindowModeChanged (boolean isInMultiWindowMode, Configuration newConfig)` from SDK `O`:
+
+```Kotlin
+@Config(minSdk = O)
+@Test
+fun `multi window mode changed and hint view should update content with text multi-window`() {
+   rule.scenario.use { scenario: ActivityScenario<MainActivity> ->
+       scenario.onActivity { activity: MainActivity ->
+           activity.onMultiWindowModeChanged(true, activity.resources.configuration)
+           val tvHint = activity.findViewById<TextView>(R.id.tv_hint)
+           assertThat(tvHint.text).isEqualTo(MainActivity.HINT_MULTI_WINDOW)
+       }
+   }
+}
+```
+
+We can run `./gradlew test` now to test `onMultiWindowChanged` callbacks for different Android versions. 
 
 ## Configure qualifiers
-
 
 ## Configure display
 
@@ -169,3 +226,5 @@ With six lines of test code, we can test the response of one button's clicking l
 [22]: <https://github.com/android/android-test> "AndroidX test"
 [23]: <https://github.com/google/truth> "Google Truth"
 [24]: <https://junit.org/junit4/> "JUnit4"
+[25]: <https://developer.android.com/reference/android/app/Activity#onMultiWindowModeChanged(boolean)> "Activity#onMultiWindowModeChanged(boolean)"
+[26]: <https://developer.android.com/reference/android/app/Activity#onMultiWindowModeChanged(boolean,%20android.content.res.Configuration)> "Activity#onMultiWindowModeChanged(boolean, android.content.res.Configuration)"
