@@ -31,13 +31,31 @@ At different test scope, there are some tools we can choose:
 2. integration test: Robolectric/AndroidX test.
 3. e2e test: Robolectric/AndroidX test.
 
-For unit test, there are many awesome mock tools for Android: [Mockito][15], [PowerMock][16], and [MockK][7]. But if you want to use fake style tool for Android unit test, Robolectric is a good choice, as [Roboletric's shadow is one type of Android's fake implementation][11]. [New Android testing tutorial prefers to fake style instead of mock style for Android testing][18], and Robolectric is trying to improve itself performance to reduce overload when using Robolectric to write unit test, e.g. instrumented android-all jars. IMO, Robolectric can be a good candidate for Android's unit test. Robolectric also supports those mock tools on many occasions when Robolectric's shadow doesn't meet your requirement.
+For unit test, there are many awesome mock tools for Android: [Mockito][15], [PowerMock][16], and [MockK][7]. But if you want to use fake style tool for Android unit test, Robolectric is a good choice, as [Roboletric's shadow is one type of Android's fake implementation][11]. [New Android testing tutorial prefers to fake style instead of mock style for Android testing][18], and Robolectric is trying to improve its performance to reduce overload when using Robolectric to write unit test, e.g. instrumented android-all jars. Robolectric also supports those mock tools on many occasions when Robolectric's shadow doesn't meet your requirement.
 
 For integration test, we can use Robolectric as simulator and run those tests on JVM, and AndroidX test library to run those tests on Emulator or real devices. Robolectric also supports AndroidX test library, and [developers can run tests written with AndroidX test library on Robolectric 4.x+][20]. In this scope, we can run those tests on CI more easily when using Robolectric, because we only need JVM.
 
 For e2e test, Robolectric also can work sometimes with better development speed and easily CI integration when writing UI related tests. And Robolectric also has advantage when testing app with system's core services/settings, because it has various shadow APIs to control those services/settings.
 
 Beside of test pyramid and test scope, I prefer to use [local test][21] to identify the occasion that I select Robolectric as the first choice for Android testing. If I want to run tests on local development machine or CI machine, I prefer to use Robolectric to write tests, including unit test, integration test and e2e test or instrumentation test.
+
+# Why Robolectric?
+
+We have discussed some reasons of selecting Robolectric to write tests. We can summarize these advantages together(thanks hoisie for summarizing these advantages):
+
+## Performance
+
+Robolectric tests run on the JVM. This avoids all of the overhead with Emulators, such as startup time, APK dexing + packaging + copying + installing.
+
+## Flakiness
+
+Tests on Emulators have more concurrent threads, leading to nondeterminism and flakiness.
+
+## APIs
+
+Robolectric offers lots of powerful and extensible testing APIs (shadow APIs) not available in Emulators.
+
+Those advantages come when comparing Robolectric with Emulator for instrumentation test. And many folks also think Robolectric is useful for instrumentation test. But what about unit test? We can use mock tools for unit test totally if related logic doesn't have too much dependencies on Android's Context or other system APIs. If not, we can prefer Robolectric to reduce our work to mock those system APIs, and write unit test more conveniently. If test method involves a lot of modules, including hidden Android system modules, I will group it to integration test although this test method only has three lines of test code, and prefer Robolectric if I want to run it locally.
 
 # TTD for Android 
 
