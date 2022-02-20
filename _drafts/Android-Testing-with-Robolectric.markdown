@@ -57,6 +57,82 @@ Robolectric offers lots of powerful and extensible testing APIs (shadow APIs) no
 
 Those advantages come when comparing Robolectric with Emulator for instrumentation test. And many folks also think Robolectric is useful for instrumentation test. But what about unit test? We can use mock tools for unit test totally if related logic doesn't have too much dependencies on Android's Context or other system APIs. If not, we can prefer Robolectric to reduce our work to mock those system APIs, and write unit test more conveniently. If test method involves a lot of modules, including hidden Android system modules, I will group it to integration test although this test method only has three lines of test code, and prefer Robolectric if I want to run it locally.
 
+# How to integrate Robolectric?
+
+Integrating Robolectric is very simple: enabling `unitTests.includeAndroidResources` to use Robolectric's maintained resource mechanism, and adding Robolectric and related recommended dependencies([AndroidX test][22], [Google Truth][23] and [JUnit4][24]).
+
+```groovy
+android {
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.test:monitor:1.4.0'
+    testImplementation 'androidx.test:runner:1.4.0'
+    testImplementation 'androidx.test:rules:1.4.0'
+    testImplementation 'androidx.test.ext:junit:1.1.3'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
+    testImplementation 'androidx.test.ext:truth:1.4.0'
+    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation 'com.google.truth:truth:1.1.3'
+    testImplementation 'org.robolectric:robolectric:4.7.3'
+}
+```
+
+Now, we can write test with Robolectric:
+
+```Kotlin
+@RunWith(RobolectricTestRunner::class)
+class MainActivityRobolectricTest {
+   @Test
+   fun `click hint button and hint view should update content with text Hint`() {
+       ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+           scenario.onActivity { activity: MainActivity ->
+               val button = activity.findViewById<Button>(R.id.btn_show_hint)
+               button.performClick()
+               val tvHint = activity.findViewById<TextView>(R.id.tv_hint)
+               assertThat(tvHint.text).isEqualTo("Hint")
+           }
+       }
+   }
+}
+```
+
+With six lines of test code, we can test the response of one button's clicking logic, and run it on JVM with command `./gradlew test`. This test sample also leverages AndroidX test APIs to test UI related logic. We can change test runner to `AndroidJUnit4` and run this test on real Emulator. We will discuss it at later sharedTest pattern part.
+
+# Core features
+
+## Real sources
+
+
+## Configure SDK
+
+
+## Configure qualifiers
+
+
+## Configure display
+
+
+## APIs
+
+## Multi build system support
+
+## M1 support
+
+# sharedTest pattern
+
+# Open-source projects use Robolectric
+
+## Flutter
+
+## AOSP
+
+## Chromium
+
 # TTD for Android 
 
 ![test development cycle](/images/android-test-development-cycle.png)
@@ -90,3 +166,6 @@ Those advantages come when comparing Robolectric with Emulator for instrumentati
 [19]: <https://medium.com/androiddevelopers/write-once-run-everywhere-tests-on-android-88adb2ba20c5> "Write Once, Run Everywhere Tests on Android"
 [20]: <http://robolectric.org/blog/2018/10/25/robolectric-4-0/> "Robolectric 4.0 Released!"
 [21]: <https://developer.android.com/training/testing/local-tests> "Local tests"
+[22]: <https://github.com/android/android-test> "AndroidX test"
+[23]: <https://github.com/google/truth> "Google Truth"
+[24]: <https://junit.org/junit4/> "JUnit4"
