@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Android Testing with Robolectric"
-date:   2022-01-01 12:47 +0800
+date:   2022-02-27 19:00 +0800
 ---
 
 [Robolectric][1] is the industry-standard local testing framework for Android. With Robolectric, your tests run in a simulated Android environment inside a JVM, without the overhead and flakiness of an emulator. At [Android testing Fundamentals tutorial][12], Google gives a name for Robolectric: simulator. I have used it and contributed to it very much, and think it is very useful tool for Android app's local testing. This article will explain the reason why we should consider Robolectric, and some practices that I want to recommend when using Robolectric, e.g. sharedTest pattern.
