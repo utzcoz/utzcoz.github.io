@@ -14,3 +14,14 @@ source start.sh
 ```shell
 source start-drafts.sh
 ```
+
+## Check theme installation path
+
+
+```shell
+bundle info --path minima
+```
+
+## Customization theme files
+
+The customization theme files are based on minima-2.5.1.
