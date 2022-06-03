@@ -14,3 +14,10 @@ source start.sh
 ```shell
 source start-drafts.sh
 ```
+
+## Check theme installation path
+
+
+```shell
+bundle info --path minima
+```
