@@ -21,3 +21,7 @@ source start-drafts.sh
 ```shell
 bundle info --path minima
 ```
+
+## Customization theme files
+
+The customization theme files are based on minima-2.5.1.
