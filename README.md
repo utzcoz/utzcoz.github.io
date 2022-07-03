@@ -2,6 +2,11 @@
 
  Personal blog powered by [Jekyll](https://jekyllrb.com/).
 
+## Install dependencies
+
+```shell
+source install-dependencies.sh
+```
  
 ## Start local instance
 
