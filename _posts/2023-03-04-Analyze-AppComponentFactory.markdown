@@ -70,7 +70,7 @@ The `AppComponentFactory` is powerful, and this article will analyze how AOSP su
 
 # Analysis
 
-## AOSP
+## AOSP part
 
 ### Parsing `AndroidManifest.xml`
 
@@ -155,6 +155,8 @@ private void handleReceiver(ReceiverData data) {
     ...
 ```
 
+## Application part
+
 ### `AppComponentFactory` initializes `BroadcastReceiver` finally
 
 ```Java
@@ -170,3 +172,5 @@ public class CustomAppCompFactory extends AppComponentFactory {
     ...
 }
 ```
+
+In `CustomAppCompFactory`, we can initialize different custom receivers with different constructors with different input parameters depends on passed `Intent` and `className`.
