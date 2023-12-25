@@ -2,31 +2,31 @@
 
  Personal blog powered by [Jekyll](https://jekyllrb.com/).
 
-## Install dependencies
+### Install dependencies
 
 ```shell
 source install-dependencies.sh
 ```
  
-## Start local instance
+### Start local instance
 
 ```shell
 source start.sh
 ```
 
-## Start local instance including drafts content
+### Start local instance including drafts content
 
 ```shell
 source start-drafts.sh
 ```
 
-## Check theme installation path
+### Check theme installation path
 
 
 ```shell
 bundle info --path minima
 ```
 
-## Customization theme files
+### Customization theme files
 
 The customization theme files are based on minima-2.5.1.
