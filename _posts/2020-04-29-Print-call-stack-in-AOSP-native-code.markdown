@@ -4,7 +4,7 @@ title:  "Print call stack in AOSP native code"
 date:   2020-04-29 23:59 +0800
 ---
 
-# AOSP 9.0
+## AOSP 9.0
 
 1. Add `libutilscallstack` to your `shared_libs` of `Android.bp`.
 2. Add `#include <utils/CallStack.h>` to your c++ code.
@@ -31,7 +31,7 @@ date:   2020-04-29 23:59 +0800
     ```  
     It's very useful to inspect or debug c++ code.
 
-# AOSP 11
+## AOSP 11
 
 In AOSP 11, we also need to include `libutils_headers` to project `Android.bp`'s `header_libs` based on previous steps. There is an example from [`libserviceutils`](https://cs.android.com/android/platform/superproject/+/master:frameworks/native/services/utils/Android.bp;l=27-50?q=libutils_headers&ss=android):
 

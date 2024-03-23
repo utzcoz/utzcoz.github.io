@@ -6,7 +6,7 @@ date:   2022-02-27 19:00 +0800
 
 [Robolectric][1] is the industry-standard local testing framework for Android. With Robolectric, your tests run in a simulated Android environment inside a JVM, without the overhead and flakiness of an emulator. At [Android testing Fundamentals tutorial][12], Google gives a name for Robolectric: simulator. I have used it and contributed to it very much, and think it is very useful tool for Android app's local testing. This article will explain the reason why we should consider Robolectric, and some practices that I want to recommend when using Robolectric, e.g. sharedTest pattern.
 
-# Test Pyramid and Test Scope
+## Test Pyramid and Test Scope
 
 Before we discuss Robolectric details, we can discuss test pyramid and scope firstly.
 
@@ -39,25 +39,25 @@ For e2e test, Robolectric also can work sometimes with better development speed 
 
 Beside of test pyramid and test scope, I prefer to use [local test][21] to identify the occasion that I select Robolectric as the first choice for Android testing. If I want to run tests on local development machine or CI machine, I prefer to use Robolectric to write tests, including unit test, integration test and e2e test or instrumentation test.
 
-# Why Robolectric?
+## Why Robolectric?
 
 We have discussed some reasons of selecting Robolectric to write tests. We can summarize these advantages together(thanks hoisie for summarizing these advantages):
 
-## Performance
+### Performance
 
 Robolectric tests run on the JVM. This avoids all of the overhead with Emulators, such as startup time, APK dexing + packaging + copying + installing.
 
-## Flakiness
+### Flakiness
 
 Tests on Emulators have more concurrent threads, leading to nondeterminism and flakiness.
 
-## APIs
+### APIs
 
 Robolectric offers lots of powerful and extensible testing APIs (shadow APIs) not available in Emulators.
 
 Those advantages come when comparing Robolectric with Emulator for instrumentation test. And many folks also think Robolectric is useful for instrumentation test. But what about unit test? We can use mock tools for unit test totally if related logic doesn't have too much dependencies on Android's Context or other system APIs. If not, we can prefer Robolectric to reduce our work to mock those system APIs, and write unit test more conveniently. If test method involves a lot of modules, including hidden Android system modules, I will group it to integration test although this test method only has three lines of test code, and prefer Robolectric if I want to run it locally.
 
-# How to integrate Robolectric?
+## How to integrate Robolectric?
 
 Integrating Robolectric is very simple: enabling `unitTests.includeAndroidResources` to use Robolectric's maintained resource mechanism, and adding Robolectric and related recommended dependencies([AndroidX test][22], [Google Truth][23] and [JUnit4][24]).
 
@@ -103,11 +103,11 @@ class MainActivityRobolectricTest {
 
 With six lines of test code, we can test the response of one button's clicking logic, and run it on JVM with command `./gradlew test`. This test sample also leverages AndroidX test APIs to test UI related logic. We can change test runner to `AndroidJUnit4` and run this test on real Emulator. We will discuss it at later sharedTest pattern part.
 
-# Core features
+## Core features
 
 Robolectric is very simple to integration, it also has many core features that useful to simplifier tests.
 
-## Real resources
+### Real resources
 
 The supporting of real resources is one of my favorite core feature of Robolectric. We can test logic with resources very easily with enabling `unitTests.includeAndroidResources` for project:
 
@@ -130,7 +130,7 @@ assertThat(tvHint.text).isEqualTo(MainActivity.HINT_HINT)
 
 It's not recommended to use legacy resources supporting, because it's not maintained and supported with high priority by Robolectric team now.
 
-## Configure SDK
+### Configure SDK
 
 Robolectric supports Android SDK from 16-31 now if we use Robolectric 4.7.3(the latest version that recommended to use). We can use configurable SDK to control test's testing range. Although almost of all APIs of Android SDK are stable, but there are some changes between different SDKs. For example, [`Activity#onMultiWindowModeChanged(boolean)`][25] is added from SDK 24, and deprecated from SDK 26 with added replacement [`onMultiWindowModeChanged (boolean isInMultiWindowMode, Configuration newConfig)`][26]. Many apps need support many Android versions, and have compatible behaviors on different Android versions. If you have this need, Robolectric's configurable SDK can help a lot.
 
@@ -169,7 +169,7 @@ fun `multi window mode changed and hint view should update content with text mul
 
 We can run `./gradlew test` now to test `onMultiWindowChanged` callbacks for different Android versions. 
 
-## Configure qualifiers
+### Configure qualifiers
 
 With Robolectric, we can configure resource qualifier for test class or test method. 
 
@@ -206,7 +206,7 @@ fun `orientation hint view should show landscape for landscape layout`() {
 
 For example, we can use `@Config` to configure display's landscape or port state, and test different screen state for cross-device apps. It's recommend use it with real resources enabling. We can follow [Android's qualifier rules][27] to configure qualifier rules based on real need.
 
-## Configure display
+### Configure display
 
 Another core feature used by many projects, e.g. Flutter, is configuring display state when testing.
 
@@ -223,7 +223,7 @@ private void setExpectedDisplayRotation(int rotation) {
 
 Above example is copied from Flutter test code, and is used to change display's rotation when testing. It's very useful to test logic related to display rotation and rotation changing. It's not convenient to configure display rotation when testing with Emulator. 
 
-## APIs
+### APIs
 
 IMO, Robolectric is a fake implementation of Android frameworks, and provides massive APIs for developer to configure frameworks's state and get framework's state. For example, there is a `BroadcastReceiver` implementation class to receive special action, and start a foreground service: 
 
@@ -265,7 +265,7 @@ fun `show hidden Taskbar when receiving ACTION_SHOW_HIDE_TASKBAR`() {
 
 Robolectric simulates a "real" service starting logic, stores started service to internal fields, and exposure those state with shadow APIs. We can visit Robolectric's online javadoc to check supported shadow APIs, e.g. [Robolectric's 4.7 javadoc][5].
 
-## Multi build system support
+### Multi build system support
 
 Beside of [Gradle][31], [robolectric-bazel][29] is used to support [Bazel][30]. If you are using Bazel for your Android project(I know there are many companies are using Bazel for it), you can use [Bazel's rules_jvm_external][32] to integrate Robolectric:
 
@@ -309,11 +309,11 @@ android_local_test(
 
 There is [an official example of local_test with robolectric-bazel][33] from rules_jvm_external.
 
-## M1 support
+### M1 support
 
 M1 is very popular, Robolectric also knows it. From Robolectric 4.7, it started to support M1 with native SQLite mechanism with massive performance improvement. Many users, including me have run Robolectric on their M1 development machine. If you are using a M1 machine, what about giving a try for Robolectric?
 
-# sharedTest pattern
+## sharedTest pattern
 
 Google has introduced an interesting project called: Project Nitrogen
 
@@ -401,7 +401,7 @@ Now, we can use following commands to run tests on both Robolectric and Emulator
 
 It's a long-term goal, and there are massive things left to do, but IMO it deserves a try. Actually, Android Studio doesn't support sharedTest pattern's sharedTest directory, we can star https://issuetracker.google.com/issues/132426298 to raise awareness of shardTest pattern supporting to Android Studio team. 
 
-# Open-source projects use Robolectric
+## Open-source projects use Robolectric
 
 There are many open-source projects use Robolectric for their local tests, and we can check it with link https://github.com/search?q=org.robolectric%3Arobolectric.
 
@@ -411,7 +411,7 @@ There are many open-source projects use Robolectric for their local tests, and w
 
 Before adopting/using Robolectric, we can check how some top open-source projects how to use Robolectric to write tests.
 
-## Flutter
+### Flutter
 
 https://github.com/flutter/engine/tree/main/shell/platform/android/test/io/flutter is Flutter's local test directory, and we can show an example of Flutter to use Robolectric to test navigation bar's location for different SDKs and display rotations.
 
@@ -461,7 +461,7 @@ public void systemInsetHandlesFullscreenNavbarRight() {
 ```
 Actually, we can improve those tests by using `@Config` to set `land` qualifier instead of `RuntimeEnvironment.setQualifiers`. Robolectric works with mockito, and Flutter also uses mockito with Robolectric to simply test logic. 
 
-## AOSP
+### AOSP
 
 We can check projects that use Robolectric with link https://cs.android.com/search?q=android_robolectric_test&sq=&ss=android. And we will show CarSettings' some tests as an example for AOSP usage.
 
@@ -497,7 +497,7 @@ public void testOkDismissesDialog() {
 }
 ```
 
-## Chromium
+### Chromium
 
 We can visit https://source.chromium.org/search?q=robolectric_all_java&sq=&ss=chromium to check Chromium's usage of Robolectric.
 
@@ -546,7 +546,7 @@ public class WebContentsDarkModeControllerUnitTest {
 }
 ```
 
-# Summary
+## Summary
 
 Robolectric is not a perfect solution for local test, but it has massive features and fake implementation of Android frameworks to make running Android tests on JVM come true. The Robolectric team is also trying to improve Robolectric's performance and enrich Robolectric's functionality to provide great experience for developers. If you don't use Robolectric ever before, and above features and examples can attract you, what about using Robolectric to write local tests? Looking forward to receive your feedback about Robolectric.
 

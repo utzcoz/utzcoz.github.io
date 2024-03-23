@@ -4,7 +4,7 @@ title:  "Analyze AppComponentFactory"
 date:   2023-03-04 18:24 +0800
 ---
 
-# Usage
+## Usage
 
 From Android P/SDK 28, Android supports developers to use `AppComponentFactory` to delegate the default `Service`/`BroadcastReceiver`/`ClassLoader`/`Activity`/`Application` initialization. For example, we can use the following example to initialize the `BroadcastReceiver` with custom constructor:
 
@@ -68,11 +68,11 @@ public class CustomConstructorReceiver extends BroadcastReceiver {
 
 The `AppComponentFactory` is powerful, and this article will analyze how AOSP supports `AppComponentFactory` from Android P/SDK 28. The real supporting analysis can help me to implement similar supporting for Robolectric.
 
-# Analysis
+## Analysis
 
-## AOSP part
+### AOSP part
 
-### Parsing `AndroidManifest.xml`
+#### Parsing `AndroidManifest.xml`
 
 The [`ParsingPackageUtils.java`](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/pm/pkg/parsing/ParsingPackageUtils.java;l=1999-2008?q=appComponentFactory&ss=android&start=61) parses `android:appComponentFactory` value from `AndroidManifest.xml` at its [`parseBaseApplication`](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/services/core/java/com/android/server/pm/pkg/parsing/ParsingPackageUtils.java;l=1861?q=appComponentFactory&ss=android&start=61) method:
 
@@ -113,7 +113,7 @@ public ParsingPackageImpl setAppComponentFactory(@Nullable String appComponentFa
 
 The `ParsingPackageImpl` will pass this `appComponentFactory` string to `ApplicationInfo#appComponentFactory`. This process will pass the `android:appComponentFactory` string in `AndroidManifest.xml` to `ApplicationInfo#appComponentFactory`, from `PackageManagerService` part to application's part.
 
-### Loading `AppComponentFactory` instance
+#### Loading `AppComponentFactory` instance
 
 When AOSP passes `android:appComponentFactory` in `AndroidManifest.xml` to [`ApplicationInfo#appComponentFactory`](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=1231-1236?q=appComponentFactory&ss=android&start=11), the next step is to load real custom `AppComponentFactory` instance from this string. We can use exception in test code to get real initialization process:
 
@@ -142,7 +142,7 @@ if (mBaseClassLoader != null) {
 mAppComponentFactory = createAppFactory(mApplicationInfo, mDefaultClassLoader);
 ```
 
-### Using `AppComponentFactory` to initialize `BroadcastReceiver`
+#### Using `AppComponentFactory` to initialize `BroadcastReceiver`
 
 Although `AppComponentFactory` can provide different critical components of Android, this part only analyzes that how `AppComponentFactory` is used to initialize `BroadcastReceiver`. And it's very simple. The [`ActivityThread#handleReceiver`](https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/ActivityThread.java;l=4290-4291?q=instantiateReceiver&ss=android) uses `AppComponentFactory#instantiateReceiver` to do this task when it needs to provide a `BroadcastReceiver` instance: 
 
@@ -155,9 +155,9 @@ private void handleReceiver(ReceiverData data) {
     ...
 ```
 
-## Application part
+### Application part
 
-### `AppComponentFactory` initializes `BroadcastReceiver` finally
+#### `AppComponentFactory` initializes `BroadcastReceiver` finally
 
 ```Java
 public class CustomAppCompFactory extends AppComponentFactory {
