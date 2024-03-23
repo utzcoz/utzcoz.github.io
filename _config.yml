@@ -22,6 +22,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 markdown: kramdown
 theme: minima
 minima:
+  skin: solarized
   social_links:
     - { platform: github,  user_url: "https://github.com/utzcoz" }
     - { platform: twitter, user_url: "https://twitter.com/utzcoz" }
