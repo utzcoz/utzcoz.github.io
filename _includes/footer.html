@@ -9,14 +9,14 @@
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
           <li class="p-name">
-            {%- if site.author -%}
-              {{ site.author | escape }}
+            {%- if site.author.name -%}
+              {{ site.author.name | escape }}
             {%- else -%}
               {{ site.title | escape }}
             {%- endif -%}
             </li>
-            {%- if site.email -%}
-            <li><a class="u-email" href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+            {%- if site.author.email -%}
+            <li><a class="u-email" href="mailto:{{ site.author.email }}">{{ site.email }}</a></li>
             {%- endif -%}
         </ul>
       </div>
