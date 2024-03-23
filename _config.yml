@@ -26,7 +26,7 @@ minima:
   skin: solarized
   social_links:
     - { platform: github,  user_url: "https://github.com/utzcoz" }
-    - { platform: twitter, user_url: "https://twitter.com/utzcoz" }
+    - { platform: x, user_url: "https://x.com/utzcoz" }
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
