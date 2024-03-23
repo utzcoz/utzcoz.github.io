@@ -17,11 +17,14 @@ email: ""
 description: ""
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  utzcoz
 
 # Build settings
 markdown: kramdown
 theme: minima
+minima:
+  social_links:
+    - { platform: github,  user_url: "https://github.com/utzcoz" }
+    - { platform: twitter, user_url: "https://twitter.com/utzcoz" }
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
