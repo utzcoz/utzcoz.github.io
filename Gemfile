@@ -7,7 +7,7 @@ source "https://rubygems.org"
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "~> 4.3.3"
+gem "jekyll", "~> 4.3.4"
 # Minima v3.0
 gem "minima", :github => "jekyll/minima", ref: "1012451"
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
