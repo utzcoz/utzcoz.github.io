@@ -9,7 +9,7 @@ source "https://rubygems.org"
 # Happy Jekylling!
 gem "jekyll", "~> 4.3.4"
 # Minima v3.0
-gem "minima", :github => "jekyll/minima", ref: "1012451"
+gem "minima", :github => "jekyll/minima", ref: "6b9b78d"
 # If you want to use GitHub Pages, remove the "gem "jekyll"" above and
 # uncomment the line below. To upgrade, run `bundle update github-pages`.
 # gem "github-pages", group: :jekyll_plugins
