@@ -34,5 +34,5 @@ The customization theme files are based on minima-3.0.
 ### Update dependencies
 
 ```shell
-bundle update
+sudo bundle update
 ```
