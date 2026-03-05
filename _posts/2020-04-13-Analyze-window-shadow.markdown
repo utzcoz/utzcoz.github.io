@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze window shadow"
 date:   2020-04-13 16:31 +0800
+categories: [AOSP]
+tags: [aosp, window-manager, rendering]
 ---
 
 > This article based on `AOSP` 9.0.

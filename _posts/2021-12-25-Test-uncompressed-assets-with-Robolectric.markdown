@@ -2,6 +2,8 @@
 layout: post
 title:  "Test uncompressed assets with Robolectric"
 date:   2021-12-25 16:30 +0800
+categories: [Testing]
+tags: [robolectric, testing, assets]
 ---
 
 This article is very short and just used to show how to test uncompressed assets with Robolectric. What we need do is very simple:

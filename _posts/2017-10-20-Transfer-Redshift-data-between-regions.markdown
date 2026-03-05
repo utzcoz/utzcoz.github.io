@@ -2,6 +2,8 @@
 layout: post
 title:  "Transfer Redshift data between regions"
 date:   2017-10-11 23:22 +0800
+categories: [Cloud]
+tags: [aws, redshift, cloud]
 ---
 
 Firstly, use aws's `UNLOAD` command to save your redshift data to s3.

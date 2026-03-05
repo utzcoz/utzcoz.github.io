@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze split screen"
 date:   2020-05-29 13:36 +0800
+categories: [AOSP]
+tags: [aosp, split-screen, multi-window]
 ---
 
 > This article based on `AOSP` 9.0.

@@ -2,10 +2,11 @@
 layout: post
 title: "Building a Custom Jekyll Theme with Claude Code"
 date: 2026-03-05 20:00 +0800
+categories: [Tools]
 tags: [claude-code, jekyll, frontend]
 ---
 
-I am not a software engineer foucus on fronted area, and I wanted to replace
+I am not a software engineer focus on fronted area, and I wanted to replace
 the minima theme on my Jekyll blog with a custom one -- no frontend experience required. I used
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) to build the entire theme in a
 single session.

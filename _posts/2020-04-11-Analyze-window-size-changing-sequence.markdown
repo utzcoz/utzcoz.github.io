@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze window size changing sequence"
 date:   2020-04-11 21:14 +0800
+categories: [AOSP]
+tags: [aosp, window-manager, multi-window]
 ---
 
 > This article based on `AOSP` 9.0

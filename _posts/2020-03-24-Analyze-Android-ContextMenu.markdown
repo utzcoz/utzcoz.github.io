@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze Android ContextMenu"
 date:   2020-03-24 22:15 +0800
+categories: [AOSP]
+tags: [aosp, context-menu, ui]
 ---
 
 > This article based on `AOSP` 9.0.

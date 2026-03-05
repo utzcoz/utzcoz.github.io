@@ -2,6 +2,8 @@
 layout: post
 title:  "Don't use empty space after variable in Android makefile"
 date:   2017-07-24 21:14:00 +0800
+categories: [AOSP]
+tags: [aosp, makefile, build-system]
 ---
 
 In Android makefile, we always assign a value to a variable. But if we add one or more empty space after variable value, it may cause some build error.

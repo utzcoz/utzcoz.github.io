@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze AOSP input architecture"
 date:   2020-05-06 20:05 +0800
+categories: [AOSP]
+tags: [aosp, input, event-dispatch]
 ---
 
 > This article based on `AOSP` 9.0.

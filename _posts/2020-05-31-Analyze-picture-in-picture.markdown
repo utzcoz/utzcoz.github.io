@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze picture in picture"
 date:   2020-05-31 13:49 +0800
+categories: [AOSP]
+tags: [aosp, picture-in-picture, multi-window]
 ---
 
 > This article based on `AOSP` 9.0.

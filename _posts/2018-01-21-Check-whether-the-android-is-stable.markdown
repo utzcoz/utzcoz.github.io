@@ -2,6 +2,8 @@
 layout: post
 title:  "Check whether the android is stable"
 date:   2018-01-21 21:05 +0800
+categories: [Android]
+tags: [android, stability, testing]
 ---
 
 > This article based on Android 7.0, and it maybe obsolete.

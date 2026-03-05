@@ -2,6 +2,8 @@
 layout: post
 title:  "Show Maru container window to android-xserver"
 date:   2021-04-24 15:22 +0800
+categories: [AOSP]
+tags: [aosp, maruos, xserver, desktop-mode]
 ---
 
 [MaruOS][1] is a project that leverages Android mobile phone's computing unit to run Linux OS, especially Debian now, on Android OS with lxc. It uses its `mflinger` to allocate buffer from Android `gralloc allocator`, and then uses its `mclient` in Linux container to `mmap` this buffer and draw content from `xf86-video-dummy` to this buffer to show the Linux desktop to Android. But there are some Android's `gralloc allocator` implementations doesn't expose write permission to exposing buffer without using `gralloc mapper`. And Linux container can't use `gralloc mapper` directly and easily. If we can use xserver implementation in Android to show x11 window on Android with the normal app buffer, we can fix this problem. So I start to test [android-xserver](https://github.com/nwrkbiz/android-xserver) with [MaruOS][1], and it works fine. This article is used to show steps to using [android-xserver][2] with [MaruOS][1].

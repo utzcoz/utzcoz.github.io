@@ -2,6 +2,8 @@
 layout: post
 title:  "Just pause selenium for python"
 date:   2017-11-06 11:41 +0800
+categories: [Tools]
+tags: [selenium, python, automation]
 ---
 
 When I use `selenium` to test page, I just want to pause some seconds, and then to do some work. Firstly, I try to use `time.sleep(seconds)` of `python`, but the `selenium` will behaviour illegitimate. So I start to find solution from `selenium`.

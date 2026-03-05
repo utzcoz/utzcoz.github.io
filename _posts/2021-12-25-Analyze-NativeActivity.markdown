@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze NativeActivity"
 date:   2021-12-25 17:25 +0800
+categories: [AOSP]
+tags: [aosp, native-activity, ndk]
 ---
 
 `NativeActivity` is added to Android from API 9, and used for games and apps that write almost of all logic with native code. The `NativeActivity` is used to pass basic Android app's lifecycle to native code, and help them to manage its logic with Android app lifecycle aware. There are also some glue code from NDK for `NativeActivity` and real native logic to pass Android app's lifecycle. This article will show the pipeline of passing Android app's lifecycle from `NativeActivity` to native code.
