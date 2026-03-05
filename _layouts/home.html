@@ -18,7 +18,7 @@ layout: default
     </div>
     {%- endif -%}
     <div class="hero-social">
-      {%- assign social = site.minima.social_links | default: site.social_links -%}
+      {%- assign social = site.social_links -%}
       {%- if social -%}
         {%- for link in social -%}
           {%- if link.platform == "github" -%}

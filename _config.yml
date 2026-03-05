@@ -37,12 +37,6 @@ social_links:
   - platform: x
     user_url: "https://x.com/utzcoz"
 
-# Keep minima social_links for backward compatibility with templates
-minima:
-  social_links:
-    - { platform: github, user_url: "https://github.com/utzcoz" }
-    - { platform: x, user_url: "https://x.com/utzcoz" }
-
 # Excerpt settings
 excerpt_separator: "\n\n"
 

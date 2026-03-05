@@ -4,7 +4,7 @@
       &copy; {{ 'now' | date: "%Y" }} {{ site.author.name | default: site.title }}. Built with Jekyll.
     </span>
     <div class="footer-links">
-      {%- assign social = site.minima.social_links | default: site.author.social_links -%}
+      {%- assign social = site.social_links -%}
       {%- if social -%}
         {%- for link in social -%}
           {%- if link.platform == "github" -%}
