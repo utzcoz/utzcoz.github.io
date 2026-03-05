@@ -63,7 +63,7 @@ layout: default
         if (event.origin !== 'https://giscus.app') return;
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         setGiscusTheme(isDark ? 'dark' : 'light');
-      });
+      }, { once: true });
     })();
   </script>
 </article>
