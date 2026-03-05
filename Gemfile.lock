@@ -1,14 +1,4 @@
 GIT
-  remote: https://github.com/jekyll/minima.git
-  revision: 6b9b78dad3e5c9f733c901e10287465735b36169
-  ref: 6b9b78d
-  specs:
-    minima (3.0.0.dev)
-      jekyll (>= 3.5, < 5.0)
-      jekyll-feed (~> 0.9)
-      jekyll-seo-tag (~> 2.1)
-
-GIT
   remote: https://github.com/netrics/jekyll-remote-include.git
   revision: 39ae1a1744c8837d5ee64b11c5f982304ea940e5
   specs:
@@ -17,7 +7,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.8.8)
+    addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     base64 (0.3.0)
     bigdecimal (4.0.1)
@@ -30,9 +20,9 @@ GEM
     eventmachine (1.2.7)
     ffi (1.17.3)
     forwardable-extended (2.6.0)
-    google-protobuf (4.33.5)
+    google-protobuf (4.34.0)
       bigdecimal
-      rake (>= 13)
+      rake (~> 13.3)
     http_parser.rb (0.8.1)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
@@ -77,7 +67,7 @@ GEM
     mercenary (0.4.0)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
-    public_suffix (7.0.2)
+    public_suffix (7.0.5)
     rake (13.3.1)
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
@@ -100,7 +90,7 @@ DEPENDENCIES
   jekyll (~> 4.4.1)
   jekyll-feed (~> 0.17)
   jekyll-remote-include!
-  minima!
+  jekyll-seo-tag
   tzinfo (~> 1.2)
   tzinfo-data
   wdm (~> 0.1.1)

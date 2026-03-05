@@ -8,38 +8,52 @@
 # 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
 title: Blog
 description: ""
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 author:
-  name: utzcoz
+  name: utzcoz's blog
+  bio: "Focus on AOSP, XR, and testing tools."
+  projects:
+    - name: Robolectric
+      url: "https://github.com/robolectric/robolectric"
+    - name: boringdroid
+      url: "https://github.com/nicholasgasior/boringdroid"
+    - name: MaruOS
+      url: "https://github.com/nicholasgasior/maruos"
 
 # Build settings
 markdown: kramdown
-theme: minima
-minima:
-  skin: solarized
-  social_links:
-    - { platform: github,  user_url: "https://github.com/utzcoz" }
-    - { platform: x, user_url: "https://x.com/utzcoz" }
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-remote-include
 
+# Social links (used by header/footer)
+social_links:
+  - platform: github
+    user_url: "https://github.com/utzcoz"
+  - platform: x
+    user_url: "https://x.com/utzcoz"
+
+# Keep minima social_links for backward compatibility with templates
+minima:
+  social_links:
+    - { platform: github, user_url: "https://github.com/utzcoz" }
+    - { platform: x, user_url: "https://x.com/utzcoz" }
+
+# Excerpt settings
+excerpt_separator: "\n\n"
+
 # Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+  - LICENSE
+  - install-dependencies.sh
+  - start-drafts.sh
+  - start.sh

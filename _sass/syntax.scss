@@ -1,0 +1,53 @@
+// Syntax highlighting (compatible with Rouge highlighter)
+.highlight {
+  background: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 1.5em;
+
+  pre {
+    border: none;
+    margin: 0;
+    background: transparent;
+  }
+
+  // Comments
+  .c, .c1, .cm, .cs, .cp { color: #6a737d; font-style: italic; }
+  // Keywords
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #d73a49; }
+  // Strings
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #032f62; }
+  // Numbers
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #005cc5; }
+  // Names
+  .n, .na, .nb, .nc, .nd, .ne, .nf, .ni, .nn, .no, .nt, .nv { color: #24292e; }
+  .na { color: #6f42c1; }
+  .nc, .nd, .ne { color: #6f42c1; }
+  .nf { color: #6f42c1; }
+  .nt { color: #22863a; }
+  // Operators
+  .o, .ow { color: #d73a49; }
+  // Punctuation
+  .p { color: #24292e; }
+  // Generic
+  .gd { color: #b31d28; background: #ffeef0; }
+  .gi { color: #22863a; background: #f0fff4; }
+  .ge { font-style: italic; }
+  .gs { font-weight: bold; }
+}
+
+[data-theme="dark"] .highlight {
+  .c, .c1, .cm, .cs, .cp { color: #6b7394; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #ff7b72; }
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #a5d6ff; }
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #79c0ff; }
+  .n, .na, .nb, .nc, .nd, .ne, .nf, .ni, .nn, .no, .nt, .nv { color: #c9d1d9; }
+  .na { color: #d2a8ff; }
+  .nc, .nd, .ne { color: #d2a8ff; }
+  .nf { color: #d2a8ff; }
+  .nt { color: #7ee787; }
+  .o, .ow { color: #ff7b72; }
+  .p { color: #c9d1d9; }
+  .gd { color: #ffdcd7; background: #67060c; }
+  .gi { color: #aff5b4; background: #033a16; }
+}

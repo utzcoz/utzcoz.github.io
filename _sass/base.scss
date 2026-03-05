@@ -1,0 +1,157 @@
+@use "variables" as *;
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: $font-size-base;
+  scroll-behavior: smooth;
+
+  @media (max-width: $bp-tablet) {
+    font-size: 16px;
+  }
+}
+
+body {
+  font-family: $font-family;
+  line-height: $line-height;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  transition: background-color $transition-normal, color $transition-normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// CSS custom properties for theme switching
+:root {
+  --bg-color: #{$light-bg};
+  --bg-secondary: #{$light-bg-secondary};
+  --text-color: #{$light-text};
+  --text-secondary: #{$light-text-secondary};
+  --border-color: #{$light-border};
+  --code-bg: #{$light-code-bg};
+  --primary: #{$color-primary};
+  --primary-dark: #{$color-primary-dark};
+  --primary-light: #{$color-primary-light};
+}
+
+[data-theme="dark"] {
+  --bg-color: #{$dark-bg};
+  --bg-secondary: #{$dark-bg-secondary};
+  --text-color: #{$dark-text};
+  --text-secondary: #{$dark-text-secondary};
+  --border-color: #{$dark-border};
+  --code-bg: #{$dark-code-bg};
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: var(--primary-dark);
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: $heading-line-height;
+  font-weight: 800;
+  color: var(--text-color);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.3rem; }
+h4 { font-size: 1.1rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.9rem; }
+
+p {
+  margin-bottom: 1.2em;
+}
+
+ul, ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.2em;
+}
+
+li {
+  margin-bottom: 0.3em;
+}
+
+blockquote {
+  border-left: 4px solid var(--primary);
+  padding: $spacing-md $spacing-lg;
+  margin: $spacing-lg 0;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 0 4px 4px 0;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+code {
+  font-family: $font-mono;
+  font-size: 0.85em;
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: $spacing-md;
+  overflow-x: auto;
+  margin-bottom: 1.5em;
+  line-height: 1.5;
+
+  code {
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5em;
+
+  th, td {
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid var(--border-color);
+    text-align: left;
+  }
+
+  th {
+    background: var(--bg-secondary);
+    font-weight: 700;
+  }
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: $spacing-xl 0;
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
