@@ -2,7 +2,6 @@
 layout: post
 title:  "Layout Inspector Deep Technical Analysis"
 date:   2026-02-23 01:46 +0800
-mermaid: true
 ---
 
 > The analysis generated with help of GitHub Copilot CLI with multiple models.
@@ -50,7 +49,7 @@ Analysis focus:
 
 ## 1) High-level architecture (old + new)
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     H[Studio Layout Inspector Plugin] --> HL[InspectorClientLauncher]
     HL --> HM[AppInspectionInspectorClient API29Plus]
@@ -66,8 +65,8 @@ flowchart TD
     DC[Compose Inspector Agent] --> C1[CompositionData and SlotTable]
     DC --> C2[Recomposer observation APIs]
     DC --> C3[ART hook points]
-    
-</div>
+
+```
 
 ---
 
@@ -249,7 +248,7 @@ The practical difference is the **base image layer** and coordinate pipeline:
 
 ### Embedded mode rendering stack (streaming path)
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     A[Device mirroring path] --> B[Screen sharing agent]
     B --> C[Video frames and display metadata]
@@ -257,7 +256,7 @@ flowchart TD
     D --> E[Layout Inspector embedded renderer]
     E --> F[Transform LI bounds to stream rectangle and orientation]
     F --> G[Overlay highlight in embedded panel]
-</div>
+```
 
 ### Embedded mode and virtual display details
 
@@ -271,7 +270,7 @@ For emulators, the code path documents that Running Devices orientation correcti
 
 That is why your recollection is correct: embedded mode is tied to the streaming/mirroring stack, and that stack can use virtual display mechanisms on device side.
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant RD as Running Devices Studio
     participant Agent as Screen Sharing Agent
@@ -284,7 +283,7 @@ sequenceDiagram
     Agent-->>RD: Encoded frames and orientation correction metadata
     RD->>LI: Render frame in AbstractDisplayView
     LI->>LI: Align LI bounds to stream rectangle and orientation
-</div>
+```
 
 ### Evidence
 
@@ -302,7 +301,7 @@ sequenceDiagram
 
 ### 6.1 Click in Studio panel -> selected node -> highlighted node
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     C1[User click in Studio panel] --> C2[Transform panel coordinates to model coordinates]
     C2 --> C3[Hit test against bounds and hit rects]
@@ -311,7 +310,7 @@ flowchart TD
     C5 --> C6[Selection listeners fire]
     C6 --> C7[Render model updates selected/hover state]
     C7 --> C8[Border or overlay highlight appears]
-</div>
+```
 
 ### Important implementation behavior
 - hit testing is not just first-contains; it resolves ordering/depth
@@ -331,7 +330,7 @@ flowchart TD
 
 ### 6.3 On-device click interception path (embedded on-device rendering mode)
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant Host as Studio Host
     participant Agent as Device Inspector Agent
@@ -344,7 +343,7 @@ sequenceDiagram
     Host->>Host: Resolve node from coordinates and root
     Host->>Host: Update InspectorModel selection
     Host->>Agent: DrawCommand and overlay update
-</div>
+```
 
 With touch interception enabled, device taps are emitted as `UserInputEvent` and resolved through the same host selection pipeline used for IDE clicks.
 
@@ -413,12 +412,12 @@ So highlighting can be host-rendered, device-rendered, or hybrid depending on mo
 
 Compose inspection initializes through the following runtime path:
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     I1[Compose inspector starts] --> I2[Enable inspection support]
     I2 --> I3[Install ART hook on WrappedComposition setContent]
     I3 --> I4[On setContent, attach slot-table tracking to owner view]
-</div>
+```
 
 Implementation concepts:
 - `artTooling.registerEntryHook(...)` on composition entry points
@@ -443,13 +442,13 @@ Evidence:
 
 ### 9.4 Building virtual Compose tree
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     V1[CompositionData groups] --> V2[CompositionBuilder conversion]
     V2 --> V3[InspectorNode virtual tree]
     V3 --> V4[Anchor-based stable IDs]
     V4 --> V5[Return tree to Studio via compose protocol]
-</div>
+```
 
 Because Compose nodes are virtual, this anchor-based mapping is critical for:
 - click resolution
@@ -466,7 +465,7 @@ Evidence:
 
 ### 10.1 Attach and client choice
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant U as User
     participant L as InspectorClientLauncher
@@ -483,11 +482,11 @@ sequenceDiagram
         L->>C: Create legacy client
         C->>C: Attach via ddmlib path
     end
-</div>
+```
 
 ### 10.2 Live interactive cycle (modern)
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant S as Studio
     participant D as Device Agent
@@ -500,11 +499,11 @@ sequenceDiagram
         S->>S: Merge view and compose trees
         S->>S: Refresh render properties and selection overlays
     end
-</div>
+```
 
 ### 10.3 Snapshot save cycle
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant U as User
     participant S as Studio
@@ -516,7 +515,7 @@ sequenceDiagram
     D-->>S: Snapshot payload data
     S->>S: Serialize metadata and snapshot proto
     S->>F: Write snapshot to disk
-</div>
+```
 
 ### 10.4 Studio click to highlight cycle
 
@@ -528,7 +527,7 @@ Covered in detail in **Section 6.3**; this section keeps the end-to-end runtime 
 
 ### 10.6 Compose injection lifecycle
 
-<div class="mermaid">
+```mermaid
 sequenceDiagram
     participant Host as Studio Host
     participant Agent as Compose Inspector Agent
@@ -540,7 +539,7 @@ sequenceDiagram
     Agent->>Runtime: Attach slot-table tracking
     Agent->>Runtime: Observe composition data
     Agent-->>Host: Send virtual tree + parameters
-</div>
+```
 
 ---
 
