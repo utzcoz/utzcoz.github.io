@@ -26,7 +26,7 @@ layout: default
     {{ content }}
   </div>
 
-  <div class="giscuss"></div>
+  <div class="giscus"></div>
   <script src="https://giscus.app/client.js"
       data-repo="utzcoz/utzcoz.github.io"
       data-repo-id="MDEwOlJlcG9zaXRvcnkxNTM4NzIyNTg="
@@ -40,5 +40,30 @@ layout: default
       data-lang="en"
       crossorigin="anonymous"
       async>
+  </script>
+  <script>
+    (function() {
+      function setGiscusTheme(theme) {
+        var iframe = document.querySelector('iframe.giscus-frame');
+        if (iframe) {
+          iframe.contentWindow.postMessage(
+            { giscus: { setConfig: { theme: theme } } },
+            'https://giscus.app'
+          );
+        }
+      }
+      // Sync giscus theme with site theme on toggle
+      var observer = new MutationObserver(function() {
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setGiscusTheme(isDark ? 'dark' : 'light');
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      // Set initial theme once giscus iframe loads
+      window.addEventListener('message', function(event) {
+        if (event.origin !== 'https://giscus.app') return;
+        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setGiscusTheme(isDark ? 'dark' : 'light');
+      });
+    })();
   </script>
 </article>
