@@ -31,6 +31,8 @@
 
   navToggle.addEventListener('click', function() {
     nav.classList.toggle('nav-open');
+    var expanded = nav.classList.contains('nav-open');
+    navToggle.setAttribute('aria-expanded', expanded);
   });
 
   // Mermaid: convert ```mermaid fenced code blocks to mermaid divs
@@ -44,7 +46,8 @@
     div.textContent = code.textContent;
     pre.parentElement.replaceChild(div, pre);
   }
-  // Also support existing <div class="mermaid"> blocks
-  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  // Initialize mermaid with theme matching site preference
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default' });
 })();
 </script>

@@ -12,6 +12,7 @@ title: Blog
 description: ""
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
+google_analytics: G-2CHF4K157C
 author:
   name: utzcoz's blog
   bio: "Focus on AOSP, XR, and testing tools."
