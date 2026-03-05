@@ -2,6 +2,8 @@
 layout: post
 title:  "Build AOSP for emulator"
 date:   2019-06-16 18:20 +0800
+categories: [AOSP]
+tags: [aosp, emulator, build]
 ---
 
 The emulator is good tool to test and prototype your product, and this article will show how to build it locally from your `AOSP` source code for your `x86` architecture develop machine.

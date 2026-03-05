@@ -26,6 +26,7 @@ author:
 
 # Build settings
 markdown: kramdown
+future: true
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

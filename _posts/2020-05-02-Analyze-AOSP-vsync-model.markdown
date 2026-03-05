@@ -2,6 +2,8 @@
 layout: post
 title:  "Analyze AOSP vsync model"
 date:   2020-05-02 13:14 +0800
+categories: [AOSP]
+tags: [aosp, vsync, surfaceflinger, graphics]
 ---
 
 > This article based on `AOSP` 9.0.

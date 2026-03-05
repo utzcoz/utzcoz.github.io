@@ -2,6 +2,8 @@
 layout: post
 title:  "APKM File Format Spec from APKMirror"
 date:   2026-03-01 14:15 +0800
+categories: [Android]
+tags: [apk, apkmirror, file-format]
 ---
 
 ## 1) Overview

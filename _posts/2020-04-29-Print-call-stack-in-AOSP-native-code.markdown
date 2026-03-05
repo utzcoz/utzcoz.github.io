@@ -2,6 +2,8 @@
 layout: post
 title:  "Print call stack in AOSP native code"
 date:   2020-04-29 23:59 +0800
+categories: [AOSP]
+tags: [aosp, native, debugging]
 ---
 
 ## AOSP 9.0
