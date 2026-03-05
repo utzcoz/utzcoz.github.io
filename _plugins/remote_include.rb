@@ -20,7 +20,9 @@ module Jekyll
     def fetch(uri, redirect_limit = 5)
       raise "Too many redirects" if redirect_limit == 0
 
-      response = Net::HTTP.get_response(uri)
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+        http.get(uri.request_uri)
+      end
       case response
       when Net::HTTPSuccess
         response.body.force_encoding('utf-8')
