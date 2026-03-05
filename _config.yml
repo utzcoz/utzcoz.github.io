@@ -28,7 +28,6 @@ markdown: kramdown
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
-  - jekyll-remote-include
 
 # Social links (used by header/footer)
 social_links:
