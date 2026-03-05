@@ -2,7 +2,6 @@
 layout: post
 title:  "Use EXTRA_SETTINGS to split custom settings from official settings"
 date:   2020-11-07 12:00 +0800
-categories: [AOSP]
 tags: [aosp, settings, customization]
 ---
 

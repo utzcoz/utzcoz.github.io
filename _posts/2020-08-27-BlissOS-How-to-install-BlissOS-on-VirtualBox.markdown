@@ -2,7 +2,6 @@
 layout: post
 title:  "[deprecated]Bliss OS: How to install Bliss OS on VirtualBox"
 date:   2020-08-27 23:17 +0800
-categories: [Emulator]
 tags: [bliss-os, virtualbox, android-x86]
 ---
 

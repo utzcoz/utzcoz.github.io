@@ -2,7 +2,6 @@
 layout: post
 title:  "How Taskbar start app in freeform windowing mode"
 date:   2021-09-12 17:34 +0800
-categories: [AOSP]
 tags: [aosp, taskbar, freeform, multi-window]
 ---
 

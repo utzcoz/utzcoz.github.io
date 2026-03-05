@@ -2,7 +2,6 @@
 layout: post
 title:  "Show Maru container window to android-xserver"
 date:   2021-04-24 15:22 +0800
-categories: [AOSP]
 tags: [aosp, maruos, xserver, desktop-mode]
 ---
 

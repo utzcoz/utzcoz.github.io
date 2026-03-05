@@ -2,7 +2,6 @@
 layout: post
 title:  "Don't use empty space after variable in Android makefile"
 date:   2017-07-24 21:14:00 +0800
-categories: [AOSP]
 tags: [aosp, makefile, build-system]
 ---
 

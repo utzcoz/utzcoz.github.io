@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze window resizing"
 date:   2020-05-12 13:36 +0800
-categories: [AOSP]
 tags: [aosp, window-manager, multi-window]
 ---
 

@@ -2,7 +2,6 @@
 layout: post
 title:  "Use swiftshader to support Vulkan for Windows 11 that runs in the VirtualBox"
 date:   2023-03-26 14:05 +0800
-categories: [Emulator]
 tags: [swiftshader, vulkan, virtualbox, emulator]
 ---
 

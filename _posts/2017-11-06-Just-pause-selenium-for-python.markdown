@@ -2,7 +2,6 @@
 layout: post
 title:  "Just pause selenium for python"
 date:   2017-11-06 11:41 +0800
-categories: [Tools]
 tags: [selenium, python, automation]
 ---
 

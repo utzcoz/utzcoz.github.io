@@ -2,7 +2,6 @@
 layout: post
 title:  "Test LiveData in Instrumentation tests"
 date:   2019-06-02 23:23 +0800
-categories: [Testing]
 tags: [android, livedata, instrumentation, testing]
 ---
 

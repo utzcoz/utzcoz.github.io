@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze AppComponentFactory"
 date:   2023-03-04 18:24 +0800
-categories: [AOSP]
 tags: [aosp, app-component-factory, classloading]
 ---
 

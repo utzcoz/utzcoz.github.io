@@ -2,7 +2,6 @@
 layout: post
 title:  "Robolectric Native Runtime: Architecture & Implementation Report"
 date:   2026-03-01 16:00 +0800
-categories: [Testing]
 tags: [robolectric, native-runtime, jni, testing]
 ---
 

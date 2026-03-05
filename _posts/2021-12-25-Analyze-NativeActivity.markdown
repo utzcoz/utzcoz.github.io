@@ -2,7 +2,6 @@
 layout: post
 title:  "Analyze NativeActivity"
 date:   2021-12-25 17:25 +0800
-categories: [AOSP]
 tags: [aosp, native-activity, ndk]
 ---
 

@@ -2,7 +2,6 @@
 layout: post
 title:  "Android Testing with Robolectric"
 date:   2022-02-27 19:00 +0800
-categories: [Testing]
 tags: [robolectric, testing, android]
 ---
 

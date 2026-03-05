@@ -2,7 +2,6 @@
 layout: post
 title:  "Integrate Houdini to emulator"
 date:   2020-03-15 20:38 +0800
-categories: [Emulator]
 tags: [emulator, houdini, arm-translation]
 ---
 

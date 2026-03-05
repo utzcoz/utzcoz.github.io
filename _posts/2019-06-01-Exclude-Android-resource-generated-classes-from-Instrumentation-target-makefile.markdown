@@ -2,7 +2,6 @@
 layout: post
 title:  "Exclude Android resource generated classes from Instrumentation target makefile"
 date:   2019-06-01 10:53 +0800
-categories: [AOSP]
 tags: [aosp, makefile, instrumentation]
 ---
 

@@ -2,7 +2,6 @@
 layout: post
 title:  "Compile adb for Android device"
 date:   2018-03-08 21:24 +0800
-categories: [Android]
 tags: [android, adb, build]
 ---
 
