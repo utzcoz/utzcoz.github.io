@@ -10,7 +10,7 @@ It's important to learn the changing sequence of window size from `ActivityManag
 
 ## `ActivityManager` space
 
-<div class="mermaid">
+```mermaid
 classDiagram
     class ActivityDisplay {
         -DisplayWindowController mWindowContainerController
@@ -27,7 +27,7 @@ classDiagram
     ActivityDisplay *-- ActivityStack : contains && restricts bounds
     ActivityStack *-- TaskRecord : contains && restricts bounds
     TaskRecord *-- ActivityRecord : contains && restricts bounds
-</div>
+```
 
 In `ActivityManager` space, there are four important classes, that represents the application object:
 

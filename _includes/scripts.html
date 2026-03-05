@@ -32,5 +32,19 @@
   navToggle.addEventListener('click', function() {
     nav.classList.toggle('nav-open');
   });
+
+  // Mermaid: convert ```mermaid fenced code blocks to mermaid divs
+  // Jekyll renders ```mermaid as <pre><code class="language-mermaid">
+  var mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
+  for (var i = 0; i < mermaidBlocks.length; i++) {
+    var code = mermaidBlocks[i];
+    var pre = code.parentElement;
+    var div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    pre.parentElement.replaceChild(div, pre);
+  }
+  // Also support existing <div class="mermaid"> blocks
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
 })();
 </script>
