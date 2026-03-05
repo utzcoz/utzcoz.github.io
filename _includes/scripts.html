@@ -1,0 +1,36 @@
+<script>
+(function() {
+  // Theme toggle
+  var toggle = document.getElementById('theme-toggle');
+  var iconSun = toggle.querySelector('.icon-sun');
+  var iconMoon = toggle.querySelector('.icon-moon');
+
+  function updateIcons() {
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    iconSun.style.display = isDark ? 'none' : 'block';
+    iconMoon.style.display = isDark ? 'block' : 'none';
+  }
+
+  updateIcons();
+
+  toggle.addEventListener('click', function() {
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    updateIcons();
+  });
+
+  // Mobile nav toggle
+  var navToggle = document.getElementById('nav-toggle');
+  var nav = document.getElementById('site-nav');
+
+  navToggle.addEventListener('click', function() {
+    nav.classList.toggle('nav-open');
+  });
+})();
+</script>
