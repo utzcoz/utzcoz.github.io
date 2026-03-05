@@ -49,5 +49,164 @@
   // Initialize mermaid with theme matching site preference
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default' });
+
+  // Mermaid click-to-zoom with pan & scroll-zoom
+  function openMermaidZoom(mermaidEl) {
+    var overlay = document.createElement('div');
+    overlay.className = 'mermaid-zoom-overlay';
+
+    var content = document.createElement('div');
+    content.className = 'mermaid-zoom-content';
+    content.innerHTML = mermaidEl.innerHTML;
+
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'mermaid-zoom-close';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.setAttribute('aria-label', 'Close');
+
+    var hint = document.createElement('div');
+    hint.className = 'mermaid-zoom-hint';
+    hint.textContent = 'Scroll to zoom \u00b7 Drag to pan \u00b7 Esc to close';
+
+    overlay.appendChild(content);
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(hint);
+    document.body.appendChild(overlay);
+
+    // State: tx/ty are pan offsets in px, (0,0) = centered via flexbox
+    var scale = 1;
+    var tx = 0, ty = 0;
+    var dragging = false;
+    var startX, startY, startTx, startTy;
+    var rafId = null;
+
+    function applyTransform() {
+      content.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+    }
+
+    function scheduleTransform() {
+      if (!rafId) {
+        rafId = requestAnimationFrame(function() {
+          rafId = null;
+          applyTransform();
+        });
+      }
+    }
+
+    // Wheel zoom — centered on viewport center
+    overlay.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      var delta = e.deltaY > 0 ? 0.9 : 1.1;
+      var newScale = Math.min(Math.max(scale * delta, 0.1), 10);
+      // Scale pan offset so the center stays fixed
+      var ratio = newScale / scale;
+      tx = tx * ratio;
+      ty = ty * ratio;
+      scale = newScale;
+      scheduleTransform();
+    }, { passive: false });
+
+    // Mouse drag to pan
+    overlay.addEventListener('mousedown', function(e) {
+      if (e.target === closeBtn) return;
+      e.preventDefault();
+      dragging = true;
+      overlay.classList.add('is-dragging');
+      startX = e.clientX;
+      startY = e.clientY;
+      startTx = tx;
+      startTy = ty;
+    });
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    function onMouseMove(e) {
+      if (!dragging) return;
+      tx = startTx + (e.clientX - startX);
+      ty = startTy + (e.clientY - startY);
+      scheduleTransform();
+    }
+
+    function onMouseUp() {
+      dragging = false;
+      overlay.classList.remove('is-dragging');
+    }
+
+    // Touch support for pan and pinch-zoom
+    var lastTouchDist = 0;
+    overlay.addEventListener('touchstart', function(e) {
+      if (e.target === closeBtn) return;
+      if (e.touches.length === 1) {
+        dragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        startTx = tx;
+        startTy = ty;
+      } else if (e.touches.length === 2) {
+        dragging = false;
+        lastTouchDist = Math.hypot(
+          e.touches[1].clientX - e.touches[0].clientX,
+          e.touches[1].clientY - e.touches[0].clientY
+        );
+      }
+    }, { passive: true });
+
+    overlay.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+      if (e.touches.length === 1 && dragging) {
+        tx = startTx + (e.touches[0].clientX - startX);
+        ty = startTy + (e.touches[0].clientY - startY);
+        scheduleTransform();
+      } else if (e.touches.length === 2) {
+        var dist = Math.hypot(
+          e.touches[1].clientX - e.touches[0].clientX,
+          e.touches[1].clientY - e.touches[0].clientY
+        );
+        if (lastTouchDist > 0) {
+          scale = Math.min(Math.max(scale * (dist / lastTouchDist), 0.1), 10);
+          scheduleTransform();
+        }
+        lastTouchDist = dist;
+      }
+    }, { passive: false });
+
+    overlay.addEventListener('touchend', function() {
+      dragging = false;
+      lastTouchDist = 0;
+    });
+
+    // Close
+    function closeOverlay() {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('keydown', onKey);
+      if (rafId) cancelAnimationFrame(rafId);
+      overlay.remove();
+    }
+
+    closeBtn.addEventListener('click', closeOverlay);
+
+    // Double-click to reset zoom
+    overlay.addEventListener('dblclick', function(e) {
+      if (e.target === closeBtn) return;
+      scale = 1;
+      tx = 0;
+      ty = 0;
+      scheduleTransform();
+    });
+
+    function onKey(e) {
+      if (e.key === 'Escape') closeOverlay();
+    }
+    document.addEventListener('keydown', onKey);
+  }
+
+  document.addEventListener('click', function(e) {
+    var mermaidEl = e.target.closest('.mermaid');
+    if (mermaidEl && !e.target.closest('.mermaid-zoom-overlay')) {
+      openMermaidZoom(mermaidEl);
+    }
+  });
 })();
 </script>
