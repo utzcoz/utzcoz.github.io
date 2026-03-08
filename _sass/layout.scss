@@ -1,5 +1,8 @@
 @use "variables" as *;
 
+// =============================================================================
+// Containers
+// =============================================================================
 .container {
   max-width: $max-width;
   margin: 0 auto;
@@ -20,19 +23,21 @@
   }
 }
 
-// Header
+// =============================================================================
+// Header — Floating rounded M3 surface-container
+// =============================================================================
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--bg-color) 92%, transparent);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--md-sys-color-surface) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   .header-inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     height: $header-height;
     max-width: $max-width-wide;
     margin: 0 auto;
@@ -44,14 +49,15 @@
   }
 
   .site-title {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--text-color);
+    font-size: $title-large-size;
+    font-weight: $title-large-weight;
+    line-height: $title-large-line-height;
+    color: var(--md-sys-color-on-surface);
     text-decoration: none;
     letter-spacing: -0.02em;
 
     &:hover {
-      color: var(--primary);
+      color: var(--md-sys-color-primary);
     }
   }
 
@@ -62,11 +68,13 @@
   }
 }
 
+// =============================================================================
 // Navigation
+// =============================================================================
 .site-nav {
   display: flex;
   align-items: center;
-  gap: $spacing-lg;
+  gap: $spacing-sm;
 
   @media (max-width: $bp-tablet) {
     display: none;
@@ -75,42 +83,99 @@
       display: flex;
       flex-direction: column;
       position: fixed;
-      top: $header-height;
+      top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--bg-color);
-      justify-content: flex-start;
-      padding-top: $spacing-2xl;
+      background: var(--md-sys-color-surface);
+      justify-content: center;
+      align-items: center;
       gap: $spacing-xl;
       z-index: 99;
+      animation: nav-enter $duration-medium2 $easing-standard-decel;
     }
   }
 
   a {
-    color: var(--text-secondary);
-    font-size: $font-size-sm;
-    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: $label-large-size;
+    font-weight: $label-large-weight;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    transition: color $transition-fast;
+    padding: 6px 16px;
+    border-radius: $shape-full;
+    transition: color $duration-short2 $easing-standard,
+                background-color $duration-short2 $easing-standard;
 
-    &:hover, &.active {
-      color: var(--primary);
+    &:hover {
+      color: var(--md-sys-color-on-surface);
+      background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+    }
+
+    &.active {
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
     }
   }
 }
 
-.nav-toggle {
-  display: none;
+@keyframes nav-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Theme toggle — 40px circular M3 icon button
+.theme-toggle {
+  width: 40px;
+  height: 40px;
   background: none;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
-  padding: $spacing-sm;
-  color: var(--text-color);
+  color: var(--md-sys-color-on-surface-variant);
+  transition: background-color $duration-short2 $easing-standard,
+              color $duration-short2 $easing-standard;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Nav toggle — 40px circular M3 icon button
+.nav-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: background-color $duration-short2 $easing-standard;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: $bp-tablet) {
-    display: block;
+    display: flex;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
   }
 
   svg {
@@ -122,27 +187,9 @@
   }
 }
 
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: $spacing-sm;
-  color: var(--text-secondary);
-  transition: color $transition-fast;
-  display: flex;
-  align-items: center;
-
-  &:hover {
-    color: var(--primary);
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
+// =============================================================================
 // Main content
+// =============================================================================
 .site-main {
   min-height: calc(100vh - #{$header-height} - 200px);
   padding: $spacing-2xl 0;
@@ -152,69 +199,91 @@
   }
 }
 
-// Hero section
+// =============================================================================
+// Hero — Extra Large rounded M3 card
+// =============================================================================
 .hero {
   padding: $spacing-2xl 0;
-  border-bottom: 1px solid var(--border-color);
   margin-bottom: $spacing-2xl;
 
+  @media (max-width: $bp-tablet) {
+    padding: $spacing-xl $spacing-lg;
+  }
+
   @media (max-width: $bp-mobile) {
-    padding: $spacing-xl 0;
+    padding: $spacing-lg $spacing-md;
     margin-bottom: $spacing-xl;
+    border-radius: $shape-lg;
   }
 
   .hero-content {
     max-width: $max-width;
     margin: 0 auto;
-    padding: 0 $spacing-lg;
 
     @media (max-width: $bp-mobile) {
-      padding: 0 $spacing-md;
+      padding: 0;
     }
   }
 
   .hero-title {
-    font-size: 3rem;
-    font-weight: 900;
+    font-size: $display-large-size;
+    font-weight: $display-large-weight;
+    line-height: $display-large-line-height;
     letter-spacing: -0.03em;
     margin-bottom: $spacing-md;
     margin-top: 0;
+    color: var(--md-sys-color-on-surface);
 
     @media (max-width: $bp-tablet) {
-      font-size: 2.2rem;
+      font-size: $display-medium-size;
+      font-weight: $display-medium-weight;
+      line-height: $display-medium-line-height;
     }
 
     @media (max-width: $bp-mobile) {
-      font-size: 1.8rem;
+      font-size: $display-small-size;
+      font-weight: $display-small-weight;
+      line-height: $display-small-line-height;
     }
   }
 
   .hero-subtitle {
-    font-size: 1.15rem;
-    color: var(--text-secondary);
+    font-size: $body-large-size;
+    font-weight: $body-large-weight;
+    line-height: $body-large-line-height;
+    color: var(--md-sys-color-on-surface-variant);
     max-width: 540px;
-    line-height: 1.6;
   }
 
   .hero-projects {
     margin-top: $spacing-md;
-    font-size: $font-size-sm;
-    color: var(--text-secondary);
+    font-size: $label-large-size;
+    font-weight: $label-large-weight;
+    color: var(--md-sys-color-on-surface-variant);
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: $spacing-xs;
+    gap: $spacing-sm;
 
     .hero-projects-label {
       margin-right: $spacing-xs;
     }
 
     a {
+      color: var(--md-sys-color-primary);
       font-weight: 600;
+      border: 1px solid var(--md-sys-color-outline);
+      border-radius: $shape-full;
+      padding: 4px 12px;
+      transition: background-color $duration-short2 $easing-standard;
+
+      &:hover {
+        background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+      }
     }
 
     .hero-projects-sep {
-      margin: 0 2px;
+      display: none; // separators not needed with chip layout
     }
   }
 
@@ -224,22 +293,33 @@
     margin-top: $spacing-lg;
 
     a {
-      color: var(--text-secondary);
-      transition: color $transition-fast;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--md-sys-color-surface-container-highest);
+      border-radius: 50%;
+      color: var(--md-sys-color-on-surface-variant);
+      transition: transform $duration-medium2 $easing-spring,
+                  color $duration-short2 $easing-standard;
 
       &:hover {
-        color: var(--primary);
+        transform: scale(1.1);
+        color: var(--md-sys-color-primary);
       }
 
       svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
       }
     }
   }
 }
 
+// =============================================================================
 // Post list
+// =============================================================================
 .post-list {
   list-style: none;
   padding: 0;
@@ -247,39 +327,49 @@
 }
 
 .post-item {
-  padding-bottom: $spacing-xl;
-  margin-bottom: $spacing-xl;
-  border-bottom: 1px solid var(--border-color);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: $shape-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  transition: transform $duration-medium1 $easing-standard,
+              box-shadow $duration-medium1 $easing-standard;
 
   &:last-child {
-    border-bottom: none;
     margin-bottom: 0;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--md-sys-color-surface-tint) 12%, transparent);
   }
 }
 
 .post-item-title {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: $title-large-size;
+  font-weight: $title-large-weight;
+  line-height: $title-large-line-height;
   margin: 0 0 $spacing-sm;
-  line-height: 1.3;
 
   a {
-    color: var(--text-color);
+    color: var(--md-sys-color-on-surface);
     text-decoration: none;
 
     &:hover {
-      color: var(--primary);
+      color: var(--md-sys-color-primary);
     }
   }
 
   @media (max-width: $bp-mobile) {
-    font-size: 1.25rem;
+    font-size: 18px;
   }
 }
 
 .post-item-meta {
-  font-size: $font-size-sm;
-  color: var(--text-secondary);
+  font-size: $label-large-size;
+  font-weight: $label-large-weight;
+  line-height: $label-large-line-height;
+  color: var(--md-sys-color-on-surface-variant);
   margin-bottom: $spacing-md;
   display: flex;
   align-items: center;
@@ -290,15 +380,15 @@
 .post-item-excerpt {
   position: relative;
   overflow: hidden;
-  max-height: 17em; // ~10 lines at 1.6 line-height
-  font-size: 0.95rem;
+  max-height: 17em;
+  font-size: $body-medium-size;
 
   .post-item-excerpt-content {
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
     line-height: 1.6;
 
     h1, h2, h3, h4, h5, h6 {
-      color: var(--text-secondary);
+      color: var(--md-sys-color-on-surface-variant);
       font-size: 1rem;
       margin-top: 0.8em;
       margin-bottom: 0.4em;
@@ -319,50 +409,55 @@
     left: 0;
     right: 0;
     height: 4em;
-    background: linear-gradient(transparent, var(--bg-color));
+    background: linear-gradient(transparent, var(--md-sys-color-surface-container));
     pointer-events: none;
   }
 }
 
 .post-tag {
   display: inline-block;
-  font-size: $font-size-xs;
+  font-size: $label-medium-size;
+  font-weight: $label-medium-weight;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-weight: 600;
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 2px 8px;
-  border-radius: 3px;
-  transition: all $transition-fast;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border: none;
+  padding: 4px 12px;
+  border-radius: $shape-full;
+  transition: opacity $duration-short2 $easing-standard;
 
   &:hover {
-    background: var(--primary);
-    color: #fff;
+    opacity: 0.85;
   }
 }
 
+// =============================================================================
 // Single post
+// =============================================================================
 .post-header {
   margin-bottom: $spacing-xl;
-  padding-bottom: $spacing-lg;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .post-title {
-  font-size: 2.2rem;
-  font-weight: 900;
+  font-size: $headline-large-size;
+  font-weight: $headline-large-weight;
+  line-height: $headline-large-line-height;
   margin: 0 0 $spacing-md;
   letter-spacing: -0.02em;
 
   @media (max-width: $bp-mobile) {
-    font-size: 1.7rem;
+    font-size: $headline-medium-size;
+    font-weight: $headline-medium-weight;
+    line-height: $headline-medium-line-height;
   }
 }
 
 .post-meta {
-  font-size: $font-size-sm;
-  color: var(--text-secondary);
+  font-size: $label-large-size;
+  font-weight: $label-large-weight;
+  line-height: $label-large-line-height;
+  color: var(--md-sys-color-on-surface-variant);
   display: flex;
   align-items: center;
   gap: $spacing-sm;
@@ -377,36 +472,52 @@
   }
 
   img {
-    border-radius: 6px;
+    border-radius: $shape-lg;
     margin: $spacing-lg auto;
   }
 
   a {
-    text-decoration: underline;
-    text-decoration-color: var(--primary-light);
-    text-underline-offset: 2px;
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    position: relative;
 
-    &:hover {
-      text-decoration-color: var(--primary);
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      right: 50%;
+      height: 1px;
+      background: var(--md-sys-color-primary);
+      transition: left $duration-short2 $easing-standard,
+                  right $duration-short2 $easing-standard;
+    }
+
+    &:hover::after {
+      left: 0;
+      right: 0;
     }
   }
 }
 
+// =============================================================================
 // Page layout
+// =============================================================================
 .page-header {
   margin-bottom: $spacing-xl;
-  padding-bottom: $spacing-lg;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .page-title {
-  font-size: 2.2rem;
-  font-weight: 900;
+  font-size: $headline-large-size;
+  font-weight: $headline-large-weight;
+  line-height: $headline-large-line-height;
   margin: 0;
   letter-spacing: -0.02em;
 }
 
+// =============================================================================
 // Pagination
+// =============================================================================
 .pagination {
   display: flex;
   justify-content: center;
@@ -414,36 +525,41 @@
   gap: $spacing-lg;
   margin-top: $spacing-2xl;
   padding-top: $spacing-xl;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
 
   a, span {
-    font-size: $font-size-sm;
-    font-weight: 600;
+    font-size: $label-large-size;
+    font-weight: $label-large-weight;
   }
 
   a {
-    color: var(--primary);
+    color: var(--md-sys-color-primary);
+    padding: 6px 16px;
+    border-radius: $shape-full;
+    transition: background-color $duration-short2 $easing-standard;
 
     &:hover {
-      color: var(--primary-dark);
+      background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
     }
   }
 
   .disabled {
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
     opacity: 0.4;
   }
 
   .page-number {
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
   }
 }
 
-// Footer
+// =============================================================================
+// Footer — M3 surface-container
+// =============================================================================
 .site-footer {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
   padding: $spacing-xl 0;
-  background: var(--bg-secondary);
+  background: var(--md-sys-color-surface-container);
 
   .footer-inner {
     max-width: $max-width-wide;
@@ -463,8 +579,10 @@
   }
 
   .footer-text {
-    font-size: $font-size-sm;
-    color: var(--text-secondary);
+    font-size: $body-small-size;
+    font-weight: $body-small-weight;
+    line-height: $body-small-line-height;
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   .footer-links {
@@ -472,11 +590,20 @@
     gap: $spacing-md;
 
     a {
-      color: var(--text-secondary);
-      transition: color $transition-fast;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--md-sys-color-surface-container-highest);
+      border-radius: 50%;
+      color: var(--md-sys-color-on-surface-variant);
+      transition: transform $duration-medium2 $easing-spring,
+                  color $duration-short2 $easing-standard;
 
       &:hover {
-        color: var(--primary);
+        transform: scale(1.1);
+        color: var(--md-sys-color-primary);
       }
 
       svg {
@@ -487,35 +614,42 @@
   }
 }
 
-// 404
+// =============================================================================
+// 404 Page — M3 Display + filled primary button
+// =============================================================================
 .not-found {
   text-align: center;
   padding: $spacing-2xl 0;
 
   h1 {
-    font-size: 6rem;
-    font-weight: 900;
-    color: var(--primary);
+    font-size: $display-large-size;
+    font-weight: $display-large-weight;
+    line-height: $display-large-line-height;
+    color: var(--md-sys-color-primary);
     margin: 0;
   }
 
   p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
+    font-size: $body-large-size;
+    font-weight: $body-large-weight;
+    line-height: $body-large-line-height;
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   a {
     display: inline-block;
     margin-top: $spacing-lg;
-    padding: $spacing-sm $spacing-lg;
-    background: var(--primary);
-    color: #fff;
-    border-radius: 6px;
-    font-weight: 600;
+    padding: 12px 24px;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border-radius: $shape-full;
+    font-size: $label-large-size;
+    font-weight: $label-large-weight;
+    transition: opacity $duration-short2 $easing-standard;
 
     &:hover {
-      background: var(--primary-dark);
-      color: #fff;
+      opacity: 0.9;
+      color: var(--md-sys-color-on-primary);
     }
   }
 }

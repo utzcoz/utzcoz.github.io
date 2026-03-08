@@ -1,83 +1,171 @@
 @use "variables" as *;
 
+// =============================================================================
+// CSS Reset
+// =============================================================================
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+// =============================================================================
+// M3 Color Tokens as CSS Custom Properties
+// =============================================================================
+:root {
+  --md-sys-color-primary: #{$md-light-primary};
+  --md-sys-color-on-primary: #{$md-light-on-primary};
+  --md-sys-color-primary-container: #{$md-light-primary-container};
+  --md-sys-color-on-primary-container: #{$md-light-on-primary-container};
+  --md-sys-color-secondary: #{$md-light-secondary};
+  --md-sys-color-on-secondary: #{$md-light-on-secondary};
+  --md-sys-color-secondary-container: #{$md-light-secondary-container};
+  --md-sys-color-on-secondary-container: #{$md-light-on-secondary-container};
+  --md-sys-color-tertiary: #{$md-light-tertiary};
+  --md-sys-color-on-tertiary: #{$md-light-on-tertiary};
+  --md-sys-color-tertiary-container: #{$md-light-tertiary-container};
+  --md-sys-color-on-tertiary-container: #{$md-light-on-tertiary-container};
+  --md-sys-color-error: #{$md-light-error};
+  --md-sys-color-on-error: #{$md-light-on-error};
+  --md-sys-color-error-container: #{$md-light-error-container};
+  --md-sys-color-on-error-container: #{$md-light-on-error-container};
+  --md-sys-color-surface: #{$md-light-surface};
+  --md-sys-color-on-surface: #{$md-light-on-surface};
+  --md-sys-color-surface-variant: #{$md-light-surface-variant};
+  --md-sys-color-on-surface-variant: #{$md-light-on-surface-variant};
+  --md-sys-color-outline: #{$md-light-outline};
+  --md-sys-color-outline-variant: #{$md-light-outline-variant};
+  --md-sys-color-surface-container-lowest: #{$md-light-surface-container-lowest};
+  --md-sys-color-surface-container-low: #{$md-light-surface-container-low};
+  --md-sys-color-surface-container: #{$md-light-surface-container};
+  --md-sys-color-surface-container-high: #{$md-light-surface-container-high};
+  --md-sys-color-surface-container-highest: #{$md-light-surface-container-highest};
+  --md-sys-color-surface-dim: #{$md-light-surface-dim};
+  --md-sys-color-surface-bright: #{$md-light-surface-bright};
+  --md-sys-color-surface-tint: #{$md-light-surface-tint};
+  --md-sys-color-inverse-surface: #{$md-light-inverse-surface};
+  --md-sys-color-inverse-on-surface: #{$md-light-inverse-on-surface};
+  --md-sys-color-inverse-primary: #{$md-light-inverse-primary};
+}
+
+[data-theme="dark"] {
+  --md-sys-color-primary: #{$md-dark-primary};
+  --md-sys-color-on-primary: #{$md-dark-on-primary};
+  --md-sys-color-primary-container: #{$md-dark-primary-container};
+  --md-sys-color-on-primary-container: #{$md-dark-on-primary-container};
+  --md-sys-color-secondary: #{$md-dark-secondary};
+  --md-sys-color-on-secondary: #{$md-dark-on-secondary};
+  --md-sys-color-secondary-container: #{$md-dark-secondary-container};
+  --md-sys-color-on-secondary-container: #{$md-dark-on-secondary-container};
+  --md-sys-color-tertiary: #{$md-dark-tertiary};
+  --md-sys-color-on-tertiary: #{$md-dark-on-tertiary};
+  --md-sys-color-tertiary-container: #{$md-dark-tertiary-container};
+  --md-sys-color-on-tertiary-container: #{$md-dark-on-tertiary-container};
+  --md-sys-color-error: #{$md-dark-error};
+  --md-sys-color-on-error: #{$md-dark-on-error};
+  --md-sys-color-error-container: #{$md-dark-error-container};
+  --md-sys-color-on-error-container: #{$md-dark-on-error-container};
+  --md-sys-color-surface: #{$md-dark-surface};
+  --md-sys-color-on-surface: #{$md-dark-on-surface};
+  --md-sys-color-surface-variant: #{$md-dark-surface-variant};
+  --md-sys-color-on-surface-variant: #{$md-dark-on-surface-variant};
+  --md-sys-color-outline: #{$md-dark-outline};
+  --md-sys-color-outline-variant: #{$md-dark-outline-variant};
+  --md-sys-color-surface-container-lowest: #{$md-dark-surface-container-lowest};
+  --md-sys-color-surface-container-low: #{$md-dark-surface-container-low};
+  --md-sys-color-surface-container: #{$md-dark-surface-container};
+  --md-sys-color-surface-container-high: #{$md-dark-surface-container-high};
+  --md-sys-color-surface-container-highest: #{$md-dark-surface-container-highest};
+  --md-sys-color-surface-dim: #{$md-dark-surface-dim};
+  --md-sys-color-surface-bright: #{$md-dark-surface-bright};
+  --md-sys-color-surface-tint: #{$md-dark-surface-tint};
+  --md-sys-color-inverse-surface: #{$md-dark-inverse-surface};
+  --md-sys-color-inverse-on-surface: #{$md-dark-inverse-on-surface};
+  --md-sys-color-inverse-primary: #{$md-dark-inverse-primary};
+}
+
+// =============================================================================
+// HTML & Body
+// =============================================================================
 html {
   font-size: $font-size-base;
   scroll-behavior: smooth;
-
-  @media (max-width: $bp-tablet) {
-    font-size: 16px;
-  }
 }
 
 body {
   font-family: $font-family;
-  line-height: $line-height;
-  color: var(--text-color);
-  background-color: var(--bg-color);
-  transition: background-color $transition-normal, color $transition-normal;
+  font-size: $body-large-size;
+  font-weight: $body-large-weight;
+  line-height: $body-large-line-height;
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface);
+  transition: background-color $duration-medium2 $easing-standard,
+              color $duration-medium2 $easing-standard;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-// CSS custom properties for theme switching
-:root {
-  --bg-color: #{$light-bg};
-  --bg-secondary: #{$light-bg-secondary};
-  --text-color: #{$light-text};
-  --text-secondary: #{$light-text-secondary};
-  --border-color: #{$light-border};
-  --code-bg: #{$light-code-bg};
-  --primary: #{$color-primary};
-  --primary-dark: #{$color-primary-dark};
-  --primary-light: #{$color-primary-light};
-}
-
-[data-theme="dark"] {
-  --bg-color: #{$dark-bg};
-  --bg-secondary: #{$dark-bg-secondary};
-  --text-color: #{$dark-text};
-  --text-secondary: #{$dark-text-secondary};
-  --border-color: #{$dark-border};
-  --code-bg: #{$dark-code-bg};
-}
-
-a {
-  color: var(--primary);
-  text-decoration: none;
-  transition: color $transition-fast;
-
-  &:hover {
-    color: var(--primary-dark);
-  }
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
+// =============================================================================
+// Typography — M3 Type Scale mapped to headings
+// =============================================================================
 h1, h2, h3, h4, h5, h6 {
-  line-height: $heading-line-height;
-  font-weight: 800;
-  color: var(--text-color);
+  color: var(--md-sys-color-on-surface);
   margin-top: 1.5em;
   margin-bottom: 0.5em;
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.6rem; }
-h3 { font-size: 1.3rem; }
-h4 { font-size: 1.1rem; }
-h5 { font-size: 1rem; }
-h6 { font-size: 0.9rem; }
+h1 {
+  font-size: $headline-large-size;
+  font-weight: $headline-large-weight;
+  line-height: $headline-large-line-height;
+}
 
+h2 {
+  font-size: $headline-medium-size;
+  font-weight: $headline-medium-weight;
+  line-height: $headline-medium-line-height;
+}
+
+h3 {
+  font-size: $headline-small-size;
+  font-weight: $headline-small-weight;
+  line-height: $headline-small-line-height;
+}
+
+h4 {
+  font-size: $title-large-size;
+  font-weight: $title-large-weight;
+  line-height: $title-large-line-height;
+}
+
+h5 {
+  font-size: $title-medium-size;
+  font-weight: $title-medium-weight;
+  line-height: $title-medium-line-height;
+}
+
+h6 {
+  font-size: $title-small-size;
+  font-weight: $title-small-weight;
+  line-height: $title-small-line-height;
+}
+
+// =============================================================================
+// Links — M3 primary color with underline-grow-from-center on hover
+// =============================================================================
+a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  transition: color $duration-short2 $easing-standard;
+
+  &:hover {
+    color: var(--md-sys-color-primary);
+  }
+}
+
+// =============================================================================
+// Body text
+// =============================================================================
 p {
   margin-bottom: 1.2em;
 }
@@ -91,31 +179,46 @@ li {
   margin-bottom: 0.3em;
 }
 
+// =============================================================================
+// Images
+// =============================================================================
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+// =============================================================================
+// Blockquotes — M3 tertiary-container styling
+// =============================================================================
 blockquote {
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--md-sys-color-tertiary-container);
   padding: $spacing-md $spacing-lg;
   margin: $spacing-lg 0;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 20%, transparent);
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: 0 $shape-md $shape-md 0;
 
   p:last-child {
     margin-bottom: 0;
   }
 }
 
+// =============================================================================
+// Code — M3 surface-container styling
+// =============================================================================
 code {
   font-family: $font-mono;
   font-size: 0.85em;
-  background: var(--code-bg);
+  background: var(--md-sys-color-surface-container);
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: $shape-sm;
 }
 
 pre {
-  background: var(--code-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: $shape-sm;
   padding: $spacing-md;
   overflow-x: auto;
   margin-bottom: 1.5em;
@@ -128,35 +231,54 @@ pre {
   }
 }
 
+// =============================================================================
+// Tables — M3 surface-container header
+// =============================================================================
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-bottom: 1.5em;
+  border-radius: $shape-sm;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
 
   th, td {
     padding: $spacing-sm $spacing-md;
-    border: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     text-align: left;
   }
 
   th {
-    background: var(--bg-secondary);
-    font-weight: 700;
+    background: var(--md-sys-color-surface-container);
+    font-weight: 600;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
   }
 }
 
+// =============================================================================
+// Horizontal rules
+// =============================================================================
 hr {
   border: none;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
   margin: $spacing-xl 0;
 }
 
+// =============================================================================
+// Selection
+// =============================================================================
 ::selection {
-  background: var(--primary);
-  color: #fff;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
+// =============================================================================
 // Mermaid diagram click-to-zoom
+// =============================================================================
 .mermaid {
   cursor: zoom-in;
 }
