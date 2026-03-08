@@ -46,9 +46,13 @@
     div.textContent = code.textContent;
     pre.parentElement.replaceChild(div, pre);
   }
-  // Initialize mermaid with theme matching site preference
+  // Initialize mermaid with M3 Expressive theme
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default' });
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: mermaidM3Expressive.getTheme(isDark)
+  });
 
   // Mermaid click-to-zoom with pan & scroll-zoom
   function openMermaidZoom(mermaidEl) {
