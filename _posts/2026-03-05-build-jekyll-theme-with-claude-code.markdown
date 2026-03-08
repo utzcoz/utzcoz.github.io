@@ -2,7 +2,7 @@
 layout: post
 title: "Building a Custom Jekyll Theme with Claude Code"
 date: 2026-03-05 20:00 +0800
-tags: [claude-code, jekyll, frontend]
+tags: [claude-code, jekyll, frontend, material3, mermaid]
 ---
 
 I am not a software engineer focus on fronted area, and I wanted to replace
@@ -97,7 +97,57 @@ The blog now runs on a fully local theme:
 
 All source lives in the repository. Deployable on GitHub Pages directly.
 
+## Later Iterations
+
+### Material 3 Expressive Redesign
+
+In a follow-up session, the entire UI was re-themed with
+[Material 3 Expressive](https://developer.android.com/develop/ui/compose/designsystems/material3-expressive)
+design language -- again using Claude Code:
+
+- **Seed color:** `#6750A4` (M3 purple), generating a full tonal palette for light and dark schemes
+- **Typography:** switched from Inter to [Outfit](https://fonts.google.com/specimen/Outfit), mapped
+  to the M3 type scale (Display / Headline / Title / Body / Label)
+- **Shape system:** pill-shaped tags and nav indicators (`border-radius: 9999px`), 12px rounded post
+  cards, 16px rounded images
+- **Motion:** M3 standard and spring easings, hover elevation on post cards (`translateY(-2px)`),
+  spring scale on social icons
+- **Components:** floating sticky header with backdrop blur, tonal pill chips for tags, circular icon
+  buttons, surface-container card backgrounds
+
+All changes were pure SCSS -- no HTML markup changes required. The M3 token system (60+ CSS custom
+properties) makes future color scheme changes a single-variable edit.
+
+### Mermaid Interactive Zoom
+
+Mermaid diagrams gained a click-to-zoom overlay:
+
+- Click any diagram to open a fullscreen modal
+- Scroll wheel to zoom (0.1x -- 10x), drag to pan
+- Touch support: pinch-to-zoom, single-finger pan
+- Double-click to reset, Esc or close button to exit
+- `requestAnimationFrame`-based rendering for smooth transforms
+
+### Modular M3 Expressive Mermaid Theme
+
+A standalone, reusable Mermaid theme was created at `assets/js/mermaid-m3-expressive-theme.js`:
+
+- **UMD module** -- works with ES modules (`import`), CommonJS (`require`), or as a global
+  (`mermaidM3Expressive`)
+- Provides `light`, `dark`, and `getTheme(isDark)` exports
+- Covers all diagram types: flowcharts, sequence, state, class, git graphs, pie charts
+- Colors derived from the same M3 tonal palette used by the site
+- Reusable in any project -- just include the script and pass the theme to `mermaid.initialize()`
+
+```js
+// Example usage in another project
+mermaid.initialize({
+  theme: 'base',
+  themeVariables: mermaidM3Expressive.getTheme(isDark)
+});
+```
+
 ## Thoughts
 
-The Claude Code's performance was very impressive, and generated theme is enough for me. At least, I don't require work from another people who have front-end experience and wait their jobs. Now, I can use Claude Codew doing it by myself.
+The Claude Code's performance was very impressive, and generated theme is enough for me. At least, I don't require work from another people who have front-end experience and wait their jobs. Now, I can use Claude Code doing it by myself.
 
