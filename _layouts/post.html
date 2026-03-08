@@ -9,6 +9,11 @@ layout: default
       <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%b %-d, %Y" }}
       </time>
+      <span>&middot;</span>
+      {%- assign words = content | number_of_words -%}
+      {%- assign minutes = words | divided_by: 200 -%}
+      {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif -%}
+      <span>{{ minutes }} min read</span>
       {%- if page.author -%}
         <span>&middot;</span>
         <span itemprop="author">{{ page.author }}</span>
