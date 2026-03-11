@@ -34,8 +34,11 @@
     var expanded = nav.classList.contains('nav-open');
     navToggle.setAttribute('aria-expanded', expanded);
   });
-
-  // Mermaid: convert ```mermaid fenced code blocks to mermaid divs
+})();
+</script>
+{% if page.mermaid %}
+<script>
+(function() {  // Mermaid: convert ```mermaid fenced code blocks to mermaid divs
   // Jekyll renders ```mermaid as <pre><code class="language-mermaid">
   var mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
   for (var i = 0; i < mermaidBlocks.length; i++) {
@@ -52,6 +55,69 @@
     startOnLoad: true,
     theme: 'base',
     themeVariables: mermaidM3Expressive.getTheme(isDark)
+  });
+
+  // Mermaid print: strip inline size constraints so SVGs scale to A4.
+  // Mermaid renders SVGs with hardcoded width/height attributes and
+  // inline style="max-width: NNNpx" that prevent CSS from scaling them.
+  // We also need to ensure each SVG has a viewBox so it scales properly.
+  var printBackups = [];
+  window.addEventListener('beforeprint', function() {
+    printBackups = [];
+    var containers = document.querySelectorAll('.mermaid');
+    for (var i = 0; i < containers.length; i++) {
+      var div = containers[i];
+      var svg = div.querySelector('svg');
+      if (!svg) continue;
+
+      var backup = {
+        div: div,
+        divStyle: div.getAttribute('style'),
+        svg: svg,
+        svgStyle: svg.getAttribute('style'),
+        svgWidth: svg.getAttribute('width'),
+        svgHeight: svg.getAttribute('height')
+      };
+      printBackups.push(backup);
+
+      // Ensure viewBox exists so the SVG can scale
+      if (!svg.getAttribute('viewBox')) {
+        var w = svg.width.baseVal.value || svg.getBoundingClientRect().width;
+        var h = svg.height.baseVal.value || svg.getBoundingClientRect().height;
+        if (w && h) {
+          svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+          backup.addedViewBox = true;
+        }
+      }
+
+      // Strip all inline sizing from the SVG
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.removeAttribute('style');
+      svg.style.width = '100%';
+      svg.style.height = 'auto';
+      svg.style.maxWidth = 'none';
+
+      // Also clear any max-width on the container div
+      div.style.maxWidth = 'none';
+      div.style.width = '100%';
+      div.style.overflow = 'visible';
+    }
+  });
+  window.addEventListener('afterprint', function() {
+    for (var i = 0; i < printBackups.length; i++) {
+      var b = printBackups[i];
+      // Restore SVG
+      b.svg.removeAttribute('style');
+      if (b.svgStyle) b.svg.setAttribute('style', b.svgStyle);
+      if (b.svgWidth) b.svg.setAttribute('width', b.svgWidth);
+      if (b.svgHeight) b.svg.setAttribute('height', b.svgHeight);
+      if (b.addedViewBox) b.svg.removeAttribute('viewBox');
+      // Restore container
+      b.div.removeAttribute('style');
+      if (b.divStyle) b.div.setAttribute('style', b.divStyle);
+    }
+    printBackups = [];
   });
 
   // Mermaid click-to-zoom with pan & scroll-zoom
@@ -214,3 +280,4 @@
   });
 })();
 </script>
+{% endif %}

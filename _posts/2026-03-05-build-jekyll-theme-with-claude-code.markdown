@@ -3,6 +3,7 @@ layout: post
 title: "Building a Custom Jekyll Theme with Claude Code"
 date: 2026-03-05 20:00 +0800
 tags: [claude-code, jekyll, frontend, material3, mermaid]
+mermaid: true
 ---
 
 I am not a software engineer focus on fronted area, and I wanted to replace
