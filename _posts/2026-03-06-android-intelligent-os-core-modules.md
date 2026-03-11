@@ -3,6 +3,7 @@ layout: post
 title: "The Intelligent OS: How AppFunctions and ComputerControl Power Android's AI Agent Ecosystem"
 date: 2026-03-06 00:22 +0800
 tags: [aosp, appfunctions, computercontrol]
+mermaid: true
 ---
 
 > Based on [The Intelligent OS: Making AI agents more helpful for Android apps](https://android-developers.googleblog.com/2026/02/the-intelligent-os-making-ai-agents.html)(February 25, 2026). This report provides a deep-dive source code analysis of the two core AOSP frameworks behind Android's AI agent capabilities.

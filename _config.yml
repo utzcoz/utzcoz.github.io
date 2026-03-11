@@ -30,6 +30,11 @@ future: true
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-paginate
+
+# Pagination
+paginate: 10
+paginate_path: "/page/:num/"
 
 # Social links (used by header/footer)
 social_links:

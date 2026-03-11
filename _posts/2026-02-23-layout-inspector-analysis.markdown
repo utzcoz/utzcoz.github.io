@@ -3,6 +3,7 @@ layout: post
 title:  "Layout Inspector Deep Technical Analysis"
 date:   2026-02-23 01:46 +0800
 tags: [android-studio, layout-inspector, compose, debugging]
+mermaid: true
 ---
 
 > The analysis generated with help of GitHub Copilot CLI with multiple models.
