@@ -38,8 +38,10 @@
 </script>
 {% if page.mermaid %}
 <script>
-(function() {  // Mermaid: convert ```mermaid fenced code blocks to mermaid divs
-  // Jekyll renders ```mermaid as <pre><code class="language-mermaid">
+// Convert ```mermaid fenced code blocks to .mermaid divs immediately
+// (no mermaid dependency — just DOM manipulation).
+// Jekyll renders ```mermaid as <pre><code class="language-mermaid">
+(function() {
   var mermaidBlocks = document.querySelectorAll('pre code.language-mermaid');
   for (var i = 0; i < mermaidBlocks.length; i++) {
     var code = mermaidBlocks[i];
@@ -49,13 +51,18 @@
     div.textContent = code.textContent;
     pre.parentElement.replaceChild(div, pre);
   }
-  // Initialize mermaid with M3 Expressive theme
+})();
+
+// Wait for deferred mermaid.js + theme.js to be available.
+// Deferred scripts execute after parsing but before DOMContentLoaded.
+document.addEventListener('DOMContentLoaded', function() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   mermaid.initialize({
-    startOnLoad: true,
+    startOnLoad: false,
     theme: 'base',
     themeVariables: mermaidM3Expressive.getTheme(isDark)
   });
+  mermaid.run();
 
   // Mermaid print: strip inline size constraints so SVGs scale to A4.
   // Mermaid renders SVGs with hardcoded width/height attributes and
@@ -278,6 +285,6 @@
       openMermaidZoom(mermaidEl);
     }
   });
-})();
+});
 </script>
 {% endif %}
