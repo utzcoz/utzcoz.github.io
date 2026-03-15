@@ -6,13 +6,13 @@ tags: [aosp, appfunctions, computercontrol]
 mermaid: true
 ---
 
-> Based on [The Intelligent OS: Making AI agents more helpful for Android apps](https://android-developers.googleblog.com/2026/02/the-intelligent-os-making-ai-agents.html)(February 25, 2026). This report provides a deep-dive source code analysis of the two core AOSP frameworks behind Android's AI agent capabilities.
+> Based on [The Intelligent OS: Making AI agents more helpful for Android apps](https://android-developers.googleblog.com/2026/02/the-intelligent-os-making-ai-agents.html)(February 25, 2026). This report is a source code analysis of the two AOSP frameworks behind Android's AI agent capabilities, plus reverse engineering of Google App (AGSA) 17.9.53 that confirms Gemini uses ComputerControl for GUI-based app automation (internally codenamed "Bonobo").
 
 ## Table of Contents
 
 **I. The Big Picture**
 
-1. [The Paradigm Shift](#1-the-paradigm-shift)
+1. [The shift to task delegation](#1-the-shift-to-task-delegation)
 2. [Android's Dual-Path Agent Architecture](#2-androids-dual-path-agent-architecture)
 
 **II. AppFunctions -- Structured Intelligence**
@@ -43,26 +43,42 @@ mermaid: true
 20. [Security Model Comparison](#20-security-model-comparison)
 21. [The Incremental Adoption Strategy](#21-the-incremental-adoption-strategy)
 
-**V. Reference**
+**V. Reverse Engineering Gemini's ComputerControl Integration**
 
-22. [Key Source File Reference](#22-key-source-file-reference)
+22. [APK Analysis Methodology](#22-apk-analysis-methodology)
+23. [Gemini Shell App -- A Thin Launcher](#23-gemini-shell-app----a-thin-launcher)
+24. [AGSA -- The Actual ComputerControl Consumer](#24-agsa----the-actual-computercontrol-consumer)
+25. [ComputerControl API Usage in AGSA](#25-computercontrol-api-usage-in-agsa)
+26. [Bonobo Agent Architecture](#26-bonobo-agent-architecture)
+27. [Bonobo Agent Turn Cycle](#27-bonobo-agent-turn-cycle)
+28. [Bonobo Session State Machine](#28-bonobo-session-state-machine)
+29. [Supported Agent Actions](#29-supported-agent-actions)
+30. [Screenshot Encryption and Upload](#30-screenshot-encryption-and-upload)
+31. [Device Eligibility and Feature Gating](#31-device-eligibility-and-feature-gating)
+32. [Bonobo UI Components](#32-bonobo-ui-components)
+33. [Dual-Path Integration: ComputerControl + AppFunctions](#33-dual-path-integration-computercontrol--appfunctions)
+34. [Key Findings Summary](#34-key-findings-summary)
+
+**VI. Reference**
+
+35. [Key Source File Reference](#35-key-source-file-reference)
 
 ---
 
 # I. The Big Picture
 
-## 1. The Paradigm Shift
+## 1. The shift to task delegation
 
-The Android Developers Blog frames a fundamental transformation in mobile computing:
+The Android Developers Blog describes the change:
 
 > *"User expectations for AI on their devices are fundamentally shifting how they interact with their apps."*
 
-The traditional model -- users manually opening apps, navigating UIs, and completing tasks step by step -- is evolving toward **task delegation**. Users tell an AI agent what they want ("order my usual pizza", "coordinate a rideshare with coworkers"), and the agent handles the multi-step workflow across multiple apps.
+The traditional model -- users manually opening apps, navigating UIs, completing tasks step by step -- is giving way to task delegation. Users tell an AI agent what they want ("order my usual pizza", "coordinate a rideshare with coworkers"), and the agent handles the multi-step workflow across apps.
 
-This shift reframes success metrics from **"app opens"** to **"task completion."** Android's response is to build native OS-level support for AI agents through two complementary frameworks:
+What matters is no longer "app opens" but "task completion." Android now has OS-level support for AI agents through two frameworks:
 
-- **AppFunctions** -- Structured, API-based integration where apps explicitly expose capabilities
-- **ComputerControl** -- Universal UI automation that works with any app, unmodified
+- **AppFunctions** -- structured, API-based integration where apps explicitly expose capabilities
+- **ComputerControl** -- UI automation that works with any app, unmodified
 
 ```mermaid
 flowchart TD
@@ -88,7 +104,7 @@ flowchart TD
 
 ## 2. Android's Dual-Path Agent Architecture
 
-Android provides AI agents with two independent, complementary pathways to interact with apps. They share no code-level integration (zero cross-references in the codebase) but serve the same higher-level goal.
+Android gives AI agents two independent pathways to interact with apps. They share no code (zero cross-references in the codebase) but serve the same goal.
 
 ```mermaid
 graph TB
@@ -130,7 +146,7 @@ The blog describes this as:
 
 The blog introduces AppFunctions with a real-world example: on the Galaxy S26, a user asks Gemini *"Show me pictures of my cat from Samsung Gallery."* The AI identifies the appropriate AppFunction, retrieves photos, and returns results within the Gemini interface -- without the user ever opening the Gallery app.
 
-**AppFunctions** (`android.app.appfunctions`) enables apps to expose discrete, self-describing functions that AI agents can discover via AppSearch and execute programmatically. It is architecturally similar to WebMCP (Model Context Protocol) but runs entirely on-device.
+**AppFunctions** (`android.app.appfunctions`) lets apps expose self-describing functions that AI agents discover via AppSearch and execute programmatically. Architecturally similar to MCP (Model Context Protocol), but runs entirely on-device.
 
 ```mermaid
 sequenceDiagram
@@ -320,7 +336,7 @@ flowchart TD
 
 ## 6. AppFunctions Discovery System
 
-Functions are discovered through a **dual-metadata system** stored in AppSearch:
+Functions are discovered through a dual-metadata system in AppSearch:
 
 ```mermaid
 graph LR
@@ -432,7 +448,7 @@ The blog introduces the second pathway:
 
 > *"The platform doing the heavy lifting, so developers can get agentic reach with zero code."*
 
-**ComputerControl** (`android.companion.virtual.computercontrol`) is a framework-level feature that enables programmatic automation of Android applications running on a trusted virtual display. It is built on the **VirtualDeviceManager (VDM)** infrastructure and allows an authorized agent to:
+**ComputerControl** (`android.companion.virtual.computercontrol`) allows programmatic automation of Android apps running on a trusted virtual display. Built on the VirtualDeviceManager (VDM) infrastructure, it lets an authorized agent:
 
 - Launch applications on an isolated virtual display
 - Inject input (taps, swipes, long presses, key events, text)
@@ -441,7 +457,7 @@ The blog introduces the second pathway:
 - Monitor UI stability (detect when the display has settled)
 - Hand over automated apps back to the user's default display
 
-The blog highlights key user-facing aspects:
+User-facing aspects from the blog:
 - Users monitor progress via **"notifications or 'live view'"** (implemented by `MirrorView` + `InteractiveMirrorDisplay`)
 - Users **"can switch to manual control at any point"** (implemented by `handOverApplications()` and `MirrorView.setInteractive(true)`)
 - Alerts precede **"sensitive tasks, such as making a purchase"**
@@ -840,7 +856,7 @@ flowchart TD
 
 ## 17. ComputerControl Security Model
 
-The blog emphasizes *"privacy and security at their core."* ComputerControl implements multiple security layers:
+The blog emphasizes *"privacy and security at their core."* ComputerControl has multiple security layers:
 
 ### Permission and Consent
 
@@ -976,13 +992,13 @@ graph TB
     end
 ```
 
-ComputerControl has a **stricter permission model** (`internal|knownSigner` vs normal with allowlist) because it has broader access -- it can see and interact with any UI content, whereas AppFunctions only exposes what apps explicitly declare.
+ComputerControl has a stricter permission model (`internal|knownSigner` vs normal with allowlist) because it has broader access -- it can see and interact with any UI content, whereas AppFunctions only exposes what apps explicitly declare.
 
 ---
 
 ## 21. The Incremental Adoption Strategy
 
-The blog outlines a roadmap: Android 17 will *"broaden these capabilities to reach even more users, developers, and device manufacturers."* The dual-path architecture enables an incremental adoption strategy:
+The blog outlines a roadmap: Android 17 will *"broaden these capabilities to reach even more users, developers, and device manufacturers."* The dual-path architecture makes incremental adoption possible:
 
 ```mermaid
 timeline
@@ -1001,18 +1017,416 @@ timeline
         Full ecosystem : User trust established via transparency
 ```
 
-**Key insight**: The ecosystem can start with ComputerControl for broad "zero code" coverage, then progressively shift to AppFunctions as more apps integrate. This mirrors the blog's framing:
+The ecosystem can start with ComputerControl for broad "zero code" coverage, then shift to AppFunctions as more apps integrate. In the blog's framing:
 
-- **AppFunctions** = *"expose data and functionality directly"* (preferred, high-quality path)
+- **AppFunctions** = *"expose data and functionality directly"* (preferred path)
 - **ComputerControl** = *"platform doing the heavy lifting... zero code"* (universal fallback)
 
-Both are unified by a commitment to **user sovereignty**: AppFunctions via access management UI and audit trails, ComputerControl via consent dialogs, live view, and manual takeover.
+Both give users control over what agents can do: AppFunctions via access management UI and audit trails, ComputerControl via consent dialogs, live view, and manual takeover.
 
 ---
 
-# V. Reference
+# V. Reverse Engineering Gemini's ComputerControl Integration
 
-## 22. Key Source File Reference
+## 22. APK Analysis Methodology
+
+To verify whether Google's Gemini assistant actually uses the AOSP ComputerControl APIs described in earlier sections, we performed static analysis on APK files downloaded from APKMirror:
+
+| APK | Package | Version | Size |
+|-----|---------|---------|------|
+| Gemini Shell | `com.google.android.apps.bard` | 1.0.869192867 (versionCode 287) | ~5 MB (base) |
+| Google Search App (AGSA) | `com.google.android.googlequicksearchbox` | 17.9.53.ve.arm64 (301708420) | ~216 MB |
+
+Both target SDK 35 and compile against SDK 36 (Baklava). The analysis used `aapt2` for manifest inspection, `dexdump` for DEX class/method enumeration, and `strings` for broad string-table sweeps across all DEX files.
+
+## 23. Gemini Shell App -- A Thin Launcher
+
+The Gemini app (`com.google.android.apps.bard`) is **not** the actual Gemini runtime. It is a minimal launcher shell with only 6 real classes:
+
+| Class | Purpose |
+|-------|---------|
+| `Bard_Application` | Application entry point |
+| `BardEntryPointActivity` | Main launcher activity, creates signed deep-link intents to AGSA |
+| `ErrorActivity` | Error display |
+| `InAppReviewActivity` | Play Store review flow |
+| `RobinToolBarAppWidgetReceiver` | Home screen widget |
+| `RobinWidgetEntryPointActivity` | Widget entry point |
+
+The manifest declares only three permissions (`WAKE_LOCK`, `ACCESS_NETWORK_STATE`, `GET_PACKAGE_SIZE`) and queries a single package: `com.google.android.googlequicksearchbox`. Its `splits0.xml` contains only language and density config splits — no on-demand feature modules.
+
+Searching all 4,935 obfuscated classes across both DEX files turned up zero references to `ComputerControlSession`, `VirtualDeviceManager`, `ACCESS_COMPUTER_CONTROL`, `AccessibilityService`, or any UI automation APIs. The shell delegates everything to AGSA via signed deep-link intents.
+
+## 24. AGSA -- The Actual ComputerControl Consumer
+
+AGSA is where the ComputerControl integration lives. Its manifest explicitly declares:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_COMPUTER_CONTROL" />
+<uses-permission android:name="android.permission.EXECUTE_APP_FUNCTIONS" />
+
+<uses-library
+    android:name="com.android.extensions.computercontrol"
+    android:required="false" />
+<uses-library
+    android:name="com.android.extensions.appfunctions"
+    android:required="false" />
+```
+
+Both extension libraries are optional (`required=false`), so AGSA can install on devices where the platform extensions aren't available yet. Other relevant permissions: `SYSTEM_ALERT_WINDOW`, `FOREGROUND_SERVICE_MEDIA_PROJECTION`, `DETECT_SCREEN_CAPTURE`, `START_ACTIVITIES_FROM_BACKGROUND`, and `QUERY_ALL_PACKAGES`.
+
+Internally, the feature is codenamed "Bonobo" (log prefix `#bnb#`). It sits alongside other Gemini feature modes like `FEATURE_MODE_DEEP_RESEARCH` and `FEATURE_MODE_IMAGE_GENERATION` within the Robin assistant surface.
+
+## 25. ComputerControl API Usage in AGSA
+
+AGSA calls every major method of `ComputerControlSession`. The table below maps platform API methods (from Section 10) to their confirmed presence in AGSA's DEX:
+
+| API Method | Found in DEX | Wrapper Class |
+|-----------|-------------|---------------|
+| `ComputerControlExtensions.getInstance(Context)` | classes6.dex | `cqna` |
+| `ComputerControlExtensions.isSessionCreationAvailable()` | classes6.dex | `cqna` |
+| `ComputerControlExtensions.getVersion()` | classes6.dex | `cqna` |
+| `tap(int, int)` | classes6.dex | `cqnk` |
+| `swipe(int, int, int, int)` | classes6.dex | `cqnk` |
+| `insertText(String, boolean, boolean)` | classes6.dex | `cqnk` |
+| `performAction(int)` | classes6.dex | `cqnk` |
+| `getScreenshot()` | classes6.dex | `cqnk` |
+| `requestScreenshot(Executor, OutcomeReceiver, CancellationSignal)` | classes6.dex | `cqnk` |
+| `launchApplication(String)` | classes6.dex | `cqnk` |
+| `handOverApplications()` | classes6.dex | `cqnk` |
+| `setStabilityListener(long, Executor, StabilityListener)` | classes6.dex | `cqnk` |
+| `clearStabilityListener()` | classes6.dex | `cqnk` |
+| `setLifecycleCallback(Executor, LifecycleCallback)` | classes6.dex | `cqnk` |
+| `getAccessibilityWindows()` | classes6.dex | `cqnk` |
+| `getDisplaySize()` | classes6.dex | `cqnk` |
+| `attachNotificationInfo(int, String)` | classes6.dex | `cqnk` |
+| `close()` | classes6.dex | `cqnk` |
+| `MirrorView.setComputerControlSession()` | classes10.dex | `aqkn` |
+| `MirrorView.setCornerRadius(int)` | classes10.dex | `aqkn` |
+
+AGSA also references both the platform `MirrorView` (`com.android.extensions.computercontrol.view.MirrorView`) and its own thin subclass (`com.google.android.libraries.computercontrol.view.MirrorView`). The `ComputerControlSession.Callback` interface is implemented by `cqmz`, which handles `onSessionCreated`, `onSessionCreationFailed`, `onSessionPending`, and `onSessionClosed`.
+
+## 26. Bonobo Agent Architecture
+
+```mermaid
+graph TB
+    subgraph Server["Gemini Server"]
+        GS["Gemini Model<br/>(screenshot analysis + action planning)"]
+    end
+
+    subgraph AGSA["AGSA (com.google.android.googlequicksearchbox)"]
+        subgraph Robin["Robin Assistant Surface"]
+            ROP["RobinOp Handler<br/>(classes.dex:aloz)"]
+            ELIG["Bonobo Eligibility Checker<br/>(classes.dex:aiiy)"]
+        end
+
+        subgraph Orchestrator["Session Orchestrator (classes9.dex:aiku)"]
+            SM["State Machine<br/>Running ↔ Blocked ↔ ControlledByUser → Stopped"]
+            SC_L["Screenshot Capture"]
+            ENC["BonoboImageEncrypter<br/>(classes9.dex:aiiz)"]
+            STAB["Stability Checker<br/>(screenshot diff)"]
+        end
+
+        subgraph CCWrapper["CC SDK Wrapper (classes6.dex)"]
+            EXT["ComputerControlExtensions Holder<br/>(cqna)"]
+            CB["Session Callback<br/>(cqmz)"]
+            SESS["Session Wrapper<br/>(cqnk)"]
+        end
+
+        subgraph UI["Bonobo UI (classes10.dex)"]
+            MV["MirrorView<br/>(live screen mirror)"]
+            FG["BonoboSessionForegroundService"]
+            FRE["First Run Experience Dialog"]
+            CONFIRM["Confirm Alert Dialog"]
+        end
+    end
+
+    subgraph Platform["AOSP Platform"]
+        CCE["ComputerControlExtensions"]
+        CCS["ComputerControlSession"]
+        VDM["VirtualDeviceManagerService"]
+        VD["VirtualDevice + Display + Input"]
+    end
+
+    GS -->|"ProcessQuery stream<br/>(RobinOp instructions)"| ROP
+    ROP --> ELIG
+    ROP -->|"dispatch actions"| SM
+    SM --> SC_L
+    SC_L --> ENC
+    ENC -->|"encrypted screenshots"| GS
+    SM --> STAB
+    SM -->|"tap/swipe/type/back"| SESS
+
+    EXT -->|"getInstance()"| CCE
+    CB -->|"onSessionCreated"| SESS
+    SESS -->|"API calls"| CCS
+    CCS --> VDM
+    VDM --> VD
+    SESS -->|"setComputerControlSession"| MV
+
+    style Server fill:#fce4ec
+    style Robin fill:#e3f2fd
+    style Orchestrator fill:#e8f5e9
+    style CCWrapper fill:#fff3e0
+    style UI fill:#f3e5f5
+    style Platform fill:#ede7f6
+```
+
+This is a server-driven agent loop. The Gemini server sends `RobinOp` instructions over a bidirectional `ProcessQuery` stream. AGSA captures encrypted screenshots and uploads them for server-side analysis, then executes the returned actions via `ComputerControlSession`.
+
+## 27. Bonobo Agent Turn Cycle
+
+```mermaid
+sequenceDiagram
+    participant GS as Gemini Server
+    participant ROP as RobinOp Handler
+    participant ORCH as Session Orchestrator
+    participant CC as ComputerControlSession
+    participant VD as Virtual Display
+
+    Note over ROP,CC: Session Initialization
+    ROP->>ORCH: StartBonoboSession(flowToken)
+    ORCH->>CC: ComputerControlExtensions.getInstance()
+    ORCH->>CC: requestComputerControlSession(params)
+    CC-->>ORCH: onSessionCreated(session)
+    ORCH->>CC: MirrorView.setComputerControlSession()
+
+    loop Agent Turn Cycle
+        Note over GS,VD: ROBIN_BONOBO_TURN_FLOW_START
+
+        ORCH->>CC: getScreenshot()
+        Note over GS,VD: SCREENSHOT_CAPTURE_START → SCREENSHOT_CAPTURE_END
+        ORCH->>ORCH: Encrypt screenshot (BonoboImageEncrypter)
+        ORCH->>GS: Upload encrypted screenshot
+        Note over GS,VD: SCREENSHOT_UPLOAD_START → SCREENSHOT_UPLOAD_END
+
+        GS->>GS: Analyze screenshot
+        GS->>ROP: RobinOp (action instruction)
+
+        ROP->>ORCH: Dispatch action
+
+        alt TAP
+            ORCH->>CC: tap(x, y)
+        else SCROLL
+            ORCH->>CC: swipe(fromX, fromY, toX, toY)
+        else INSERT TEXT
+            ORCH->>CC: insertText(text, replace, commit)
+        else GO_BACK
+            ORCH->>CC: performAction(ACTION_GO_BACK)
+        else START
+            ORCH->>CC: launchApplication(packageName)
+        else HAND_OVER
+            ORCH->>CC: handOverApplications()
+        else WAIT
+            ORCH->>ORCH: Pause execution
+        end
+
+        Note over GS,VD: ACTION_EXECUTION_START
+        ORCH->>CC: setStabilityListener()
+        CC-->>ORCH: onSessionStable()
+        Note over GS,VD: PAGE_STABILIZATION_END
+
+        Note over GS,VD: ROBIN_BONOBO_TURN_SUCCESS
+    end
+
+    alt User takes over
+        Note over GS,VD: TURN_USER_TAKEOVER_RESPONSE_RECEIVED
+        ORCH->>ORCH: State → ControlledByUser
+    else Task complete
+        Note over GS,VD: TURN_TASK_COMPLETED_RESPONSE_RECEIVED
+        ORCH->>CC: close()
+    else User stops
+        Note over GS,VD: TURN_TASK_STOPPED_BY_USER
+        ORCH->>CC: close()
+    end
+```
+
+Each turn follows a fixed sequence tracked by instrumentation events:
+
+| Phase | Event |
+|-------|-------|
+| Turn start | `ROBIN_BONOBO_TURN_FLOW_START` |
+| Screenshot capture | `SCREENSHOT_CAPTURE_START` → `SCREENSHOT_CAPTURE_END` |
+| Screenshot upload | `SCREENSHOT_UPLOAD_START` → `SCREENSHOT_UPLOAD_END` |
+| UI stabilization | `PAGE_STABILIZATION_END` |
+| Action execution | `ACTION_EXECUTION_START` |
+| Turn end | `TURN_SUCCESS` or `ACTION_EXECUTION_FAILED` |
+| User interaction | `USER_CLARIFICATION_REQUESTED` / `USER_TAKEOVER_RESPONSE_RECEIVED` |
+| Session end | `TASK_COMPLETED_RESPONSE_RECEIVED` / `TASK_STOPPED_BY_USER` |
+
+## 28. Bonobo Session State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> StartBonoboSession: flowToken received
+
+    StartBonoboSession --> Running: onSessionCreated
+    StartBonoboSession --> Stopped: onSessionCreationFailed
+
+    Running --> Running: execute turn cycle
+    Running --> Blocked: waiting for user input
+    Running --> ControlledByUser: user takes over
+    Running --> Stopped: task complete / error
+
+    Blocked --> Running: user clarification received
+    Blocked --> Stopped: user stops task
+
+    ControlledByUser --> Running: user returns control
+    ControlledByUser --> Stopped: user ends session
+
+    Stopped --> [*]
+```
+
+The session orchestrator (`aiku`) maintains this state machine with the following states, each holding a reference to the `ComputerControlSession` wrapper:
+
+| State | Obfuscated Class | Description |
+|-------|-------------------|-------------|
+| `StartBonoboSession` | `ajeh` | Initial state, holds flow token |
+| `Running` | `aihz` | Actively executing agent turns |
+| `Blocked` | `aihx` | Blocked, waiting for user clarification |
+| `SessionIsBlocked` | `aihm` | Blocked with a reason string |
+| `ControlledByUser` | `aihy` | User has taken manual control via MirrorView |
+| `Stopped` | `aiia` | Session terminated (with session reference) |
+| `Stopped (reason)` | `aiig` | Session terminated with a reason string |
+
+## 29. Supported Agent Actions
+
+The `RobinOp` handler (`aloz`) dispatches the following actions received from the Gemini server:
+
+| Action | ComputerControl API Call | Log Pattern |
+|--------|--------------------------|-------------|
+| **START** | `launchApplication(packageName)` | `"#bnb# START action with package names: %s"` |
+| **TAP** | `tap(x, y)` | `"#bnb# '%s': tap %d, %d"` |
+| **SCROLL** | `swipe(fromX, fromY, toX, toY)` | `"#bnb# '%s': scroll from %d, %d to %d, %d"` |
+| **GO_BACK** | `performAction(ACTION_GO_BACK)` | `"#bnb# '%s': goBack"` |
+| **INSERT TEXT** | `insertText(text, replace, commit)` | _(unstable action tracking)_ |
+| **KEY_PRESS** | _(partially supported)_ | `"#bnb# ignored unsupported KeyPress action: %s"` |
+| **WAIT** | _(no API call, pauses loop)_ | `"#bnb# received WAIT action"` |
+| **RESUME** | _(resumes loop)_ | `"#bnb# RESUME action"` |
+| **HAND_OVER** | `handOverApplications()` | `"#bnb# handOver"` |
+| **ACTION_NARRATION** | _(UI display only)_ | `"#bnb# actionNarration: %s"` |
+
+## 30. Screenshot Encryption and Upload
+
+Bonobo encrypts screenshots before uploading them to the Gemini server. The `BonoboImageEncrypter` class (`aiiz` in classes9.dex) processes raw screenshot bytes through an encryption method (`a([B) -> [B`) before transmission.
+
+The orchestrator also does screenshot diff comparison for stability detection -- comparing consecutive screenshots to determine when the UI has settled after an action, on top of the platform's `StabilityListener` callback.
+
+## 31. Device Eligibility and Feature Gating
+
+Bonobo's eligibility checker (`aiiy`) enforces multiple constraints:
+
+```
+"#bnb# Device is not eligible. Skip eligibility checks enabled %s,
+ is Pixel 10+ %s, is Samsung S26 %s"
+```
+
+| Check | Description |
+|-------|-------------|
+| Device model | Pixel 10+ or Samsung Galaxy S26+ |
+| Client flag | `"#bnb# Bonobo client flag is not enabled"` |
+| CC API availability | `ComputerControlExtensions.isSessionCreationAvailable()` |
+| `ACCESS_COMPUTER_CONTROL` permission | Runtime permission check |
+| Age verification | `BONOBO_INELIGIBILITY_REASON_USER_IS_U18` |
+| Language | `BONOBO_INELIGIBILITY_REASON_UNSUPPORTED_LANGUAGE` |
+| Country | `BONOBO_INELIGIBILITY_REASON_COUNTRY_NOT_SUPPORTED` |
+| Capability | `BONOBO_INELIGIBILITY_REASON_MISSING_BONOBO_CAPABILITY` |
+
+The `ACCESS_COMPUTER_CONTROL` permission has protection level `internal|knownSigner` in AOSP, with trusted certificates configured via `config_accessComputerControlKnownSigners`. The AOSP base leaves this array **empty** — OEMs must overlay it with specific signing certificate digests for their authorized agent apps. On Pixel devices, Google overlays this with AGSA's signing certificate.
+
+## 32. Bonobo UI Components
+
+```mermaid
+graph LR
+    subgraph GeminiChat["Gemini Chat UI"]
+        MSG["Chat Messages"]
+        NARR["Action Narration<br/>(what the agent is doing)"]
+        MV["MirrorView<br/>(live screen mirror)"]
+        BTN["Action Buttons<br/>(Open App / View Live)"]
+    end
+
+    subgraph SystemUI["System UI"]
+        FG["BonoboSessionForegroundService<br/>(persistent notification)"]
+        NOTIF["Notification Actions<br/>(via TrampolineActivity)"]
+    end
+
+    subgraph Dialogs["Consent & Warnings"]
+        FRE["First Run Experience<br/>(BonoboFreViewModel)"]
+        CONFIRM["Confirmation Dialog<br/>(BonoboConfirmAlertDialog)"]
+        MULTI["Multiple Session Dialog<br/>(BonoboMultipleSessionViewModel)"]
+        NOTIF_REQ["Notification Permission<br/>(BonoboNotificationRequestViewModel)"]
+    end
+
+    MV -->|"setComputerControlSession()"| FG
+    NOTIF -->|"BonoboNotificationActionTrampolineActivity"| GeminiChat
+
+    style GeminiChat fill:#e3f2fd
+    style SystemUI fill:#fff3e0
+    style Dialogs fill:#fce4ec
+```
+
+The Bonobo UI is embedded within the Robin (Gemini) chat surface. The view binding class (`aqki`) reveals the layout structure: a `MaterialToolbar` header, a `TextView` for status/narration, a `FrameLayout` containing the `MirrorView` for live screen mirroring, and two `MaterialButton`s. A `BonoboSessionForegroundService` keeps the session alive with a persistent notification, and a `BonoboNotificationActionTrampolineActivity` handles notification action clicks to return the user to the session.
+
+## 33. Dual-Path Integration: ComputerControl + AppFunctions
+
+AGSA's manifest declares both `com.android.extensions.computercontrol` and `com.android.extensions.appfunctions` libraries, along with both `ACCESS_COMPUTER_CONTROL` and `EXECUTE_APP_FUNCTIONS` permissions. This confirms the dual-path architecture from Section 2: Gemini uses AppFunctions for apps that expose function APIs, and falls back to ComputerControl's UI automation for apps that don't.
+
+```mermaid
+graph TB
+    subgraph Gemini["Gemini Agent (AGSA)"]
+        ROUTER["Action Router"]
+    end
+
+    subgraph Structured["Structured Path"]
+        AF["AppFunctions SDK<br/>(com.android.extensions.appfunctions)"]
+        PERM_AF["EXECUTE_APP_FUNCTIONS"]
+    end
+
+    subgraph Universal["Universal Path"]
+        CC["ComputerControl SDK<br/>(com.android.extensions.computercontrol)"]
+        PERM_CC["ACCESS_COMPUTER_CONTROL"]
+    end
+
+    subgraph Apps["Target Applications"]
+        APP_AF["Apps with AppFunctions<br/>(structured API)"]
+        APP_CC["Any App<br/>(UI-based automation)"]
+    end
+
+    ROUTER -->|"app exposes functions"| AF
+    ROUTER -->|"generic UI task"| CC
+    AF --> PERM_AF
+    CC --> PERM_CC
+    AF --> APP_AF
+    CC --> APP_CC
+
+    style Gemini fill:#e3f2fd
+    style Structured fill:#e8f5e9
+    style Universal fill:#fff3e0
+    style Apps fill:#f3e5f5
+```
+
+## 34. Key Findings Summary
+
+| Dimension | Gemini Shell (`com.google.android.apps.bard`) | AGSA (`com.google.android.googlequicksearchbox`) |
+|-----------|-----------------------------------------------|--------------------------------------------------|
+| Role | Thin launcher, deep-links to AGSA | Full Gemini runtime with agent capabilities |
+| ComputerControl API references | None (0 matches across 4,935 classes) | Extensive (all major session methods invoked) |
+| `ACCESS_COMPUTER_CONTROL` permission | Not declared | Declared |
+| `computercontrol` extension library | Not declared | Declared (optional) |
+| DEX files | 2 (~3.9 MB) | 12 (~88 MB) |
+| Internal codename | — | "Bonobo" (`#bnb#`) |
+| Agent actions | — | START, TAP, SCROLL, GO_BACK, INSERT TEXT, KEY_PRESS, WAIT, RESUME, HAND_OVER, ACTION_NARRATION |
+| Device eligibility | — | Pixel 10+, Samsung Galaxy S26+ |
+| Screenshot handling | — | Encrypted before upload to Gemini server |
+| UI | Widget only | MirrorView, ForegroundService, consent dialogs |
+| Dual-path support | — | Both ComputerControl + AppFunctions |
+
+AGSA v17.9.53 uses the full AOSP ComputerControl API surface. Bonobo is a server-driven agent loop: the Gemini model analyzes encrypted screenshots, plans actions, and sends them as `RobinOp` instructions over a bidirectional stream. AGSA executes those actions through `ComputerControlSession` on an isolated virtual display, while the user can watch via `MirrorView` in the Gemini chat UI.
+
+---
+
+# VI. Reference
+
+## 35. Key Source File Reference
 
 ### AppFunctions Core API (`frameworks/base/core/java/android/app/appfunctions/`)
 
