@@ -6,7 +6,7 @@ tags: [claude-code, jekyll, frontend, material3, mermaid]
 mermaid: true
 ---
 
-I am not a software engineer focus on fronted area, and I wanted to replace
+I'm not a frontend engineer, and I wanted to replace
 the minima theme on my Jekyll blog with a custom one -- no frontend experience required. I used
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) to build the entire theme in a
 single session.
@@ -15,7 +15,7 @@ single session.
 
 ### Built a Complete Local Theme
 
-Claude Code read the existing repository structure, fetched the reference design to understand the visual language, and
+Claude Code read the existing repository structure, fetched the reference design, and
 produced a full theme from scratch:
 
 - 4 layouts: `default.html`, `home.html`, `page.html`, `post.html`
@@ -69,7 +69,7 @@ Gave Claude Code the PR URL. It fetched all Copilot review comments and applied 
 
 ## How the Session Worked
 
-The session was iterative. Each prompt built on the previous result:
+Each prompt built on the previous result:
 
 1. "Create a new theme like this" -- got the base theme
 2. "Article briefs should be at least 10 lines" -- adjusted excerpt length
@@ -150,5 +150,5 @@ mermaid.initialize({
 
 ## Thoughts
 
-The Claude Code's performance was very impressive, and generated theme is enough for me. At least, I don't require work from another people who have front-end experience and wait their jobs. Now, I can use Claude Code doing it by myself.
+Claude Code's performance was impressive, and the generated theme suits my needs. I no longer need to wait for someone with frontend experience to build it for me.
 

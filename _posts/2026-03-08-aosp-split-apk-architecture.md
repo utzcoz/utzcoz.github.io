@@ -25,7 +25,7 @@ mermaid: true
 
 ## 1. Executive Summary
 
-Split APKs allow an Android application to be delivered as multiple APK files instead of a single monolithic APK. Introduced in Android L (API 21), this mechanism enables:
+Split APKs allow an Android application to be delivered as multiple APK files instead of a single monolithic APK. Introduced in Android L (API 21), split APKs provide:
 
 - **Reduced download sizes** via config splits (density, ABI, language-specific resources)
 - **Modular features** via feature splits (on-demand delivery of app modules)
@@ -120,8 +120,7 @@ graph LR
 ### 3.3 Config Splits
 - Non-feature splits with `configForSplit` attribute (e.g., `configForSplit="featureA"`)
 - Contain configuration-specific resources (screen density, ABI, locale)
-- Are treated as **leaves** in the dependency tree
-- Cannot have their own dependencies
+- Form **leaves** in the dependency tree (no dependencies of their own)
 - Cannot be feature splits (validated in `SplitDependencyLoader.createDependenciesFromPackage()`)
 
 ### 3.4 Required Splits
@@ -290,7 +289,7 @@ Split APKs can declare these components in their `<application>` tag:
 - `<provider>` (via `ParsedProviderUtils`)
 - `<activity-alias>`
 
-**Critical**: The `defaultSplitName` (line 865) is set from `pkg.getSplitNames()[splitIndex]` and passed to all component parsers. This ensures every component declared in a split has its `splitName` field set correctly for runtime dispatch.
+**Critical**: The `defaultSplitName` (line 865) is set from `pkg.getSplitNames()[splitIndex]` and passed to all component parsers. This sets each component's `splitName` field for runtime dispatch.
 
 ### 5.5 SplitAssetLoader Implementations
 
@@ -852,7 +851,7 @@ graph TB
 
 ### 9.3 How bundletool Generates Split APKs
 
-The `bundletool` (external to AOSP) converts an AAB into split APKs. The key transformation rules that the AOSP framework expects:
+The `bundletool` (external to AOSP) converts an AAB into split APKs. The naming and format conventions AOSP expects:
 
 #### Split Naming Convention
 
@@ -1128,7 +1127,7 @@ public static File getNextCodePath(File targetDir, String packageName) {
 }
 ```
 
-The prefix constants are defined in `PackageManagerService.java` (lines 568-569):
+`PackageManagerService.java` defines these constants (lines 568-569):
 ```java
 static final String RANDOM_DIR_PREFIX = "~~";
 static final char RANDOM_CODEPATH_PREFIX = '-';

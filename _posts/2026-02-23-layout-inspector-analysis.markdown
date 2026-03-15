@@ -10,7 +10,7 @@ mermaid: true
 
 ## 0) Scope and evidence base
 
-This report is based on analysis of:
+This report analyzes:
 
 - **Android Studio source**: `~/android-toolchains/studio-main`
   - `tools/adt/idea/layout-inspector/`
@@ -242,8 +242,8 @@ flowchart TD
 
 ### Why the two modes can look similar
 
-At first glance, both modes can look almost identical because they share the same inspector model, node selection logic, and highlight semantics.  
-The practical difference is the **base image layer** and coordinate pipeline:
+Both modes look identical at first -- they share the same inspector model, node selection logic, and highlight semantics.
+The difference is the **base image layer** and coordinate pipeline:
 
 - **Embedded mode** draws on top of the Running Devices stream surface (`AbstractDisplayView`) and applies stream-specific transforms (`displayRectangle`, `screenScalingFactor`, orientation correction).
 - **Standalone mode** renders in LI-owned panels without depending on the Running Devices display widget tree.
@@ -428,7 +428,7 @@ Implementation concepts:
 
 Evidence:
 - **Verified in source**: `androidx-main/.../ComposeLayoutInspector.kt` and `.../framework/ViewExtensions.kt`
-- **Inferred from implementation flow**: the exact ordering between hook install and already-alive compositions can vary by app lifecycle timing.
+- **Inferred from implementation flow**: hook install order relative to already-alive compositions depends on app lifecycle timing.
 
 ### 9.3 Hot reload/bootstrap support
 
@@ -547,11 +547,11 @@ sequenceDiagram
 
 ## 11) Android API-level and feature matrix
 
-These API levels are practical lower bounds observed in current implementation paths; exact behavior can vary by platform patch level, Compose runtime version, and fallback code path (legacy vs app inspection).
+These API levels are practical lower bounds observed in current implementation paths; exact behavior varies by platform patch level, Compose runtime version, and fallback code path (legacy vs app inspection).
 
 Evidence:
 - **Verified in source**: host-side fallback/client selection and API-gated behavior in layout inspector pipeline classes.
-- **Inferred from implementation flow**: practical runtime behavior on OEM images may differ from AOSP/emulator defaults.
+- **Inferred from implementation flow**: practical runtime behavior on OEM images often differs from AOSP/emulator defaults.
 
 | Feature | Min practical API | Notes |
 |---|---:|---|

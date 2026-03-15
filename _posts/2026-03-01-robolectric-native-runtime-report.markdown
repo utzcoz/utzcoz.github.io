@@ -9,7 +9,7 @@ tags: [robolectric, native-runtime, jni, testing]
 
 Robolectric is the de-facto standard for running Android unit tests on the JVM without a device or
 emulator. Historically, Robolectric used hand-written Java "shadow" classes to approximate the
-behavior of Android framework native code. Starting around Android O (API 26), Robolectric
+behavior of Android framework native code. In Android O (API 26), Robolectric
 introduced **Native Runtime** — a mechanism to load *real* AOSP native libraries (compiled for
 host platforms) and delegate Android framework native method calls to them, yielding
 pixel-accurate graphics, real SQLite behavior, and authentic text layout.
@@ -563,8 +563,7 @@ covering these major subsystems:
 
 ## 13. Compiled Native Library Dependency Tree
 
-The following is a summary of major native libraries statically linked into the host
-`libandroid_runtime.so` and their roles:
+Major native libraries statically linked into the host `libandroid_runtime.so`:
 
 ```
 libandroid_runtime.so (host shared library)
@@ -817,5 +816,4 @@ Robolectric's Native Runtime achieves **high-fidelity Android emulation on the J
    requires for correct operation
 
 This approach delivers pixel-accurate graphics rendering, real SQLite behavior, and authentic
-text layout in Robolectric tests, significantly improving test fidelity compared to the older
-shadow-only approach.
+text layout in Robolectric tests, well beyond what hand-written shadows alone could provide.

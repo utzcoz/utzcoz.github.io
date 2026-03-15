@@ -28,7 +28,7 @@ and an installer URL shortcut.
 
 ### 2.1) Real-world example — Google Play Store 50.3.27
 
-The following is the actual structure of `com.android.vending` v50.3.27 distributed by APKMirror
+Directory structure of `com.android.vending` v50.3.27 from APKMirror
 (48.0 MB compressed, 106.3 MB uncompressed, 42 entries):
 
 ```
@@ -132,8 +132,8 @@ The naming follows the conventions used by Android's
 
 ## 3) Metadata — `info.json`
 
-The `.apkm` archive includes an `info.json` file at the root of the archive. This JSON file
-describes the package, its available configurations, and APKMirror-specific distribution metadata.
+The `.apkm` archive includes an `info.json` at its root, describing the package, available
+configurations, and APKMirror-specific distribution metadata.
 
 ### 3.1) Real-world example — Google Play Store 50.3.27
 
@@ -487,6 +487,5 @@ extension serves as a hint for the APKMirror Installer to register as a handler.
 - [PackageInstaller API](https://developer.android.com/reference/android/content/pm/PackageInstaller) —
   Android API for installing split APK sessions.
 
-> **Disclaimer:** This document is an **unofficial** specification based on publicly observable
-> behavior of `.apkm` files distributed by APKMirror and the APKMirror Installer application.
-> APKMirror has not published a formal specification. Details may change without notice.
+> **Disclaimer:** This is an unofficial spec reverse-engineered from `.apkm` files and the
+> APKMirror Installer. APKMirror has not published a formal specification.
