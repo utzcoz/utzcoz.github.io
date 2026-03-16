@@ -158,7 +158,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var rafId = null;
 
     function applyTransform() {
-      content.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+      // Use CSS zoom instead of transform scale so the browser re-rasterizes
+      // the SVG at the target resolution, keeping text crisp.
+      // Divide translate by scale because zoom changes the coordinate space.
+      content.style.zoom = scale;
+      content.style.transform = 'translate(' + (tx / scale) + 'px, ' + (ty / scale) + 'px)';
     }
 
     function scheduleTransform() {
