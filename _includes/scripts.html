@@ -36,6 +36,103 @@
   });
 })();
 </script>
+<script>
+// Wrap tables in scrollable containers
+(function() {
+  var tables = document.querySelectorAll('.post-content > table');
+  for (var i = 0; i < tables.length; i++) {
+    var wrapper = document.createElement('div');
+    wrapper.className = 'table-wrapper';
+    tables[i].parentNode.insertBefore(wrapper, tables[i]);
+    wrapper.appendChild(tables[i]);
+  }
+})();
+</script>
+<script>
+// Article TOC sidebar — scan h2/h3 headings and build nav
+(function() {
+  var sidebar = document.querySelector('.toc-sidebar');
+  var content = document.querySelector('.post-content');
+  if (!sidebar || !content) return;
+
+  var headings = content.querySelectorAll('h2, h3');
+  if (headings.length < 2) return;
+
+  // Ensure each heading has an id for anchor links
+  for (var i = 0; i < headings.length; i++) {
+    if (!headings[i].id) {
+      headings[i].id = 'heading-' + i;
+    }
+  }
+
+  // Build TOC markup
+  var html = '<div class="toc-title">On this page</div><ol>';
+  for (var i = 0; i < headings.length; i++) {
+    var h = headings[i];
+    var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
+    html += '<li' + cls + '><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+  }
+  html += '</ol>';
+  sidebar.innerHTML = html;
+
+  // Scroll tracking via IntersectionObserver
+  var links = sidebar.querySelectorAll('a');
+  var headingMap = {};
+  for (var i = 0; i < links.length; i++) {
+    headingMap[links[i].getAttribute('href').slice(1)] = links[i];
+  }
+
+  var currentActive = null;
+
+  var observer = new IntersectionObserver(function(entries) {
+    // Find the topmost visible heading
+    var visible = [];
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        visible.push(entries[i]);
+      }
+    }
+
+    if (visible.length > 0) {
+      // Pick the one closest to the top
+      visible.sort(function(a, b) {
+        return a.boundingClientRect.top - b.boundingClientRect.top;
+      });
+      var id = visible[0].target.id;
+      if (currentActive !== id) {
+        if (currentActive && headingMap[currentActive]) {
+          headingMap[currentActive].classList.remove('toc-active');
+        }
+        currentActive = id;
+        if (headingMap[id]) {
+          headingMap[id].classList.add('toc-active');
+          // Scroll the TOC sidebar to keep active link visible
+          headingMap[id].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    }
+  }, {
+    rootMargin: '-' + 64 + 'px 0px -60% 0px',
+    threshold: 0
+  });
+
+  for (var i = 0; i < headings.length; i++) {
+    observer.observe(headings[i]);
+  }
+
+  // Smooth scroll on click
+  sidebar.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    e.preventDefault();
+    var target = document.getElementById(link.getAttribute('href').slice(1));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', link.getAttribute('href'));
+    }
+  });
+})();
+</script>
 {% if page.mermaid %}
 <script>
 // Convert ```mermaid fenced code blocks to .mermaid divs immediately
@@ -158,11 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var rafId = null;
 
     function applyTransform() {
-      // Use CSS zoom instead of transform scale so the browser re-rasterizes
-      // the SVG at the target resolution, keeping text crisp.
-      // Divide translate by scale because zoom changes the coordinate space.
-      content.style.zoom = scale;
-      content.style.transform = 'translate(' + (tx / scale) + 'px, ' + (ty / scale) + 'px)';
+      content.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
     }
 
     function scheduleTransform() {
@@ -178,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.addEventListener('wheel', function(e) {
       e.preventDefault();
       var delta = e.deltaY > 0 ? 0.9 : 1.1;
-      var newScale = Math.min(Math.max(scale * delta, 0.1), 10);
+      var newScale = Math.min(Math.max(scale * delta, 0.1), 8);
       // Scale pan offset so the center stays fixed
       var ratio = newScale / scale;
       tx = tx * ratio;
@@ -245,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
           e.touches[1].clientY - e.touches[0].clientY
         );
         if (lastTouchDist > 0) {
-          scale = Math.min(Math.max(scale * (dist / lastTouchDist), 0.1), 10);
+          scale = Math.min(Math.max(scale * (dist / lastTouchDist), 0.1), 8);
           scheduleTransform();
         }
         lastTouchDist = dist;

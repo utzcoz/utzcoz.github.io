@@ -7,22 +7,6 @@ mermaid: true
 ---
 
 
-## Table of Contents
-
-1. [Executive Summary](#1-executive-summary)
-2. [Architecture Overview](#2-architecture-overview)
-3. [Split APK Types](#3-split-apk-types)
-4. [Manifest Structure](#4-manifest-structure)
-5. [Parsing Infrastructure](#5-parsing-infrastructure)
-6. [Installation Flow](#6-installation-flow)
-7. [Runtime Loading](#7-runtime-loading)
-8. [Dependency Tree System](#8-dependency-tree-system)
-9. [Android App Bundle (AAB) and Split APKs](#9-android-app-bundle-aab-and-split-apks)
-10. [On-Disk Storage](#10-on-disk-storage)
-11. [Key Source Files Reference](#11-key-source-files-reference)
-
----
-
 ## 1. Executive Summary
 
 Split APKs allow an Android application to be delivered as multiple APK files instead of a single monolithic APK. Introduced in Android L (API 21), split APKs provide:

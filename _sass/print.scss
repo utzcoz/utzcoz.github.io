@@ -41,7 +41,8 @@
   .site-nav,
   .pagination,
   .giscus,
-  .mermaid-zoom-overlay {
+  .mermaid-zoom-overlay,
+  .toc-sidebar {
     display: none !important;
   }
 
@@ -62,7 +63,9 @@
   }
 
   .container,
-  .container-wide {
+  .container-wide,
+  .post-layout {
+    display: block;
     max-width: 100%;
     padding: 0;
     margin: 0;
