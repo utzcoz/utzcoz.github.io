@@ -10,10 +10,9 @@ layout: default
     {%- endif -%}
     {%- if site.author.projects -%}
     <div class="hero-projects">
-      <span class="hero-projects-label">Open source contributor:</span>
+      <span class="hero-projects-label">Open source:</span>
       {%- for project in site.author.projects -%}
         <a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.name }}</a>
-        {%- unless forloop.last -%}<span class="hero-projects-sep">&middot;</span>{%- endunless -%}
       {%- endfor -%}
     </div>
     {%- endif -%}
@@ -63,11 +62,12 @@ layout: default
         {%- endif -%}
       </div>
       <div class="post-item-excerpt">
-        <div class="post-item-excerpt-content post-content">
-          {{ post.content }}
+        <div class="post-item-excerpt-content">
+          {{ post.excerpt | strip_html | truncatewords: 50 }}
         </div>
         <div class="post-item-excerpt-fade"></div>
       </div>
+      <a class="post-item-readmore" href="{{ post.url | relative_url }}">Read more</a>
     </li>
     {%- endfor -%}
   </ul>

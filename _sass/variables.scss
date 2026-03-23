@@ -1,173 +1,67 @@
 // =============================================================================
-// Material 3 Expressive Design Tokens
-// Seed color: #6750A4 (M3 Expressive purple)
+// Whisper Design Tokens
+// Minimalist monospace writing theme
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Light)
 // Applied as CSS custom properties in base.scss
 // -----------------------------------------------------------------------------
-$md-light-primary: #6750A4;
-$md-light-on-primary: #FFFFFF;
-$md-light-primary-container: #EADDFF;
-$md-light-on-primary-container: #21005D;
-$md-light-secondary: #625B71;
-$md-light-on-secondary: #FFFFFF;
-$md-light-secondary-container: #E8DEF8;
-$md-light-on-secondary-container: #1D192B;
-$md-light-tertiary: #7D5260;
-$md-light-on-tertiary: #FFFFFF;
-$md-light-tertiary-container: #FFD8E4;
-$md-light-on-tertiary-container: #31111D;
-$md-light-error: #B3261E;
-$md-light-on-error: #FFFFFF;
-$md-light-error-container: #F9DEDC;
-$md-light-on-error-container: #410E0B;
-$md-light-surface: #FEF7FF;
-$md-light-on-surface: #1C1B1F;
-$md-light-surface-variant: #E7E0EC;
-$md-light-on-surface-variant: #49454F;
-$md-light-outline: #79747E;
-$md-light-outline-variant: #CAC4D0;
-$md-light-surface-container-lowest: #FFFFFF;
-$md-light-surface-container-low: #F7F2FA;
-$md-light-surface-container: #F3EDF7;
-$md-light-surface-container-high: #ECE6F0;
-$md-light-surface-container-highest: #E6E0E9;
-$md-light-surface-dim: #DED8E1;
-$md-light-surface-bright: #FEF7FF;
-$md-light-surface-tint: #6750A4;
-$md-light-inverse-surface: #313033;
-$md-light-inverse-on-surface: #F4EFF4;
-$md-light-inverse-primary: #D0BCFF;
+$light-primary: #2F5EE9;
+$light-on-primary: #FFFFFF;
+$light-primary-hover: #1A4BD6;
+$light-accent-bg: rgba(47, 94, 233, 0.07);
+$light-accent-bg-hover: rgba(47, 94, 233, 0.12);
+$light-surface: #FFFFFF;
+$light-on-surface: #111111;
+$light-on-surface-variant: #878787;
+$light-surface-container: #F6F6F6;
+$light-surface-container-high: #EEEEEE;
+$light-surface-container-highest: #E5E5E5;
+$light-outline: #CCCCCC;
+$light-outline-variant: #E0E0E0;
+$light-error: #D32F2F;
+$light-on-error: #FFFFFF;
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Dark)
 // -----------------------------------------------------------------------------
-$md-dark-primary: #D0BCFF;
-$md-dark-on-primary: #381E72;
-$md-dark-primary-container: #4F378B;
-$md-dark-on-primary-container: #EADDFF;
-$md-dark-secondary: #CCC2DC;
-$md-dark-on-secondary: #332D41;
-$md-dark-secondary-container: #4A4458;
-$md-dark-on-secondary-container: #E8DEF8;
-$md-dark-tertiary: #EFB8C8;
-$md-dark-on-tertiary: #492532;
-$md-dark-tertiary-container: #633B48;
-$md-dark-on-tertiary-container: #FFD8E4;
-$md-dark-error: #F2B8B5;
-$md-dark-on-error: #601410;
-$md-dark-error-container: #8C1D18;
-$md-dark-on-error-container: #F9DEDC;
-$md-dark-surface: #141218;
-$md-dark-on-surface: #E6E0E9;
-$md-dark-surface-variant: #49454F;
-$md-dark-on-surface-variant: #CAC4D0;
-$md-dark-outline: #938F99;
-$md-dark-outline-variant: #49454F;
-$md-dark-surface-container-lowest: #0F0D13;
-$md-dark-surface-container-low: #1D1B20;
-$md-dark-surface-container: #211F26;
-$md-dark-surface-container-high: #2B2930;
-$md-dark-surface-container-highest: #36343B;
-$md-dark-surface-dim: #141218;
-$md-dark-surface-bright: #3B383E;
-$md-dark-surface-tint: #D0BCFF;
-$md-dark-inverse-surface: #E6E0E9;
-$md-dark-inverse-on-surface: #313033;
-$md-dark-inverse-primary: #6750A4;
+$dark-primary: #7B9EF5;
+$dark-on-primary: #111111;
+$dark-primary-hover: #9BB5F7;
+$dark-accent-bg: rgba(123, 158, 245, 0.1);
+$dark-accent-bg-hover: rgba(123, 158, 245, 0.18);
+$dark-surface: #111111;
+$dark-on-surface: #E5E5E5;
+$dark-on-surface-variant: #878787;
+$dark-surface-container: #1A1A1A;
+$dark-surface-container-high: #222222;
+$dark-surface-container-highest: #2A2A2A;
+$dark-outline: #444444;
+$dark-outline-variant: #333333;
+$dark-error: #EF9A9A;
+$dark-on-error: #111111;
 
 // -----------------------------------------------------------------------------
 // Typography
 // -----------------------------------------------------------------------------
-$font-family: 'Outfit', sans-serif;
-$font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+$font-family: 'DM Mono', 'Menlo', 'Consolas', monospace;
 
-// Display
-$display-large-size: 57px;
-$display-large-weight: 700;
-$display-large-line-height: 1.12;
-$display-medium-size: 45px;
-$display-medium-weight: 700;
-$display-medium-line-height: 1.16;
-$display-small-size: 36px;
-$display-small-weight: 600;
-$display-small-line-height: 1.22;
+$font-size-base: 15px;
+$font-size-sm: 13px;
+$font-size-xs: 12px;
+$font-size-lg: 16px;
 
-// Headline
-$headline-large-size: 32px;
-$headline-large-weight: 600;
-$headline-large-line-height: 1.25;
-$headline-medium-size: 28px;
-$headline-medium-weight: 600;
-$headline-medium-line-height: 1.29;
-$headline-small-size: 24px;
-$headline-small-weight: 600;
-$headline-small-line-height: 1.33;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
 
-// Title
-$title-large-size: 22px;
-$title-large-weight: 600;
-$title-large-line-height: 1.27;
-$title-medium-size: 16px;
-$title-medium-weight: 600;
-$title-medium-line-height: 1.5;
-$title-small-size: 14px;
-$title-small-weight: 600;
-$title-small-line-height: 1.43;
+$line-height-base: 1.7;
+$line-height-tight: 1.4;
+$line-height-loose: 1.8;
 
-// Body
-$body-large-size: 16px;
-$body-large-weight: 400;
-$body-large-line-height: 1.75;
-$body-medium-size: 14px;
-$body-medium-weight: 400;
-$body-medium-line-height: 1.43;
-$body-small-size: 12px;
-$body-small-weight: 400;
-$body-small-line-height: 1.33;
-
-// Label
-$label-large-size: 14px;
-$label-large-weight: 600;
-$label-large-line-height: 1.43;
-$label-medium-size: 12px;
-$label-medium-weight: 600;
-$label-medium-line-height: 1.33;
-$label-small-size: 11px;
-$label-small-weight: 600;
-$label-small-line-height: 1.45;
-
-// Legacy base size reference
-$font-size-base: 16px;
-
-// -----------------------------------------------------------------------------
-// Shape Tokens
-// -----------------------------------------------------------------------------
-$shape-none: 0px;
-$shape-xs: 4px;
-$shape-sm: 8px;
-$shape-md: 12px;
-$shape-lg: 16px;
-$shape-xl: 28px;
-$shape-full: 9999px;
-
-// -----------------------------------------------------------------------------
-// Motion Tokens
-// -----------------------------------------------------------------------------
-$easing-standard: cubic-bezier(0.2, 0, 0, 1);
-$easing-standard-decel: cubic-bezier(0, 0, 0, 1);
-$easing-standard-accel: cubic-bezier(0.3, 0, 1, 1);
-$easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
-$easing-spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 18.9%, 1.067, 1.099 22.2%, 1.121 23.6%, 1.133 24.8%, 1.135 26.7%, 1.122 29.4%, 1.035 38.4%, 1.008 44.1%, 0.997 52%, 1.001 60.3%, 1);
-
-$duration-short1: 50ms;
-$duration-short2: 100ms;
-$duration-short4: 200ms;
-$duration-medium1: 250ms;
-$duration-medium2: 300ms;
-$duration-long1: 450ms;
+// Headings — kept subtle, same font, slightly bolder
+$heading-weight: 500;
 
 // -----------------------------------------------------------------------------
 // Spacing
@@ -178,13 +72,27 @@ $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 40px;
 $spacing-2xl: 64px;
+$spacing-3xl: 80px;
 
 // -----------------------------------------------------------------------------
 // Layout
 // -----------------------------------------------------------------------------
-$max-width: 800px;
-$max-width-wide: 1080px;
-$header-height: 64px;
+$max-width: 680px;
+$max-width-wide: 900px;
+$header-height: 56px;
+
+// -----------------------------------------------------------------------------
+// Shape
+// -----------------------------------------------------------------------------
+$radius-sm: 2px;
+$radius-md: 4px;
+
+// -----------------------------------------------------------------------------
+// Motion
+// -----------------------------------------------------------------------------
+$easing-standard: cubic-bezier(0.2, 0, 0, 1);
+$duration-fast: 100ms;
+$duration-normal: 200ms;
 
 // -----------------------------------------------------------------------------
 // Breakpoints

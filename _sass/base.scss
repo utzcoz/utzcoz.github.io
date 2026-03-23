@@ -10,78 +10,42 @@
 }
 
 // =============================================================================
-// M3 Color Tokens as CSS Custom Properties
+// Color Tokens as CSS Custom Properties
 // =============================================================================
 :root {
-  --md-sys-color-primary: #{$md-light-primary};
-  --md-sys-color-on-primary: #{$md-light-on-primary};
-  --md-sys-color-primary-container: #{$md-light-primary-container};
-  --md-sys-color-on-primary-container: #{$md-light-on-primary-container};
-  --md-sys-color-secondary: #{$md-light-secondary};
-  --md-sys-color-on-secondary: #{$md-light-on-secondary};
-  --md-sys-color-secondary-container: #{$md-light-secondary-container};
-  --md-sys-color-on-secondary-container: #{$md-light-on-secondary-container};
-  --md-sys-color-tertiary: #{$md-light-tertiary};
-  --md-sys-color-on-tertiary: #{$md-light-on-tertiary};
-  --md-sys-color-tertiary-container: #{$md-light-tertiary-container};
-  --md-sys-color-on-tertiary-container: #{$md-light-on-tertiary-container};
-  --md-sys-color-error: #{$md-light-error};
-  --md-sys-color-on-error: #{$md-light-on-error};
-  --md-sys-color-error-container: #{$md-light-error-container};
-  --md-sys-color-on-error-container: #{$md-light-on-error-container};
-  --md-sys-color-surface: #{$md-light-surface};
-  --md-sys-color-on-surface: #{$md-light-on-surface};
-  --md-sys-color-surface-variant: #{$md-light-surface-variant};
-  --md-sys-color-on-surface-variant: #{$md-light-on-surface-variant};
-  --md-sys-color-outline: #{$md-light-outline};
-  --md-sys-color-outline-variant: #{$md-light-outline-variant};
-  --md-sys-color-surface-container-lowest: #{$md-light-surface-container-lowest};
-  --md-sys-color-surface-container-low: #{$md-light-surface-container-low};
-  --md-sys-color-surface-container: #{$md-light-surface-container};
-  --md-sys-color-surface-container-high: #{$md-light-surface-container-high};
-  --md-sys-color-surface-container-highest: #{$md-light-surface-container-highest};
-  --md-sys-color-surface-dim: #{$md-light-surface-dim};
-  --md-sys-color-surface-bright: #{$md-light-surface-bright};
-  --md-sys-color-surface-tint: #{$md-light-surface-tint};
-  --md-sys-color-inverse-surface: #{$md-light-inverse-surface};
-  --md-sys-color-inverse-on-surface: #{$md-light-inverse-on-surface};
-  --md-sys-color-inverse-primary: #{$md-light-inverse-primary};
+  --color-primary: #{$light-primary};
+  --color-on-primary: #{$light-on-primary};
+  --color-primary-hover: #{$light-primary-hover};
+  --color-accent-bg: #{$light-accent-bg};
+  --color-accent-bg-hover: #{$light-accent-bg-hover};
+  --color-surface: #{$light-surface};
+  --color-on-surface: #{$light-on-surface};
+  --color-on-surface-variant: #{$light-on-surface-variant};
+  --color-surface-container: #{$light-surface-container};
+  --color-surface-container-high: #{$light-surface-container-high};
+  --color-surface-container-highest: #{$light-surface-container-highest};
+  --color-outline: #{$light-outline};
+  --color-outline-variant: #{$light-outline-variant};
+  --color-error: #{$light-error};
+  --color-on-error: #{$light-on-error};
 }
 
 [data-theme="dark"] {
-  --md-sys-color-primary: #{$md-dark-primary};
-  --md-sys-color-on-primary: #{$md-dark-on-primary};
-  --md-sys-color-primary-container: #{$md-dark-primary-container};
-  --md-sys-color-on-primary-container: #{$md-dark-on-primary-container};
-  --md-sys-color-secondary: #{$md-dark-secondary};
-  --md-sys-color-on-secondary: #{$md-dark-on-secondary};
-  --md-sys-color-secondary-container: #{$md-dark-secondary-container};
-  --md-sys-color-on-secondary-container: #{$md-dark-on-secondary-container};
-  --md-sys-color-tertiary: #{$md-dark-tertiary};
-  --md-sys-color-on-tertiary: #{$md-dark-on-tertiary};
-  --md-sys-color-tertiary-container: #{$md-dark-tertiary-container};
-  --md-sys-color-on-tertiary-container: #{$md-dark-on-tertiary-container};
-  --md-sys-color-error: #{$md-dark-error};
-  --md-sys-color-on-error: #{$md-dark-on-error};
-  --md-sys-color-error-container: #{$md-dark-error-container};
-  --md-sys-color-on-error-container: #{$md-dark-on-error-container};
-  --md-sys-color-surface: #{$md-dark-surface};
-  --md-sys-color-on-surface: #{$md-dark-on-surface};
-  --md-sys-color-surface-variant: #{$md-dark-surface-variant};
-  --md-sys-color-on-surface-variant: #{$md-dark-on-surface-variant};
-  --md-sys-color-outline: #{$md-dark-outline};
-  --md-sys-color-outline-variant: #{$md-dark-outline-variant};
-  --md-sys-color-surface-container-lowest: #{$md-dark-surface-container-lowest};
-  --md-sys-color-surface-container-low: #{$md-dark-surface-container-low};
-  --md-sys-color-surface-container: #{$md-dark-surface-container};
-  --md-sys-color-surface-container-high: #{$md-dark-surface-container-high};
-  --md-sys-color-surface-container-highest: #{$md-dark-surface-container-highest};
-  --md-sys-color-surface-dim: #{$md-dark-surface-dim};
-  --md-sys-color-surface-bright: #{$md-dark-surface-bright};
-  --md-sys-color-surface-tint: #{$md-dark-surface-tint};
-  --md-sys-color-inverse-surface: #{$md-dark-inverse-surface};
-  --md-sys-color-inverse-on-surface: #{$md-dark-inverse-on-surface};
-  --md-sys-color-inverse-primary: #{$md-dark-inverse-primary};
+  --color-primary: #{$dark-primary};
+  --color-on-primary: #{$dark-on-primary};
+  --color-primary-hover: #{$dark-primary-hover};
+  --color-accent-bg: #{$dark-accent-bg};
+  --color-accent-bg-hover: #{$dark-accent-bg-hover};
+  --color-surface: #{$dark-surface};
+  --color-on-surface: #{$dark-on-surface};
+  --color-on-surface-variant: #{$dark-on-surface-variant};
+  --color-surface-container: #{$dark-surface-container};
+  --color-surface-container-high: #{$dark-surface-container-high};
+  --color-surface-container-highest: #{$dark-surface-container-highest};
+  --color-outline: #{$dark-outline};
+  --color-outline-variant: #{$dark-outline-variant};
+  --color-error: #{$dark-error};
+  --color-on-error: #{$dark-on-error};
 }
 
 // =============================================================================
@@ -94,72 +58,47 @@ html {
 
 body {
   font-family: $font-family;
-  font-size: $body-large-size;
-  font-weight: $body-large-weight;
-  line-height: $body-large-line-height;
-  color: var(--md-sys-color-on-surface);
-  background-color: var(--md-sys-color-surface);
-  transition: background-color $duration-medium2 $easing-standard,
-              color $duration-medium2 $easing-standard;
+  font-size: $font-size-base;
+  font-weight: $font-weight-light;
+  line-height: $line-height-base;
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+  transition: background-color $duration-normal $easing-standard,
+              color $duration-normal $easing-standard;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 // =============================================================================
-// Typography — M3 Type Scale mapped to headings
+// Typography
 // =============================================================================
 h1, h2, h3, h4, h5, h6 {
-  color: var(--md-sys-color-on-surface);
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+  color: var(--color-on-surface);
+  font-weight: $heading-weight;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+  line-height: $line-height-tight;
 }
 
-h1 {
-  font-size: $headline-large-size;
-  font-weight: $headline-large-weight;
-  line-height: $headline-large-line-height;
-}
-
-h2 {
-  font-size: $headline-medium-size;
-  font-weight: $headline-medium-weight;
-  line-height: $headline-medium-line-height;
-}
-
-h3 {
-  font-size: $headline-small-size;
-  font-weight: $headline-small-weight;
-  line-height: $headline-small-line-height;
-}
-
-h4 {
-  font-size: $title-large-size;
-  font-weight: $title-large-weight;
-  line-height: $title-large-line-height;
-}
-
-h5 {
-  font-size: $title-medium-size;
-  font-weight: $title-medium-weight;
-  line-height: $title-medium-line-height;
-}
-
-h6 {
-  font-size: $title-small-size;
-  font-weight: $title-small-weight;
-  line-height: $title-small-line-height;
-}
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; }
+h5 { font-size: 0.95rem; }
+h6 { font-size: 0.9rem; }
 
 // =============================================================================
-// Links — M3 primary color with underline-grow-from-center on hover
+// Links — Shhh style: no underline, accent background on hover
 // =============================================================================
 a {
-  color: var(--md-sys-color-primary);
+  color: var(--color-on-surface);
   text-decoration: none;
-  transition: color $duration-short2 $easing-standard;
+  transition: color $duration-fast $easing-standard,
+              background-color $duration-fast $easing-standard;
 
   &:hover {
-    color: var(--md-sys-color-primary);
+    color: var(--color-primary);
+    background-color: var(--color-accent-bg);
   }
 }
 
@@ -189,15 +128,13 @@ img {
 }
 
 // =============================================================================
-// Blockquotes — M3 tertiary-container styling
+// Blockquotes
 // =============================================================================
 blockquote {
-  border-left: 4px solid var(--md-sys-color-tertiary-container);
-  padding: $spacing-md $spacing-lg;
+  border-left: 2px solid var(--color-outline);
+  padding: $spacing-sm $spacing-lg;
   margin: $spacing-lg 0;
-  background: color-mix(in srgb, var(--md-sys-color-tertiary-container) 20%, transparent);
-  color: var(--md-sys-color-on-surface-variant);
-  border-radius: 0 $shape-md $shape-md 0;
+  color: var(--color-on-surface-variant);
 
   p:last-child {
     margin-bottom: 0;
@@ -205,64 +142,62 @@ blockquote {
 }
 
 // =============================================================================
-// Code — M3 surface-container styling
+// Code
 // =============================================================================
 code {
-  font-family: $font-mono;
-  font-size: 0.85em;
-  background: var(--md-sys-color-surface-container);
-  padding: 2px 6px;
-  border-radius: $shape-sm;
+  font-family: $font-family;
+  font-size: 0.9em;
+  background: var(--color-surface-container);
+  padding: 1px 4px;
+  border-radius: $radius-sm;
 }
 
 pre {
-  background: var(--md-sys-color-surface-container);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: $shape-sm;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $radius-sm;
   padding: $spacing-md;
   overflow-x: auto;
   margin-bottom: 1.5em;
   line-height: 1.5;
+  font-size: $font-size-sm;
 
   code {
     background: none;
     padding: 0;
-    font-size: 0.85rem;
+    font-size: inherit;
   }
 }
 
 // =============================================================================
-// Scrollable content — always show scrollbar when overflowing
+// Scrollbar styling
 // =============================================================================
 pre,
 .table-wrapper {
-  // Firefox
-  scrollbar-color: var(--md-sys-color-outline) var(--md-sys-color-surface-container-high);
+  scrollbar-color: var(--color-outline) var(--color-surface-container);
 
-  // WebKit (Chrome, Safari)
   &::-webkit-scrollbar {
-    height: 12px;
+    height: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--md-sys-color-outline);
-    border-radius: $shape-full;
+    background: var(--color-outline);
+    border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--md-sys-color-surface-container-high);
-    border-radius: $shape-full;
+    background: var(--color-surface-container);
   }
 }
 
 // =============================================================================
-// Tables — M3 surface-container header
+// Tables
 // =============================================================================
 .table-wrapper {
   overflow-x: auto;
   margin-bottom: 1.5em;
-  border-radius: $shape-sm;
-  border: 1px solid var(--md-sys-color-outline-variant);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $radius-sm;
 
   table {
     margin-bottom: 0;
@@ -276,19 +211,20 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 1.5em;
-  border-radius: $shape-sm;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $radius-sm;
   overflow: hidden;
-  border: 1px solid var(--md-sys-color-outline-variant);
+  font-size: $font-size-sm;
 
   th, td {
     padding: $spacing-sm $spacing-md;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    border-bottom: 1px solid var(--color-outline-variant);
     text-align: left;
   }
 
   th {
-    background: var(--md-sys-color-surface-container);
-    font-weight: 600;
+    background: var(--color-surface-container);
+    font-weight: $heading-weight;
   }
 
   tr:last-child td {
@@ -301,7 +237,7 @@ table {
 // =============================================================================
 hr {
   border: none;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
+  border-top: 1px solid var(--color-outline-variant);
   margin: $spacing-xl 0;
 }
 
@@ -309,8 +245,8 @@ hr {
 // Selection
 // =============================================================================
 ::selection {
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 // =============================================================================
@@ -326,7 +262,7 @@ hr {
   left: 0;
   width: 100%;
   height: 100%;
-  background: color-mix(in srgb, var(--md-sys-color-surface) 92%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 9999;
@@ -354,13 +290,13 @@ hr {
     position: fixed;
     top: 1rem;
     right: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    border: none;
-    border-radius: 50%;
-    background: var(--md-sys-color-surface-container);
-    color: var(--md-sys-color-on-surface);
-    font-size: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-outline);
+    border-radius: $radius-sm;
+    background: var(--color-surface);
+    color: var(--color-on-surface);
+    font-size: 1.2rem;
     line-height: 1;
     cursor: pointer;
     z-index: 10000;
@@ -369,7 +305,7 @@ hr {
     justify-content: center;
 
     &:hover {
-      background: var(--md-sys-color-surface-container-highest);
+      background: var(--color-surface-container);
     }
   }
 
@@ -378,8 +314,8 @@ hr {
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.8rem;
+    color: var(--color-on-surface-variant);
+    font-size: $font-size-xs;
     pointer-events: none;
     z-index: 10000;
   }

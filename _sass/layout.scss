@@ -24,20 +24,19 @@
 }
 
 // =============================================================================
-// Header — Floating rounded M3 surface-container
+// Header — Minimal, clean
 // =============================================================================
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--md-sys-color-surface) 92%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-outline-variant);
 
   .header-inner {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     height: $header-height;
     max-width: $max-width-wide;
     margin: 0 auto;
@@ -49,22 +48,22 @@
   }
 
   .site-title {
-    font-size: $title-large-size;
-    font-weight: $title-large-weight;
-    line-height: $title-large-line-height;
-    color: var(--md-sys-color-on-surface);
+    font-size: $font-size-base;
+    font-weight: $heading-weight;
+    color: var(--color-on-surface);
     text-decoration: none;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
 
     &:hover {
-      color: var(--md-sys-color-primary);
+      color: var(--color-primary);
+      background: none;
     }
   }
 
   .header-right {
     display: flex;
     align-items: center;
-    gap: $spacing-lg;
+    gap: $spacing-md;
   }
 }
 
@@ -74,7 +73,7 @@
 .site-nav {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
 
   @media (max-width: $bp-tablet) {
     display: none;
@@ -87,86 +86,71 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--md-sys-color-surface);
+      background: var(--color-surface);
       justify-content: center;
       align-items: center;
       gap: $spacing-xl;
       z-index: 99;
-      animation: nav-enter $duration-medium2 $easing-standard-decel;
     }
   }
 
   a {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: $label-large-size;
-    font-weight: $label-large-weight;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 6px 16px;
-    border-radius: $shape-full;
-    transition: color $duration-short2 $easing-standard,
-                background-color $duration-short2 $easing-standard;
+    color: var(--color-on-surface-variant);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
+    padding: 4px 8px;
+    border-radius: $radius-sm;
+    transition: color $duration-fast $easing-standard,
+                background-color $duration-fast $easing-standard;
 
     &:hover {
-      color: var(--md-sys-color-on-surface);
-      background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+      color: var(--color-primary);
+      background: var(--color-accent-bg);
     }
 
     &.active {
-      background: var(--md-sys-color-secondary-container);
-      color: var(--md-sys-color-on-secondary-container);
+      color: var(--color-primary);
+      background: var(--color-accent-bg);
     }
   }
 }
 
-@keyframes nav-enter {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-// Theme toggle — 40px circular M3 icon button
+// Theme toggle
 .theme-toggle {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   background: none;
-  border: none;
-  border-radius: 50%;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $radius-sm;
   cursor: pointer;
-  color: var(--md-sys-color-on-surface-variant);
-  transition: background-color $duration-short2 $easing-standard,
-              color $duration-short2 $easing-standard;
+  color: var(--color-on-surface-variant);
+  transition: color $duration-fast $easing-standard,
+              border-color $duration-fast $easing-standard;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:hover {
-    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
-    color: var(--md-sys-color-on-surface);
+    color: var(--color-on-surface);
+    border-color: var(--color-outline);
   }
 
   svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 }
 
-// Nav toggle — 40px circular M3 icon button
+// Nav toggle (mobile)
 .nav-toggle {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   background: none;
-  border: none;
-  border-radius: 50%;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: $radius-sm;
   cursor: pointer;
-  color: var(--md-sys-color-on-surface-variant);
-  transition: background-color $duration-short2 $easing-standard;
+  color: var(--color-on-surface-variant);
   align-items: center;
   justify-content: center;
 
@@ -175,12 +159,13 @@
   }
 
   &:hover {
-    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+    color: var(--color-on-surface);
+    border-color: var(--color-outline);
   }
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;
@@ -191,7 +176,7 @@
 // Main content
 // =============================================================================
 .site-main {
-  min-height: calc(100vh - #{$header-height} - 200px);
+  min-height: calc(100vh - #{$header-height} - 120px);
   padding: $spacing-2xl 0;
 
   @media (max-width: $bp-mobile) {
@@ -200,66 +185,45 @@
 }
 
 // =============================================================================
-// Hero — Extra Large rounded M3 card
+// Hero — Simplified, text-only
 // =============================================================================
 .hero {
-  padding: $spacing-2xl 0;
-  margin-bottom: $spacing-2xl;
-
-  @media (max-width: $bp-tablet) {
-    padding: $spacing-xl $spacing-lg;
-  }
+  padding: $spacing-xl 0 $spacing-2xl;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding-left: $spacing-lg;
+  padding-right: $spacing-lg;
 
   @media (max-width: $bp-mobile) {
-    padding: $spacing-lg $spacing-md;
-    margin-bottom: $spacing-xl;
-    border-radius: $shape-lg;
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+    padding-bottom: $spacing-xl;
   }
 
   .hero-content {
     max-width: $max-width;
-    margin: 0 auto;
-
-    @media (max-width: $bp-mobile) {
-      padding: 0;
-    }
   }
 
   .hero-title {
-    font-size: $display-large-size;
-    font-weight: $display-large-weight;
-    line-height: $display-large-line-height;
-    letter-spacing: -0.03em;
-    margin-bottom: $spacing-md;
-    margin-top: 0;
-    color: var(--md-sys-color-on-surface);
-
-    @media (max-width: $bp-tablet) {
-      font-size: $display-medium-size;
-      font-weight: $display-medium-weight;
-      line-height: $display-medium-line-height;
-    }
-
-    @media (max-width: $bp-mobile) {
-      font-size: $display-small-size;
-      font-weight: $display-small-weight;
-      line-height: $display-small-line-height;
-    }
+    font-size: $font-size-base;
+    font-weight: $heading-weight;
+    line-height: $line-height-base;
+    margin: 0 0 $spacing-sm;
+    color: var(--color-on-surface);
   }
 
   .hero-subtitle {
-    font-size: $body-large-size;
-    font-weight: $body-large-weight;
-    line-height: $body-large-line-height;
-    color: var(--md-sys-color-on-surface-variant);
-    max-width: 540px;
+    font-size: $font-size-base;
+    font-weight: $font-weight-light;
+    line-height: $line-height-base;
+    color: var(--color-on-surface-variant);
   }
 
   .hero-projects {
     margin-top: $spacing-md;
-    font-size: $label-large-size;
-    font-weight: $label-large-weight;
-    color: var(--md-sys-color-on-surface-variant);
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
+    color: var(--color-on-surface-variant);
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -270,55 +234,53 @@
     }
 
     a {
-      color: var(--md-sys-color-primary);
-      font-weight: 600;
-      border: 1px solid var(--md-sys-color-outline);
-      border-radius: $shape-full;
-      padding: 4px 12px;
-      transition: background-color $duration-short2 $easing-standard;
+      color: var(--color-primary);
+      padding: 2px 6px;
+      border-radius: $radius-sm;
 
       &:hover {
-        background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+        background: var(--color-accent-bg);
       }
     }
 
     .hero-projects-sep {
-      display: none; // separators not needed with chip layout
+      display: none;
     }
   }
 
   .hero-social {
     display: flex;
-    gap: $spacing-md;
-    margin-top: $spacing-lg;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
 
     a {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--md-sys-color-surface-container-highest);
-      border-radius: 50%;
-      color: var(--md-sys-color-on-surface-variant);
-      transition: transform $duration-medium2 $easing-spring,
-                  color $duration-short2 $easing-standard;
+      color: var(--color-on-surface-variant);
+      border: 1px solid var(--color-outline-variant);
+      border-radius: $radius-sm;
+      transition: color $duration-fast $easing-standard,
+                  border-color $duration-fast $easing-standard;
 
       &:hover {
-        transform: scale(1.1);
-        color: var(--md-sys-color-primary);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
+        background: var(--color-accent-bg);
       }
 
       svg {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
       }
     }
   }
 }
 
 // =============================================================================
-// Post list
+// Post list — Simple text list, Shhh style
 // =============================================================================
 .post-list {
   list-style: none;
@@ -327,50 +289,52 @@
 }
 
 .post-item {
-  background: var(--md-sys-color-surface-container);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: $shape-md;
-  padding: $spacing-lg;
-  margin-bottom: $spacing-md;
-  transition: transform $duration-medium1 $easing-standard,
-              box-shadow $duration-medium1 $easing-standard;
+  padding: $spacing-lg 0;
+  border-bottom: 1px solid var(--color-outline-variant);
+  background: none;
+  border-radius: 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
 
   &:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--md-sys-color-surface-tint) 12%, transparent);
+    transform: none;
+    box-shadow: none;
   }
 }
 
 .post-item-title {
-  font-size: $title-large-size;
-  font-weight: $title-large-weight;
-  line-height: $title-large-line-height;
+  font-size: $font-size-base;
+  font-weight: $heading-weight;
+  line-height: $line-height-tight;
   margin: 0 0 $spacing-sm;
 
   a {
-    color: var(--md-sys-color-on-surface);
+    color: var(--color-on-surface);
     text-decoration: none;
 
-    &:hover {
-      color: var(--md-sys-color-primary);
+    &::before {
+      content: "\2317\00a0";
+      color: var(--color-on-surface-variant);
     }
-  }
 
-  @media (max-width: $bp-mobile) {
-    font-size: 18px;
+    &:hover {
+      color: var(--color-primary);
+      background: none;
+    }
   }
 }
 
 .post-item-meta {
-  font-size: $label-large-size;
-  font-weight: $label-large-weight;
-  line-height: $label-large-line-height;
-  color: var(--md-sys-color-on-surface-variant);
-  margin-bottom: $spacing-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-light;
+  color: var(--color-on-surface-variant);
+  margin-bottom: $spacing-sm;
   display: flex;
   align-items: center;
   gap: $spacing-sm;
@@ -380,22 +344,22 @@
 .post-item-excerpt {
   position: relative;
   overflow: hidden;
-  max-height: 17em;
-  font-size: $body-medium-size;
+  max-height: 6em;
+  font-size: $font-size-sm;
 
   .post-item-excerpt-content {
-    color: var(--md-sys-color-on-surface-variant);
-    line-height: 1.6;
+    color: var(--color-on-surface-variant);
+    line-height: $line-height-base;
 
     h1, h2, h3, h4, h5, h6 {
-      color: var(--md-sys-color-on-surface-variant);
-      font-size: 1rem;
-      margin-top: 0.8em;
-      margin-bottom: 0.4em;
+      color: var(--color-on-surface-variant);
+      font-size: $font-size-sm;
+      margin-top: 0.5em;
+      margin-bottom: 0.3em;
     }
 
     p, ul, ol, pre, blockquote, table {
-      margin-bottom: 0.6em;
+      margin-bottom: 0.5em;
     }
 
     img {
@@ -408,35 +372,43 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 4em;
-    background: linear-gradient(transparent, var(--md-sys-color-surface-container));
+    height: 3em;
+    background: linear-gradient(transparent, var(--color-surface));
     pointer-events: none;
+  }
+}
+
+.post-item-readmore {
+  display: inline-block;
+  margin-top: $spacing-sm;
+  font-size: $font-size-sm;
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+  background: var(--color-accent-bg);
+
+  &:hover {
+    background: var(--color-accent-bg-hover);
+    color: var(--color-primary);
   }
 }
 
 .post-tag {
   display: inline-block;
-  font-size: $label-medium-size;
-  font-weight: $label-medium-weight;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  color: var(--color-on-surface-variant);
+  background: var(--color-surface-container);
   border: none;
-  padding: 4px 12px;
-  border-radius: $shape-full;
-  transition: opacity $duration-short2 $easing-standard;
-
-  &:hover {
-    opacity: 0.85;
-  }
+  padding: 2px 8px;
+  border-radius: $radius-sm;
 }
 
 // =============================================================================
 // Post layout with TOC sidebar
 // =============================================================================
-$toc-width: 220px;
-$toc-breakpoint: 1200px;
+$toc-width: 200px;
+$toc-breakpoint: 1100px;
 
 .post-layout {
   max-width: $max-width;
@@ -469,27 +441,26 @@ $toc-breakpoint: 1200px;
     align-self: start;
     max-height: calc(100vh - #{$header-height} - #{$spacing-lg} * 2);
     overflow-y: auto;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: $font-size-xs;
+    line-height: 1.5;
 
-    // Thin scrollbar
     scrollbar-width: thin;
-    scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+    scrollbar-color: var(--color-outline-variant) transparent;
 
     &::-webkit-scrollbar {
-      width: 3px;
+      width: 2px;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--md-sys-color-outline-variant);
-      border-radius: $shape-full;
+      background: var(--color-outline-variant);
+      border-radius: 2px;
     }
   }
 
   .toc-title {
-    font-size: $label-large-size;
-    font-weight: $label-large-weight;
-    color: var(--md-sys-color-on-surface);
+    font-size: $font-size-xs;
+    font-weight: $heading-weight;
+    color: var(--color-on-surface-variant);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: $spacing-sm;
@@ -507,33 +478,32 @@ $toc-breakpoint: 1200px;
 
   a {
     display: block;
-    padding: 4px 0 4px $spacing-md;
-    color: var(--md-sys-color-on-surface-variant);
+    padding: 3px 0 3px $spacing-md;
+    color: var(--color-on-surface-variant);
     text-decoration: none;
-    border-left: 2px solid transparent;
-    transition: color $duration-short2 $easing-standard,
-                border-color $duration-short2 $easing-standard;
+    border-left: 1px solid transparent;
+    transition: color $duration-fast $easing-standard,
+                border-color $duration-fast $easing-standard;
 
     &:hover {
-      color: var(--md-sys-color-on-surface);
+      color: var(--color-on-surface);
+      background: none;
     }
 
     &::after {
-      // Disable the underline animation from .post-content a
       display: none;
     }
 
     &.toc-active {
-      color: var(--md-sys-color-primary);
-      border-left-color: var(--md-sys-color-primary);
-      font-weight: 500;
+      color: var(--color-primary);
+      border-left-color: var(--color-primary);
+      font-weight: $heading-weight;
     }
   }
 
-  // Indent h3 entries
   .toc-h3 a {
     padding-left: calc(#{$spacing-md} + #{$spacing-sm});
-    font-size: 13px;
+    font-size: 11px;
   }
 }
 
@@ -545,24 +515,20 @@ $toc-breakpoint: 1200px;
 }
 
 .post-title {
-  font-size: $headline-large-size;
-  font-weight: $headline-large-weight;
-  line-height: $headline-large-line-height;
+  font-size: 1.4rem;
+  font-weight: $heading-weight;
+  line-height: $line-height-tight;
   margin: 0 0 $spacing-md;
-  letter-spacing: -0.02em;
 
   @media (max-width: $bp-mobile) {
-    font-size: $headline-medium-size;
-    font-weight: $headline-medium-weight;
-    line-height: $headline-medium-line-height;
+    font-size: 1.2rem;
   }
 }
 
 .post-meta {
-  font-size: $label-large-size;
-  font-weight: $label-large-weight;
-  line-height: $label-large-line-height;
-  color: var(--md-sys-color-on-surface-variant);
+  font-size: $font-size-sm;
+  font-weight: $font-weight-light;
+  color: var(--color-on-surface-variant);
   display: flex;
   align-items: center;
   gap: $spacing-sm;
@@ -577,30 +543,22 @@ $toc-breakpoint: 1200px;
   }
 
   img {
-    border-radius: $shape-lg;
     margin: $spacing-lg auto;
   }
 
   a {
-    color: var(--md-sys-color-primary);
+    color: var(--color-primary);
     text-decoration: none;
-    position: relative;
+    padding: 0 2px;
+    border-radius: $radius-sm;
 
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 50%;
-      right: 50%;
-      height: 1px;
-      background: var(--md-sys-color-primary);
-      transition: left $duration-short2 $easing-standard,
-                  right $duration-short2 $easing-standard;
+    &:hover {
+      background: var(--color-accent-bg);
     }
 
-    &:hover::after {
-      left: 0;
-      right: 0;
+    // Disable the old underline animation
+    &::after {
+      display: none;
     }
   }
 }
@@ -613,11 +571,10 @@ $toc-breakpoint: 1200px;
 }
 
 .page-title {
-  font-size: $headline-large-size;
-  font-weight: $headline-large-weight;
-  line-height: $headline-large-line-height;
+  font-size: 1.4rem;
+  font-weight: $heading-weight;
+  line-height: $line-height-tight;
   margin: 0;
-  letter-spacing: -0.02em;
 }
 
 // =============================================================================
@@ -630,41 +587,40 @@ $toc-breakpoint: 1200px;
   gap: $spacing-lg;
   margin-top: $spacing-2xl;
   padding-top: $spacing-xl;
-  border-top: 1px solid var(--md-sys-color-outline-variant);
+  border-top: 1px solid var(--color-outline-variant);
 
   a, span {
-    font-size: $label-large-size;
-    font-weight: $label-large-weight;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
   }
 
   a {
-    color: var(--md-sys-color-primary);
-    padding: 6px 16px;
-    border-radius: $shape-full;
-    transition: background-color $duration-short2 $easing-standard;
+    color: var(--color-primary);
+    padding: 4px 12px;
+    border-radius: $radius-sm;
+    transition: background-color $duration-fast $easing-standard;
 
     &:hover {
-      background: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+      background: var(--color-accent-bg);
     }
   }
 
   .disabled {
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--color-on-surface-variant);
     opacity: 0.4;
   }
 
   .page-number {
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--color-on-surface-variant);
   }
 }
 
 // =============================================================================
-// Footer — M3 surface-container
+// Footer — Minimal
 // =============================================================================
 .site-footer {
-  border-top: 1px solid var(--md-sys-color-outline-variant);
-  padding: $spacing-xl 0;
-  background: var(--md-sys-color-surface-container);
+  border-top: 1px solid var(--color-outline-variant);
+  padding: $spacing-lg 0;
 
   .footer-inner {
     max-width: $max-width-wide;
@@ -684,77 +640,71 @@ $toc-breakpoint: 1200px;
   }
 
   .footer-text {
-    font-size: $body-small-size;
-    font-weight: $body-small-weight;
-    line-height: $body-small-line-height;
-    color: var(--md-sys-color-on-surface-variant);
+    font-size: $font-size-xs;
+    font-weight: $font-weight-light;
+    color: var(--color-on-surface-variant);
   }
 
   .footer-links {
     display: flex;
-    gap: $spacing-md;
+    gap: $spacing-sm;
 
     a {
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--md-sys-color-surface-container-highest);
-      border-radius: 50%;
-      color: var(--md-sys-color-on-surface-variant);
-      transition: transform $duration-medium2 $easing-spring,
-                  color $duration-short2 $easing-standard;
+      color: var(--color-on-surface-variant);
+      border-radius: $radius-sm;
+      transition: color $duration-fast $easing-standard;
 
       &:hover {
-        transform: scale(1.1);
-        color: var(--md-sys-color-primary);
+        color: var(--color-primary);
+        background: var(--color-accent-bg);
       }
 
       svg {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
       }
     }
   }
 }
 
 // =============================================================================
-// 404 Page — M3 Display + filled primary button
+// 404 Page
 // =============================================================================
 .not-found {
   text-align: center;
   padding: $spacing-2xl 0;
 
   h1 {
-    font-size: $display-large-size;
-    font-weight: $display-large-weight;
-    line-height: $display-large-line-height;
-    color: var(--md-sys-color-primary);
+    font-size: 2rem;
+    font-weight: $heading-weight;
+    color: var(--color-on-surface);
     margin: 0;
   }
 
   p {
-    font-size: $body-large-size;
-    font-weight: $body-large-weight;
-    line-height: $body-large-line-height;
-    color: var(--md-sys-color-on-surface-variant);
+    color: var(--color-on-surface-variant);
   }
 
   a {
     display: inline-block;
     margin-top: $spacing-lg;
-    padding: 12px 24px;
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-    border-radius: $shape-full;
-    font-size: $label-large-size;
-    font-weight: $label-large-weight;
-    transition: opacity $duration-short2 $easing-standard;
+    padding: 8px 20px;
+    background: var(--color-on-surface);
+    color: var(--color-surface);
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $heading-weight;
+    transition: opacity $duration-fast $easing-standard;
 
     &:hover {
-      opacity: 0.9;
-      color: var(--md-sys-color-on-primary);
+      opacity: 0.85;
+      color: var(--color-surface);
+      background: var(--color-on-surface);
     }
   }
 }
