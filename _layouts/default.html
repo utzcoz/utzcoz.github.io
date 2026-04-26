@@ -2,11 +2,21 @@
 <html lang="{{ page.lang | default: site.lang | default: 'en' }}">
   {%- include head.html -%}
   <body>
-    {%- include header.html -%}
-    <main class="site-main">
-      {{ content }}
-    </main>
-    {%- include footer.html -%}
+    <div class="app-shell">
+      {%- include header.html -%}
+      <main class="site-main">
+        {%- if page.layout != 'home' and page.layout != 'post' -%}
+          <nav class="topbar" aria-label="Breadcrumb">
+            <span class="topbar__crumbs">
+              <a href="{{ '/' | relative_url }}">{{ site.title | default: site.author.name }}</a>
+              <span class="topbar__sep">/</span>
+              <span class="topbar__here">{{ page.title | default: 'page' }}</span>
+            </span>
+          </nav>
+        {%- endif -%}
+        {{ content }}
+      </main>
+    </div>
     {%- include scripts.html -%}
   </body>
 </html>

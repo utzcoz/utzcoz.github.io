@@ -28,6 +28,7 @@
   --color-outline-variant: #{$light-outline-variant};
   --color-error: #{$light-error};
   --color-on-error: #{$light-on-error};
+  --color-visited: #{$light-visited};
 }
 
 [data-theme="dark"] {
@@ -46,20 +47,20 @@
   --color-outline-variant: #{$dark-outline-variant};
   --color-error: #{$dark-error};
   --color-on-error: #{$dark-on-error};
+  --color-visited: #{$dark-visited};
 }
 
 // =============================================================================
 // HTML & Body
 // =============================================================================
 html {
-  font-size: $font-size-base;
   scroll-behavior: smooth;
 }
 
 body {
   font-family: $font-family;
   font-size: $font-size-base;
-  font-weight: $font-weight-light;
+  font-weight: $font-weight-regular;
   line-height: $line-height-base;
   color: var(--color-on-surface);
   background-color: var(--color-surface);
@@ -67,38 +68,51 @@ body {
               color $duration-normal $easing-standard;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern", "liga", "calt";
+  text-rendering: optimizeLegibility;
 }
 
 // =============================================================================
-// Typography
+// Typography — page-title style on h1/h2
 // =============================================================================
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-on-surface);
+  font-family: $font-family-serif;
   font-weight: $heading-weight;
+  letter-spacing: -0.005em;
   margin-top: 1.8em;
-  margin-bottom: 0.6em;
+  margin-bottom: 0.5em;
   line-height: $line-height-tight;
+  text-wrap: balance;
 }
 
-h1 { font-size: 1.4rem; }
-h2 { font-size: 1.2rem; }
-h3 { font-size: 1.1rem; }
-h4 { font-size: 1rem; }
+// Hairline rule beneath h2 (and the article title)
+h2 {
+  padding-bottom: 0.18em;
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+h1 { font-size: 2.1rem; font-weight: 400; }
+h2 { font-size: 1.5rem; font-weight: 400; }
+h3 { font-size: 1.2rem; font-weight: 500; }
+h4 { font-size: 1.05rem; font-weight: 500; }
 h5 { font-size: 0.95rem; }
 h6 { font-size: 0.9rem; }
 
 // =============================================================================
-// Links — Shhh style: no underline, accent background on hover
+// Links — blue, underline on hover, visited purple
 // =============================================================================
 a {
-  color: var(--color-on-surface);
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color $duration-fast $easing-standard,
-              background-color $duration-fast $easing-standard;
+  transition: color $duration-fast $easing-standard;
 
   &:hover {
-    color: var(--color-primary);
-    background-color: var(--color-accent-bg);
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: var(--color-visited);
   }
 }
 
@@ -142,30 +156,35 @@ blockquote {
 }
 
 // =============================================================================
-// Code
+// Code — thin border + soft fill panel for blocks; tinted inline code
 // =============================================================================
 code {
-  font-family: $font-family;
-  font-size: 0.9em;
+  font-family: $font-family-mono;
+  font-size: 0.88em;
   background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
   padding: 1px 4px;
-  border-radius: $radius-sm;
+  border-radius: $radius-xs;
+  color: var(--color-on-surface);
 }
 
 pre {
   background: var(--color-surface-container);
   border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-sm;
-  padding: $spacing-md;
+  border-radius: $radius-xs;
+  padding: $spacing-md $spacing-md + 2;
   overflow-x: auto;
-  margin-bottom: 1.5em;
-  line-height: 1.5;
+  margin: 1.5em 0;
+  line-height: 1.55;
   font-size: $font-size-sm;
+  font-family: $font-family-mono;
 
   code {
     background: none;
+    border: 0;
     padding: 0;
     font-size: inherit;
+    color: inherit;
   }
 }
 

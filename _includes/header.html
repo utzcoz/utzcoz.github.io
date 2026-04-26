@@ -1,12 +1,49 @@
-<header class="site-header">
-  <div class="header-inner">
-    <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title | default: site.author.name }}</a>
+<aside class="site-nav" id="site-nav" aria-label="Primary navigation">
+  <div class="site-nav__inner">
+    <div class="site-nav__brand">
+      <a class="site-nav__name" href="{{ '/' | relative_url }}">{{ site.title | default: site.author.name }}</a>
+      {%- if site.author.bio -%}
+        <p class="site-nav__sub">{{ site.author.bio }}</p>
+      {%- endif -%}
+      {%- if site.author.projects -%}
+        <p class="site-nav__projects">
+          <span class="site-nav__projects-label">Working on open-source projects:</span>
+          {%- for project in site.author.projects -%}
+            <a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.name }}</a>{%- unless forloop.last -%}, {%- endunless -%}
+          {%- endfor -%}
+        </p>
+      {%- endif -%}
+    </div>
 
-    <div class="header-right">
-      <nav class="site-nav" id="site-nav">
-        <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Home</a>
-        <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}class="active"{% endif %}>About</a>
-      </nav>
+    <nav class="site-nav__links" aria-label="Sections">
+      <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Home</a>
+      <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
+      {%- if site.feed -%}
+        <a href="{{ '/feed.xml' | relative_url }}">Feed</a>
+      {%- endif -%}
+    </nav>
+
+    {%- if page.layout == 'post' -%}
+      <nav class="toc-sidebar" aria-label="Table of contents"></nav>
+    {%- endif -%}
+
+    <div class="site-nav__footer">
+      <div class="site-nav__row">
+        {%- if site.social_links -%}
+        <div class="site-nav__social">
+        {%- for link in site.social_links -%}
+          {%- if link.platform == "github" -%}
+            <a href="{{ link.user_url }}" title="GitHub" target="_blank" rel="noopener" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+          {%- elsif link.platform == "x" or link.platform == "twitter" -%}
+            <a href="{{ link.user_url }}" title="X / Twitter" target="_blank" rel="noopener" aria-label="X / Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- endif -%}
 
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -24,14 +61,16 @@
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-controls="site-nav" aria-expanded="false">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
+      </div>
+      <p class="site-nav__copyright">&copy; 2018&ndash;{{ 'now' | date: "%Y" }} {{ site.author.name }}. Built with Jekyll.</p>
     </div>
   </div>
-</header>
+
+  <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-controls="site-nav" aria-expanded="false">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+</aside>

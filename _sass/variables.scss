@@ -1,67 +1,74 @@
 // =============================================================================
-// Whisper Design Tokens
-// Minimalist monospace writing theme
+// Editorial design tokens — clean reading theme
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Light)
-// Applied as CSS custom properties in base.scss
 // -----------------------------------------------------------------------------
-$light-primary: #2F5EE9;
-$light-on-primary: #FFFFFF;
-$light-primary-hover: #1A4BD6;
-$light-accent-bg: rgba(47, 94, 233, 0.07);
-$light-accent-bg-hover: rgba(47, 94, 233, 0.12);
-$light-surface: #FFFFFF;
-$light-on-surface: #111111;
-$light-on-surface-variant: #878787;
-$light-surface-container: #F6F6F6;
-$light-surface-container-high: #EEEEEE;
-$light-surface-container-highest: #E5E5E5;
-$light-outline: #CCCCCC;
-$light-outline-variant: #E0E0E0;
-$light-error: #D32F2F;
-$light-on-error: #FFFFFF;
+$light-primary: #3366cc;                          // Editorial link blue
+$light-on-primary: #ffffff;
+$light-primary-hover: #2a4b8d;
+$light-accent-bg: #eaf3ff;
+$light-accent-bg-hover: #d8e8ff;
+$light-surface: #ffffff;                          // bg
+$light-on-surface: #202122;                       // ink
+$light-on-surface-variant: #54595d;               // ink-mute
+$light-surface-container: #f8f9fa;                // bg-soft
+$light-surface-container-high: #f1f3f5;
+$light-surface-container-highest: #eaecf0;
+$light-outline: #a2a9b1;                          // rule-strong
+$light-outline-variant: #eaecf0;                  // rule (hairline)
+$light-error: #d33;
+$light-on-error: #ffffff;
+$light-visited: #6b4ba1;                          // Visited link
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Dark)
 // -----------------------------------------------------------------------------
-$dark-primary: #7B9EF5;
-$dark-on-primary: #111111;
-$dark-primary-hover: #9BB5F7;
-$dark-accent-bg: rgba(123, 158, 245, 0.1);
-$dark-accent-bg-hover: rgba(123, 158, 245, 0.18);
-$dark-surface: #111111;
-$dark-on-surface: #E5E5E5;
-$dark-on-surface-variant: #878787;
-$dark-surface-container: #1A1A1A;
-$dark-surface-container-high: #222222;
-$dark-surface-container-highest: #2A2A2A;
-$dark-outline: #444444;
-$dark-outline-variant: #333333;
-$dark-error: #EF9A9A;
-$dark-on-error: #111111;
+$dark-primary: #88a4ee;                           // Dark-mode link blue
+$dark-on-primary: #101418;
+$dark-primary-hover: #a8baf0;
+$dark-accent-bg: #1a2438;
+$dark-accent-bg-hover: #243057;
+$dark-surface: #101418;
+$dark-on-surface: #eaecf0;
+$dark-on-surface-variant: #a2a9b1;
+$dark-surface-container: #1c1f23;
+$dark-surface-container-high: #202428;
+$dark-surface-container-highest: #2a2e33;
+$dark-outline: #54595d;
+$dark-outline-variant: #27292d;
+$dark-error: #ef9a9a;
+$dark-on-error: #101418;
+$dark-visited: #a48fd1;
 
 // -----------------------------------------------------------------------------
-// Typography
+// Typography — single serif font (Source Serif 4) for body + UI;
+// system monospace fallback for code blocks.
 // -----------------------------------------------------------------------------
-$font-family: 'DM Mono', 'Menlo', 'Consolas', monospace;
+$font-family-serif: "Source Serif 4", "Iowan Old Style", "Charter", Georgia, serif;
+$font-family-sans:  $font-family-serif;
+$font-family-mono:  "SF Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
 
-$font-size-base: 15px;
-$font-size-sm: 13px;
-$font-size-xs: 12px;
-$font-size-lg: 16px;
+// Default body family — serif for long-form reading
+$font-family: $font-family-serif;
+
+$font-size-base: 18px;     // body
+$font-size-ui:   15px;     // UI chrome (nav, breadcrumbs)
+$font-size-sm:   13.5px;
+$font-size-xs:   11.5px;
+$font-size-lg:   20px;
 
 $font-weight-light: 300;
 $font-weight-regular: 400;
 $font-weight-medium: 500;
 
-$line-height-base: 1.7;
-$line-height-tight: 1.4;
+$line-height-base:  1.7;
+$line-height-tight: 1.25;
 $line-height-loose: 1.8;
 
-// Headings — kept subtle, same font, slightly bolder
-$heading-weight: 500;
+// Headings
+$heading-weight: 400;
 
 // -----------------------------------------------------------------------------
 // Spacing
@@ -72,20 +79,22 @@ $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 40px;
 $spacing-2xl: 64px;
-$spacing-3xl: 80px;
+$spacing-3xl: 96px;
 
 // -----------------------------------------------------------------------------
 // Layout
 // -----------------------------------------------------------------------------
-$max-width: 680px;
+$max-width: 680px;          // reading column
 $max-width-wide: 900px;
-$header-height: 56px;
+$nav-width: 264px;          // left navigator
+$header-height: 56px;       // breadcrumb topbar
 
 // -----------------------------------------------------------------------------
 // Shape
 // -----------------------------------------------------------------------------
-$radius-sm: 2px;
-$radius-md: 4px;
+$radius-xs: 2px;
+$radius-sm: 3px;
+$radius-md: 6px;
 
 // -----------------------------------------------------------------------------
 // Motion
@@ -99,4 +108,6 @@ $duration-normal: 200ms;
 // -----------------------------------------------------------------------------
 $bp-mobile: 576px;
 $bp-tablet: 768px;
+$bp-nav-collapse: 960px;    // when left-nav collapses to top
 $bp-desktop: 1024px;
+$bp-toc: 1280px;            // when article TOC sidebar appears

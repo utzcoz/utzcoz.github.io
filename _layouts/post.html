@@ -2,34 +2,34 @@
 layout: default
 ---
 
-<div class="post-layout">
-<nav class="toc-sidebar" aria-label="Table of contents"></nav>
-<article itemscope itemtype="http://schema.org/BlogPosting">
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">{{ page.title | escape }}</h1>
-    <div class="post-meta">
+    <a class="post-header__back" href="{{ '/' | relative_url }}">&larr; Back to posts</a>
+    {%- if page.tags.size > 0 -%}
+    <div class="post-header__tags">
+      {%- for tag in page.tags -%}
+        <span class="tag">{{ tag }}</span>
+      {%- endfor -%}
+    </div>
+    {%- endif -%}
+    <h1 class="post-header__title" itemprop="name headline">{{ page.title | escape }}</h1>
+    <div class="post-header__meta">
       <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {{ page.date | date: "%b %-d, %Y" }}
       </time>
-      <span>&middot;</span>
+      <span class="dot">&middot;</span>
       {%- assign words = content | number_of_words -%}
       {%- assign minutes = words | divided_by: 200 -%}
       {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif -%}
       <span>{{ minutes }} min read</span>
       {%- if page.author -%}
-        <span>&middot;</span>
+        <span class="dot">&middot;</span>
         <span itemprop="author">{{ page.author }}</span>
-      {%- endif -%}
-      {%- if page.tags.size > 0 -%}
-        <span>&middot;</span>
-        {%- for tag in page.tags -%}
-          <span class="post-tag">{{ tag }}</span>
-        {%- endfor -%}
       {%- endif -%}
     </div>
   </header>
 
-  <div class="post-content" itemprop="articleBody">
+  <div class="post-content prose" itemprop="articleBody">
     {{ content }}
   </div>
 
@@ -59,13 +59,11 @@ layout: default
           );
         }
       }
-      // Sync giscus theme with site theme on toggle
       var observer = new MutationObserver(function() {
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         setGiscusTheme(isDark ? 'dark' : 'light');
       });
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-      // Set initial theme once giscus iframe loads
       window.addEventListener('message', function(event) {
         if (event.origin !== 'https://giscus.app') return;
         var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -74,4 +72,3 @@ layout: default
     })();
   </script>
 </article>
-</div>
