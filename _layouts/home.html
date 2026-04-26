@@ -63,7 +63,7 @@ layout: default
       </div>
       <div class="post-item-excerpt">
         <div class="post-item-excerpt-content">
-          {{ post.excerpt | strip_html | truncatewords: 50 }}
+          {{ post.content | strip_html | truncatewords: 120 }}
         </div>
         <div class="post-item-excerpt-fade"></div>
       </div>
