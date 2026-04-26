@@ -20,9 +20,13 @@ author:
     - name: Robolectric
       url: "https://github.com/robolectric/robolectric"
     - name: boringdroid
-      url: "https://github.com/nicholasgasior/boringdroid"
+      url: "https://github.com/boringdroid"
     - name: MaruOS
-      url: "https://github.com/nicholasgasior/maruos"
+      url: "https://github.com/maruos"
+    - name: DigitalisX64
+      url: "https://github.com/DigitalisX64"
+    - name: aospbooks
+      url: "https://github.com/aospbooks"
 
 # Build settings
 markdown: kramdown
