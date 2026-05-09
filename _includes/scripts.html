@@ -247,6 +247,23 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.appendChild(hint);
     document.body.appendChild(overlay);
 
+    // Zoom resizes the SVG directly rather than using CSS transform: scale().
+    // Safari/WebKit rasterizes a transform: scale()'d element into a bitmap
+    // at its original size and re-samples it when scaling up, producing a
+    // blurry result. Resizing the SVG keeps it vector-rendered at every zoom.
+    var svg = content.querySelector('svg');
+    var origW = 0, origH = 0;
+    if (svg) {
+      origW = (svg.width && svg.width.baseVal && svg.width.baseVal.value) || 0;
+      origH = (svg.height && svg.height.baseVal && svg.height.baseVal.value) || 0;
+      if (!origW || !origH) {
+        var r = svg.getBoundingClientRect();
+        origW = origW || r.width;
+        origH = origH || r.height;
+      }
+      svg.style.maxWidth = 'none';
+    }
+
     // State: tx/ty are pan offsets in px, (0,0) = centered via flexbox
     var scale = 1;
     var tx = 0, ty = 0;
@@ -255,7 +272,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var rafId = null;
 
     function applyTransform() {
-      content.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+      content.style.transform = 'translate(' + tx + 'px, ' + ty + 'px)';
+      if (svg && origW && origH) {
+        svg.style.width = (origW * scale) + 'px';
+        svg.style.height = (origH * scale) + 'px';
+      }
     }
 
     function scheduleTransform() {
