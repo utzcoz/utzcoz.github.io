@@ -7,10 +7,6 @@
   display: grid;
   grid-template-columns: $nav-width 1fr;
   min-height: 100vh;
-
-  @media (max-width: $bp-nav-collapse) {
-    grid-template-columns: 1fr;
-  }
 }
 
 // =============================================================================
@@ -25,69 +21,12 @@
   background: var(--color-surface);
   overflow-y: auto;
 
-  @media (max-width: $bp-nav-collapse) {
-    position: relative;
-    height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--color-outline-variant);
-  }
-
   &__inner {
     display: flex;
     flex-direction: column;
     gap: $spacing-lg;
     padding: $spacing-lg + 4 $spacing-lg $spacing-lg;
     min-height: 100%;
-
-    @media (max-width: $bp-nav-collapse) {
-      padding: $spacing-md $spacing-lg;
-      gap: $spacing-md;
-    }
-  }
-
-  &__brand {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  &__name {
-    font-family: $font-family-serif;
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--color-on-surface);
-    text-decoration: none;
-
-    &:hover { color: var(--color-primary); text-decoration: none; }
-  }
-
-  &__sub {
-    font-size: $font-size-xs;
-    color: var(--color-on-surface-variant);
-    line-height: 1.45;
-    margin: 0;
-  }
-
-  &__projects {
-    font-size: $font-size-xs;
-    line-height: 1.6;
-    color: var(--color-on-surface-variant);
-    margin: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-
-    .site-nav__projects-label {
-      color: var(--color-on-surface-variant);
-      margin-right: 3px;
-    }
-
-    a {
-      color: var(--color-primary);
-      text-decoration: none;
-      white-space: nowrap;
-      &:hover { text-decoration: underline; }
-    }
   }
 
   &__links {
@@ -129,13 +68,6 @@
     gap: $spacing-sm;
   }
 
-  &__row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $spacing-sm;
-  }
-
   &__copyright {
     margin: $spacing-md 0 0;
     font-size: 10.5px;
@@ -143,10 +75,57 @@
     opacity: 0.75;
     line-height: 1.4;
   }
+}
+
+// Shared brand block (used in side-nav on desktop and home-hero on mobile)
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__name {
+    font-family: $font-family-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-on-surface);
+    text-decoration: none;
+
+    &:hover { color: var(--color-primary); text-decoration: none; }
+  }
+
+  &__sub {
+    font-size: $font-size-xs;
+    color: var(--color-on-surface-variant);
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  &__projects {
+    font-size: $font-size-xs;
+    line-height: 1.6;
+    color: var(--color-on-surface-variant);
+    margin: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+
+    .brand__projects-label {
+      color: var(--color-on-surface-variant);
+      margin-right: 3px;
+    }
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      white-space: nowrap;
+      &:hover { text-decoration: underline; }
+    }
+  }
 
   &__social {
     display: flex;
     gap: $spacing-xs;
+    margin-top: $spacing-xs;
 
     a {
       width: 30px;
@@ -190,39 +169,6 @@
   }
 
   svg { width: 14px; height: 14px; }
-}
-
-// Mobile nav toggle (only shown < $bp-nav-collapse)
-.nav-toggle {
-  display: none;
-  position: absolute;
-  top: $spacing-md;
-  right: $spacing-md;
-  width: 32px;
-  height: 32px;
-  background: none;
-  border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-sm;
-  cursor: pointer;
-  color: var(--color-on-surface-variant);
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: $bp-nav-collapse) {
-    display: flex;
-  }
-
-  svg { width: 16px; height: 16px; }
-}
-
-// On mobile, collapse the nav inner content unless toggled
-@media (max-width: $bp-nav-collapse) {
-  .site-nav:not(.nav-open) .site-nav__inner {
-    .site-nav__projects,
-    .site-nav__links,
-    .site-nav__footer,
-    .toc-sidebar { display: none; }
-  }
 }
 
 // =============================================================================

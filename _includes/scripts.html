@@ -1,19 +1,19 @@
 <script>
 (function() {
-  // Theme toggle
-  var toggle = document.getElementById('theme-toggle');
-  var iconSun = toggle.querySelector('.icon-sun');
-  var iconMoon = toggle.querySelector('.icon-moon');
+  var toggles = document.querySelectorAll('[data-theme-toggle]');
+  if (toggles.length === 0) return;
 
   function updateIcons() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    iconSun.style.display = isDark ? 'none' : 'block';
-    iconMoon.style.display = isDark ? 'block' : 'none';
+    for (var i = 0; i < toggles.length; i++) {
+      var sun  = toggles[i].querySelector('.icon-sun');
+      var moon = toggles[i].querySelector('.icon-moon');
+      if (sun)  sun.style.display  = isDark ? 'none'  : 'block';
+      if (moon) moon.style.display = isDark ? 'block' : 'none';
+    }
   }
 
-  updateIcons();
-
-  toggle.addEventListener('click', function() {
+  function flipTheme() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     if (isDark) {
       document.documentElement.removeAttribute('data-theme');
@@ -23,17 +23,12 @@
       localStorage.setItem('theme', 'dark');
     }
     updateIcons();
-  });
+  }
 
-  // Mobile nav toggle
-  var navToggle = document.getElementById('nav-toggle');
-  var nav = document.getElementById('site-nav');
-
-  navToggle.addEventListener('click', function() {
-    nav.classList.toggle('nav-open');
-    var expanded = nav.classList.contains('nav-open');
-    navToggle.setAttribute('aria-expanded', expanded);
-  });
+  updateIcons();
+  for (var i = 0; i < toggles.length; i++) {
+    toggles[i].addEventListener('click', flipTheme);
+  }
 })();
 </script>
 <script>
@@ -49,43 +44,45 @@
 })();
 </script>
 <script>
-// Article TOC sidebar — scan h2/h3 headings and build nav
+// Article TOC — populate desktop sidebar and mobile <details> from one builder
 (function() {
   var sidebar = document.querySelector('.toc-sidebar');
+  var mobile  = document.querySelector('.toc-mobile nav');
   var content = document.querySelector('.post-content');
-  if (!sidebar || !content) return;
+  if (!content) return;
+  if (!sidebar && !mobile) return;
 
   var headings = content.querySelectorAll('h2, h3');
   if (headings.length < 2) return;
 
-  // Ensure each heading has an id for anchor links
   for (var i = 0; i < headings.length; i++) {
     if (!headings[i].id) {
       headings[i].id = 'heading-' + i;
     }
   }
 
-  // Build TOC markup
-  var html = '<div class="toc-title">On this page</div><ol>';
+  var listHtml = '<ol>';
   for (var i = 0; i < headings.length; i++) {
     var h = headings[i];
     var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
-    html += '<li' + cls + '><a href="#' + h.id + '">' + h.textContent + '</a></li>';
+    listHtml += '<li' + cls + '><a href="#' + h.id + '">' + h.textContent + '</a></li>';
   }
-  html += '</ol>';
-  sidebar.innerHTML = html;
+  listHtml += '</ol>';
 
-  // Scroll tracking via IntersectionObserver
-  var links = sidebar.querySelectorAll('a');
+  if (sidebar) sidebar.innerHTML = '<div class="toc-title">On this page</div>' + listHtml;
+  if (mobile)  mobile.innerHTML  = listHtml;
+
+  var allLinks = document.querySelectorAll('.toc-sidebar a, .toc-mobile nav a');
   var headingMap = {};
-  for (var i = 0; i < links.length; i++) {
-    headingMap[links[i].getAttribute('href').slice(1)] = links[i];
+  for (var i = 0; i < allLinks.length; i++) {
+    var id = allLinks[i].getAttribute('href').slice(1);
+    if (!headingMap[id]) headingMap[id] = [];
+    headingMap[id].push(allLinks[i]);
   }
 
   var currentActive = null;
 
   var observer = new IntersectionObserver(function(entries) {
-    // Find the topmost visible heading
     var visible = [];
     for (var i = 0; i < entries.length; i++) {
       if (entries[i].isIntersecting) {
@@ -94,20 +91,21 @@
     }
 
     if (visible.length > 0) {
-      // Pick the one closest to the top
       visible.sort(function(a, b) {
         return a.boundingClientRect.top - b.boundingClientRect.top;
       });
       var id = visible[0].target.id;
       if (currentActive !== id) {
         if (currentActive && headingMap[currentActive]) {
-          headingMap[currentActive].classList.remove('toc-active');
+          headingMap[currentActive].forEach(function(a) { a.classList.remove('toc-active'); });
         }
         currentActive = id;
         if (headingMap[id]) {
-          headingMap[id].classList.add('toc-active');
-          // Scroll the TOC sidebar to keep active link visible
-          headingMap[id].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          headingMap[id].forEach(function(a) { a.classList.add('toc-active'); });
+          if (sidebar) {
+            var sidebarLink = sidebar.querySelector('a.toc-active');
+            if (sidebarLink) sidebarLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
         }
       }
     }
@@ -120,9 +118,8 @@
     observer.observe(headings[i]);
   }
 
-  // Smooth scroll on click
-  sidebar.addEventListener('click', function(e) {
-    var link = e.target.closest('a');
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.toc-sidebar a, .toc-mobile nav a');
     if (!link) return;
     e.preventDefault();
     var target = document.getElementById(link.getAttribute('href').slice(1));
