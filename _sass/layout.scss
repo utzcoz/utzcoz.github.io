@@ -427,9 +427,7 @@
 }
 
 .post-header {
-  padding-bottom: $spacing-xl;
-  border-bottom: 1px solid var(--color-outline-variant);
-  margin-bottom: $spacing-xl;
+  margin-bottom: $spacing-lg;
 
   &__back {
     display: inline-block;
