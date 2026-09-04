@@ -19,8 +19,17 @@ Quest-class headsets render through the host compositor without a port.
 
 This post describes the tool as shipped in v2.8.9 (tool) and v2.8.3 (image),
 the builds from 2026-08-30, with earlier versions back to v2.7.7 noted where
-they differ. The README is a page long, so the material comes from the bash
-scripts, init `.rc` files, and strings in the binaries.
+they differ.
+
+The README is a page long, so the analysis comes from the depot itself. The
+launcher and its library are plain bash, and the overlay files are init
+scripts and JSON, so those were read directly. The image was examined with
+`strings` on the HAL binaries, `unzip` plus `strings` on the dex files inside
+the framework jars, and the build and vendor property files. Changes between
+releases were found by file timestamps, since Steam rewrites only the files
+that changed, and then by diffing the dex strings of the jars that moved.
+Provenance was settled by comparing the shipped HALs against the upstream
+Waydroid repositories, as the last section of the Waydroid comparison shows.
 
 Two things could not be checked directly.
 
@@ -490,33 +499,31 @@ contents.
 ### Checking that the HAL is stock
 
 A rebuild is never byte-identical, so "unmodified" has to be shown by
-comparing content rather than hashes. The claim above rests on three checks
-against the upstream `hwcomposer` source: the binary reads exactly the 11
-`persist.waydroid.*` properties the source reads, it links exactly the Wayland
-protocols the source binds, and it contains no `lepton`, `valve`, or `steam`
-string. A patch of any size almost always adds or changes at least one log
-message, property, or protocol name, so this catches additions, but not a
-silent logic change.
+comparing content rather than hashes. The shipped `hwcomposer.waydroid.so`
+was compared against upstream `android_hardware_waydroid` at the
+`lineage-18.1` tip (commit `d520fcb`, 2026-03-02):
 
-A stronger check is to diff against Waydroid's own prebuilt `lineage-18.1`
-`waydroid_arm64` vendor image from SourceForge, which comes from the same
-tree:
+- The set of `persist.waydroid.*` properties the binary reads is identical to
+  the set the source reads, 11 of 11.
+- Every Wayland protocol interface named in the binary is bound in the
+  source, and the reverse holds.
+- The binary's `DT_NEEDED` list matches the `shared_libs` in the upstream
+  `Android.bp` entry for entry, down to the three `vendor.waydroid.window`
+  versions.
+- Of 58 `ALOG` message strings in the source, 54 are in the binary. The four
+  that are not all sit behind `if (new ... == nullptr)` checks, which the
+  compiler removes as dead code. Log strings in the binary that are not in the
+  source all belong to the statically linked `libxkbcommon` and
+  `libwayland_client`, which `Android.bp` lists as `static_libs`.
+- There is no `lepton`, `valve`, or `steam` string anywhere in the file.
 
-```sh
-nm -D --defined-only lepton.so   | awk '{print $3}' | sort > a.sym
-nm -D --defined-only waydroid.so | awk '{print $3}' | sort > b.sym
-diff a.sym b.sym
-strings -n 4 lepton.so   | sort -u > a.str
-strings -n 4 waydroid.so | sort -u > b.str
-diff a.str b.str
-readelf -S -d lepton.so > a.elf; readelf -S -d waydroid.so > b.elf
-diff a.elf b.elf
-```
-
-Matching symbol sets, string sets, and `DT_NEEDED` lists, with `.text` sizes
-within compiler noise, means the same code. Function-level tools such as
-BinDiff on the two files would settle it completely, and a public source tree
-would make all of this unnecessary.
+A patch of any size almost always adds or changes a log message, a property,
+a protocol, or a dependency, so this is strong evidence of a stock build. It
+does not rule out a silent logic change with no new strings. Two things would
+close that gap: diffing symbol tables and disassembly against Waydroid's own
+prebuilt `lineage-18.1` `waydroid_arm64` vendor image from SourceForge, which
+comes from the same tree, or a public source tree for the image, which the
+README says exists.
 
 ## Security model
 
