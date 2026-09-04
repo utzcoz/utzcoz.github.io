@@ -34,8 +34,8 @@ Two things could not be checked directly.
 
 | Path | What it is |
 | --- | --- |
-| `lepton`, `liblepton/` | The launcher and about 3,400 lines of bash: mounting, networking, properties, baking, Vulkan layers, debugging |
-| `images/rootfs/` | Android 11 system image, `lineage_lepton_arm64_only-userdebug`, arm64 only, test keys, no Google apps |
+| `lepton`, `liblepton/` | The launcher and about 3,500 lines of bash: mounting, networking, properties, baking, Vulkan layers, debugging, plus a small `apk_extractor` tool |
+| `images/rootfs/` | Android 11 system image, `lineage_lepton_arm64_only-userdebug`, arm64 only, test keys |
 | `images/rootfs_overlay/` | A few files bind-mounted over the rootfs at launch |
 | `sysbake/` | A pre-baked `/data` tree so first boot skips package scans and dexopt |
 | `sysbake.xattrs` | The `user.*` xattrs of `sysbake/`, restored at launch because Steam depots cannot carry xattrs |
@@ -100,10 +100,11 @@ It is built from Waydroid's tree as a `lepton_arm64_only` Lineage 18.1 device:
 `vendor/waydroid.prop`, `hwcomposer.waydroid.so`, minigbm gralloc, plus a QTI
 display and gralloc stack for Adreno that upstream lacks.
 
-Waydroid's `base-patches-30` framework patches are compiled in. Searching
-`framework.jar`, `services.jar`, `SystemUI.apk`, and `framework-res.apk` for
-`BoringdroidManager`, `getPackageOverlayWindowingMode`, `back_window`, and
-`boring_config_navBarLayout` finds all of them. Those are the Boringdroid
+Waydroid's `base-patches-30` framework patches are compiled in. The markers
+are all in the shipped binaries: `BoringdroidManager` and
+`getPackageOverlayWindowingMode` in `framework.jar` and `services.jar`,
+`back_window` and `decor_back_button` in `framework-res.apk`, and
+`boring_config_navBarLayout` in `SystemUI.apk`. Those are the Boringdroid
 freeform-window patches, and in Lepton they serve the flatscreen path.
 
 Valve added exactly two patches on top, both in `services.jar`. Diffing the dex
@@ -116,7 +117,9 @@ strings across releases finds them.
   mounted at `/lepton/steam.pipe`. The container has no browser, so this is how
   an EULA link ends up in the Steam overlay.
 
-The v2.8.3 framework jars are byte-identical to v2.7.15's.
+The v2.8.3 image's framework jars still carry their v2.7.15 timestamps
+(`framework.jar` from 2026-08-01, `services.jar` from 2026-08-19), and Steam
+only rewrites changed files, so neither patch has moved since.
 
 ## Launch-time composition
 
@@ -125,9 +128,9 @@ Steam-verifiable. Each launch composes its own view of the system out of mounts.
 
 ### Per-file bind mounts
 
-The rootfs cannot take several overlayfs lowerdirs, so `mounting.sh:78-91`
-walks `images/rootfs_overlay/` and the host's `/usr/share/guestos/android/` and
-bind-mounts every file in them, read-only, over the rootfs.
+Rather than layering the rootfs, `mounting.sh:78-91` walks
+`images/rootfs_overlay/` and the host's `/usr/share/guestos/android/` and
+bind-mounts every file in them, one by one, read-only, over the rootfs.
 
 That is how `binder.rc`, the audio service override, the `cmd` wrapper, the
 OpenXR runtime manifest, and Valve's Vulkan layer libraries get in.
@@ -154,7 +157,8 @@ A few files are generated per launch and mounted over image paths:
 
 Incompatible HAL services are switched off by mounting empty `.rc` files (and
 an empty VINTF manifest) over their definitions, chosen by GPU mode. One image
-serves Mesa/GBM, Qualcomm, and software rendering (`mounting.sh:367-388`).
+serves Turnip, the Qualcomm Adreno blob, and software rendering
+(`mounting.sh:367-388`).
 
 ### Content mounts
 
@@ -162,8 +166,10 @@ The rest is content: the APK, save data, the shader cache at `/data/shaders`,
 the SteamVR runtime at `/data/steamvr/*`, the Wayland and Pulse sockets, and the
 Steam pipe.
 
-Since v2.8 the host's `~/Documents`, `~/Videos`, `~/Downloads`, and every Steam
-library root are mounted too, all read-write.
+The Steam client's install directory and every Steam library root are mounted
+read-write at their host paths, and since v2.8 so are the host's
+`~/Documents`, `~/Videos`, and `~/Downloads`, which appear as the guest's
+external storage.
 
 ### Launch sequence
 
@@ -180,7 +186,7 @@ sequenceDiagram
     L->>C: podman run with overlays and mounts
     C->>C: boot Android, zygote inherits VR/Steam env
     C-->>L: /data/lepton-onboot appears
-    L->>C: first run: install APK via cmd wrapper
+    L->>C: first run: adb install (hooked by cmd wrapper)
     L->>C: am start -S pkg/activity
     C->>G: fork from zygote
     G->>S: libsteamclient to 169.254.233.1:57343
@@ -308,14 +314,14 @@ Activating a layer takes two steps.
 2. Android's GPU debug settings are set:
 
 ```sh
-settings put global gpu_debug_layers  VK_LAYER_fdm_injection
-settings put global gpu_debug_app     $(getprop lepton.active_app_id)
+settings put global gpu_debug_app $(getprop lepton.active_app_id)
 settings put global enable_gpu_debug_layers 1
+settings put global gpu_debug_layers VK_LAYER_fossilize:VK_LAYER_fdm_injection
 ```
 
-Foveation also has an OpenXR half, an implicit API layer manifest under
-`/vendor/etc/openxr/`. The overlay walk mounts it only when the Vulkan half is
-enabled (`mounting.sh:84`). One without the other either does nothing or
+Foveation also has an OpenXR half, an implicit API layer manifest named
+`XrApiLayer_VALVE_fdm_injection.json` in the host overlay. The overlay walk
+mounts it only when the Vulkan half is enabled (`mounting.sh:84`). One without the other either does nothing or
 crashes the swapchain.
 
 ### The `cmd` wrapper
@@ -338,13 +344,17 @@ One typo: the `adb install` fallback saves the package name under
 
 ### Graphics
 
-SurfaceFlinger runs on Zink. `properties.sh:95-97` forces
-`service.sf.present_timestamp=0` with the comment "because our SurfaceFlinger
-is run using Zink".
+SurfaceFlinger runs on Zink: `mesa.loader.driver.override=zink`, and
+`properties.sh:94-97` forces `service.sf.present_timestamp=0` with the comment
+"Our SurfaceFlinger is run using Zink. Thus, set this ourselves to avoid a
+deadlock."
 
-On Qualcomm, `LEPTON_USE_QCOM_DRIVER=true` selects Turnip and the QTI gralloc.
-Elsewhere it is minigbm over GBM. `TU_DEBUG`, `ZINK_*`, and
-`MESA_SHADER_CACHE_*` pass from the host environment into zygote. Because
+The default driver is Turnip (`ro.hardware.vulkan=freedreno`) with minigbm
+gralloc. `LEPTON_USE_QCOM_DRIVER=true` switches to Qualcomm's Adreno blob
+(`ro.hardware.vulkan=adreno`, ANGLE for GLES) with the QTI gralloc and display
+stack, and `LEPTON_FORCE_SOFTWARE=true` uses SwiftShader. `_TU_DEBUG`, `ZINK_DEBUG`,
+`MESA_SHADER_CACHE_MAX_SIZE`, and two dozen other Turnip and Zink variables pass
+from the host environment into zygote. Because
 gralloc buffers are dma-bufs, both display paths are zero-copy.
 
 ### Audio
@@ -352,7 +362,7 @@ gralloc buffers are dma-bufs, both display paths are zero-copy.
 Audio is Waydroid's Pulse bridge with one Valve change. `z_audio.rc` overrides
 the HAL service to run as root, which under the rootless mapping means the host
 user, so it can open the host socket. The comment reads "`# Lepton: We run this
-as root`". It also sets `ioprio rt 4` and high-performance task profiles.
+as root:root which maps to the host user`". It also sets `ioprio rt 4` and high-performance task profiles.
 
 ### Input
 
@@ -415,8 +425,10 @@ The host's `androidarm64/libsteamclient.so` is bind-mounted into `/system/lib64`
 and whitelisted in `public.libraries.txt`. `lepton.steamclient.path` tells the
 game's `libsteam_api.so` where it is.
 
-Save data lives under the compat-data path. On first run it is mounted at a
-staging path so APK installation cannot wipe restored saves.
+Save data lives on the host at `<compat-data>/internal/<package>`. Once the
+app bake is done, `continue_boot_after_bake` replaces `/data/data/<package>`
+inside the container with a symlink to that directory, so an APK reinstall
+cannot wipe it.
 
 ### sysbake
 
@@ -432,8 +444,9 @@ staging path so APK installation cannot wipe restored saves.
   update forces a fresh install. An exit within 30 seconds of start also clears
   the bake.
 
-If the bake is missing, the user is sent to Steam's "Verify installed files",
-which makes the depot itself the recovery mechanism. Since v2.8 `sysbake`
+If the bake is missing, the message is "Please verify the files of Lepton in
+Settings->Properties->Installed files", which makes the depot itself the
+recovery mechanism. Since v2.8 `sysbake`
 refuses to run outside CI.
 
 ### Developer surface
@@ -456,7 +469,7 @@ multi-window UX. Lepton keeps the first and replaces the second.
 | LXC + Python host tool | replaced by podman + bash |
 | Multi-window UX, clipboard, notifications | dropped |
 | Sensors, camera bridging | stubbed |
-| GApps, ARM translation | dropped |
+| ARM translation (libhoudini/libndk) | dropped |
 | LXC bridge networking | replaced by pasta |
 
 The reasons follow from what Steam needs.
@@ -465,14 +478,45 @@ The reasons follow from what Steam needs.
   Android session, hence one container per launch.
 - An OpenXR title never presents through SurfaceFlinger. Waydroid's whole
   display path is optional here.
-- Steam already provides what GApps would.
 - A Steam-shipped product needs deterministic content. A fixed rootfs plus a
   pre-baked `/data` gives that; a stateful first boot does not.
 
 Compared against upstream `android_hardware_waydroid`, the shipped guest HALs
-are stock. None of them contains a `lepton`, `valve`, or `steam` string. Valve's own code is the launcher, `sysbake`, the OpenXR and OpenVR
-redirection, the FDM and RPO layers and the layer system, the Steamworks bridge,
-and the overlay contents.
+are stock. None of them contains a `lepton`, `valve`, or `steam` string. Valve's
+own code is the launcher, `sysbake`, the OpenXR and OpenVR redirection, the FDM
+and RPO layers and the layer system, the Steamworks bridge, and the overlay
+contents.
+
+### Checking that the HAL is stock
+
+A rebuild is never byte-identical, so "unmodified" has to be shown by
+comparing content rather than hashes. The claim above rests on three checks
+against the upstream `hwcomposer` source: the binary reads exactly the 11
+`persist.waydroid.*` properties the source reads, it links exactly the Wayland
+protocols the source binds, and it contains no `lepton`, `valve`, or `steam`
+string. A patch of any size almost always adds or changes at least one log
+message, property, or protocol name, so this catches additions, but not a
+silent logic change.
+
+A stronger check is to diff against Waydroid's own prebuilt `lineage-18.1`
+`waydroid_arm64` vendor image from SourceForge, which comes from the same
+tree:
+
+```sh
+nm -D --defined-only lepton.so   | awk '{print $3}' | sort > a.sym
+nm -D --defined-only waydroid.so | awk '{print $3}' | sort > b.sym
+diff a.sym b.sym
+strings -n 4 lepton.so   | sort -u > a.str
+strings -n 4 waydroid.so | sort -u > b.str
+diff a.str b.str
+readelf -S -d lepton.so > a.elf; readelf -S -d waydroid.so > b.elf
+diff a.elf b.elf
+```
+
+Matching symbol sets, string sets, and `DT_NEEDED` lists, with `.text` sizes
+within compiler noise, means the same code. Function-level tools such as
+BinDiff on the two files would settle it completely, and a public source tree
+would make all of this unnecessary.
 
 ## Security model
 
@@ -519,11 +563,8 @@ largest so far.
   `head -n0 >/dev/null`, so it always runs `am start -n ""`. The wait-for-match
   idiom was pasted where a capture belonged.
 - `system/apex/` holds directories, not `.apex` images. There is no `apexd` in
-  the container. A debug verb relies on this to symlink `com.android.runtime`
-  so `/system/bin/sh` runs before Android boots.
-- `settings_{global,system,secure}.xml` are deleted from the bake on cleanup.
-  That is what stops leftover `gpu_debug_*` settings leaking into the next
-  session.
+  the container. `start_early_debug_container` relies on this: it symlinks
+  `com.android.runtime` so `/system/bin/sh` runs before Android boots.
 - `debug.sh` uses app ID 3029110, with a hidden dev app 3056000 and a test title
   3418470 installed as "Unreal VR Test 🐸".
 
