@@ -211,6 +211,21 @@
 
     .dot { opacity: 0.5; }
   }
+
+  &__tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px $spacing-md;
+    margin-top: $spacing-sm;
+    font-size: $font-size-xs;
+    color: var(--color-on-surface-variant);
+  }
+}
+
+.tag::before {
+  content: "#";
+  opacity: 0.6;
 }
 
 // Left table of contents: fixed in the left margin on wide screens only.
