@@ -53,6 +53,15 @@
   if (!sidebar && !mobile) return;
 
   var headings = content.querySelectorAll('h2, h3');
+
+  // Posts that number their own headings ("1. Introduction") keep them;
+  // everything else gets generated section numbers from CSS counters.
+  var firstH2 = content.querySelector('h2');
+  if (firstH2 && /^\s*(\d+|[IVX]+)[.)]?\s/.test(firstH2.textContent)) {
+    var layout = content.closest('.post-layout') || document.body;
+    layout.classList.add('has-manual-numbers');
+  }
+
   if (headings.length < 2) return;
 
   for (var i = 0; i < headings.length; i++) {
@@ -237,7 +246,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var hint = document.createElement('div');
     hint.className = 'mermaid-zoom-hint';
-    hint.textContent = 'Scroll to zoom \u00b7 Drag to pan \u00b7 Esc to close';
+    var touch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    hint.textContent = touch
+      ? 'Pinch to zoom \u00b7 Drag to pan \u00b7 Tap \u00d7 to close'
+      : 'Scroll to zoom \u00b7 Drag to pan \u00b7 Esc to close';
 
     overlay.appendChild(content);
     overlay.appendChild(closeBtn);
@@ -261,8 +273,17 @@ document.addEventListener('DOMContentLoaded', function() {
       svg.style.maxWidth = 'none';
     }
 
-    // State: tx/ty are pan offsets in px, (0,0) = centered via flexbox
+    // Open at a scale that fits the browser window (never below 1:1 unless
+    // the diagram is larger than the viewport).
     var scale = 1;
+    if (origW && origH) {
+      var fitW = (window.innerWidth * 0.92) / origW;
+      var fitH = (window.innerHeight * 0.88) / origH;
+      scale = Math.min(fitW, fitH);
+      scale = Math.min(Math.max(scale, 0.1), 8);
+    }
+
+    // State: tx/ty are pan offsets in px, (0,0) = centered via flexbox
     var tx = 0, ty = 0;
     var dragging = false;
     var startX, startY, startTx, startTy;
@@ -284,6 +305,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     }
+
+    applyTransform();
 
     // Wheel zoom — centered on viewport center
     overlay.addEventListener('wheel', function(e) {

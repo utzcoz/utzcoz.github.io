@@ -1,88 +1,22 @@
 @use "variables" as *;
 
 // =============================================================================
-// Mobile layout (≤768px)
-//
-// Additive layer on top of layout.scss. Mobile-only DOM elements default to
-// display: none here, then are revealed inside the @media block. Desktop
-// stylesheet (layout.scss) is not modified by these rules.
+// Small screens: collapsible table of contents and wrapped code.
 // =============================================================================
 
-:root {
-  --mobile-tabbar-height: 56px;
-}
+// Hidden wherever the left TOC column is shown.
+.toc-mobile { display: none; }
 
-// Default-hide all mobile-only elements at every viewport width.
-.mobile-tabbar { display: none; }
-.home-hero     { display: none; }
-.toc-mobile    { display: none; }
-
-@media (max-width: $bp-tablet) {
-  // ---------------------------------------------------------------------------
-  // App-shell: collapse to single column, hide side-nav.
-  // ---------------------------------------------------------------------------
-  .app-shell { grid-template-columns: 1fr; }
-  .site-nav  { display: none; }
-
-  // Reserve space for the fixed bottom bar so content doesn't sit under it.
-  .site-main {
-    padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
-  }
-
-  // ---------------------------------------------------------------------------
-  // Home hero — brand block surfaced on the home page.
-  // ---------------------------------------------------------------------------
-  .home-hero {
-    display: block;
-    padding: $spacing-xl 0 $spacing-lg;
-    margin: 0 0 $spacing-md;
-    border-bottom: 1px solid var(--color-outline-variant);
-
-    .brand__name {
-      font-size: 1.6rem;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-      display: block;
-    }
-
-    .brand__sub {
-      font-size: 14.5px;
-      margin-top: 8px;
-      line-height: 1.5;
-    }
-
-    .brand__projects {
-      font-size: 13px;
-      margin-top: 12px;
-    }
-
-    .brand__social {
-      margin-top: 16px;
-
-      a {
-        width: 36px;
-        height: 36px;
-
-        svg { width: 18px; height: 18px; }
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // Article TOC — collapsible <details> above the article body.
-  // ---------------------------------------------------------------------------
+@media (max-width: $bp-toc-min - 1) {
   .toc-mobile {
     display: block;
     margin: 0 0 $spacing-lg;
     border: 1px solid var(--color-outline-variant);
-    border-radius: $radius-sm;
-    background: var(--color-surface-container);
     font-size: $font-size-sm;
 
     summary {
       padding: $spacing-sm $spacing-md;
-      font-weight: 500;
-      color: var(--color-on-surface);
+      font-weight: 600;
       cursor: pointer;
       user-select: none;
       list-style: none;
@@ -91,16 +25,14 @@
       gap: $spacing-sm;
 
       &::-webkit-details-marker { display: none; }
-
       &::before {
-        content: "▸";
+        content: "\25B8";
         font-size: 11px;
         color: var(--color-on-surface-variant);
-        transition: transform $duration-fast $easing-standard;
       }
     }
 
-    &[open] summary::before { transform: rotate(90deg); }
+    &[open] summary::before { content: "\25BE"; }
 
     nav {
       padding: 0 $spacing-md $spacing-sm;
@@ -111,58 +43,69 @@
       list-style: none;
       margin: $spacing-sm 0 0;
       padding: 0;
+      counter-reset: sec;
     }
 
     li { margin: 0; }
 
     a {
       display: block;
-      padding: 4px 8px;
+      padding: 3px 0;
       color: var(--color-on-surface-variant);
       text-decoration: none;
-      border-left: 2px solid transparent;
       line-height: 1.4;
-
       &:hover { color: var(--color-on-surface); }
-
-      &.toc-active {
-        color: var(--color-primary);
-        border-left-color: var(--color-primary);
-        font-weight: 500;
-      }
+      &.toc-active { color: var(--color-primary); }
     }
 
-    .toc-h3 a {
-      padding-left: 24px;
-      font-size: $font-size-xs;
+    li:not(.toc-h3) {
+      counter-increment: sec;
+      counter-reset: sub;
+      a::before { content: counter(sec) "\2002"; }
+    }
+
+    .toc-h3 {
+      counter-increment: sub;
+      a { padding-left: 18px; font-size: $font-size-xs; }
+      a::before { content: counter(sec) "." counter(sub) "\2002"; }
     }
   }
+}
 
-  // ---------------------------------------------------------------------------
-  // Tighter reading column on phones.
-  // ---------------------------------------------------------------------------
-  .post {
-    padding: $spacing-lg $spacing-md $spacing-2xl;
+@media (max-width: $bp-tablet) {
+  // Top bar wraps onto two lines: brand, then the links.
+  .site-header__inner {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 10px $spacing-md;
+    gap: 4px $spacing-md;
   }
 
-  .page {
-    padding: $spacing-lg $spacing-md $spacing-xl;
+  .site-header__brand { flex: 1 0 100%; }
+
+  .site-header__nav {
+    flex-wrap: wrap;
+    gap: $spacing-md;
   }
 
-  .post-header__title { font-size: 1.6rem; }
-  .featured__title    { font-size: 1.5rem; }
+  body { font-size: 16px; }
+  .post-content, .prose { font-size: 16px; }
 
-  .topbar {
-    padding: $spacing-sm $spacing-md;
+  // Tables scroll sideways inside their wrapper instead of breaking
+  // identifiers mid-word.
+  .table-wrapper {
+    margin-left: -$spacing-md;
+    margin-right: -$spacing-md;
+    padding: 0 $spacing-md;
   }
 
-  // ---------------------------------------------------------------------------
-  // Wrap long lines instead of scrolling horizontally.
-  //
-  // Code blocks, inline code, long URLs, and unbroken identifiers all become
-  // horizontal scroll triggers on a phone-sized viewport. On mobile we prefer
-  // wrapping so the reader never has to drag a snippet sideways.
-  // ---------------------------------------------------------------------------
+  table code {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  // Wrap long lines instead of scrolling sideways on phones.
   pre {
     white-space: pre-wrap;
     word-break: break-word;
@@ -179,75 +122,12 @@
   .post-content,
   .prose {
     overflow-wrap: anywhere;
-
     code { overflow-wrap: anywhere; }
   }
+}
 
-  // ---------------------------------------------------------------------------
-  // Bottom tab bar.
-  // ---------------------------------------------------------------------------
-  .mobile-tabbar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 50;
-    display: flex;
-    align-items: stretch;
-    justify-content: space-around;
-    height: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
-    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-    backdrop-filter: saturate(140%) blur(8px);
-    -webkit-backdrop-filter: saturate(140%) blur(8px);
-    border-top: 1px solid var(--color-outline-variant);
-
-    &__tab {
-      flex: 1 1 0;
-      min-width: 44px;
-      min-height: 44px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      background: none;
-      border: 0;
-      cursor: pointer;
-      color: var(--color-on-surface-variant);
-      text-decoration: none;
-      font-family: $font-family-serif;
-      font-size: 11px;
-      letter-spacing: 0.02em;
-      padding: 6px 4px;
-      transition: color $duration-fast $easing-standard;
-
-      &:hover { color: var(--color-on-surface); text-decoration: none; }
-
-      &[aria-current="page"] {
-        color: var(--color-primary);
-        position: relative;
-
-        &::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: 12px;
-          right: 12px;
-          height: 2px;
-          background: var(--color-primary);
-          border-radius: 0 0 2px 2px;
-        }
-      }
-    }
-
-    &__icon {
-      width: 22px;
-      height: 22px;
-    }
-
-    &__label {
-      line-height: 1;
-    }
-  }
+// Posts that number their own headings: no generated numbers in either TOC.
+.has-manual-numbers .toc-sidebar li a::before,
+.has-manual-numbers .toc-mobile li a::before {
+  content: none;
 }

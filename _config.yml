@@ -37,7 +37,7 @@ plugins:
   - jekyll-paginate
 
 # Pagination
-paginate: 10
+paginate: 15
 paginate_path: "/page/:num/"
 
 # Social links (used by header/footer)

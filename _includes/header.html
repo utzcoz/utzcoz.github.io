@@ -1,22 +1,18 @@
-<aside class="site-nav" id="site-nav" aria-label="Primary navigation">
-  <div class="site-nav__inner">
-    {%- include brand.html -%}
-
-    <nav class="site-nav__links" aria-label="Sections">
-      <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Home</a>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" href="{{ '/' | relative_url }}">{{ site.title | default: site.author.name }}</a>
+    <nav class="site-header__nav" aria-label="Primary navigation">
+      <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Posts</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>About</a>
-      {%- if site.feed -%}
-        <a href="{{ '/feed.xml' | relative_url }}">Feed</a>
-      {%- endif -%}
-    </nav>
-
-    {%- if page.layout == 'post' -%}
-      <nav class="toc-sidebar" aria-label="Table of contents"></nav>
-    {%- endif -%}
-
-    <div class="site-nav__footer">
-      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      {%- for link in site.social_links -%}
+        {%- if link.platform == "github" -%}
+          <a href="{{ link.user_url }}" target="_blank" rel="noopener">GitHub</a>
+        {%- elsif link.platform == "x" or link.platform == "twitter" -%}
+          <a href="{{ link.user_url }}" target="_blank" rel="noopener">X</a>
+        {%- endif -%}
+      {%- endfor -%}
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode" type="button">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -27,11 +23,10 @@
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
-      <p class="site-nav__copyright">&copy; 2018&ndash;{{ 'now' | date: "%Y" }} {{ site.author.name }}. Built with Jekyll.</p>
-    </div>
+    </nav>
   </div>
-</aside>
+</header>

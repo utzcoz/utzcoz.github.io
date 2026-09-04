@@ -2,65 +2,34 @@
 layout: default
 ---
 
-<div class="page page--home">
-  {%- include home-hero.html -%}
+<div class="container page--home">
+  {%- if site.author.bio or site.author.projects -%}
+  <section class="home-intro" aria-label="About this blog">
+    <p>
+      {{ site.author.bio }}
+      {%- if site.author.projects %}
+      Working on
+      {%- for project in site.author.projects %}
+        <a href="{{ project.url }}" target="_blank" rel="noopener">{{ project.name }}</a>{%- if forloop.last -%}.{%- else -%},{%- endif -%}
+      {%- endfor -%}
+      {%- endif %}
+    </p>
+  </section>
+  {%- endif -%}
+
   {{ content }}
 
   {%- assign posts = paginator.posts | default: site.posts -%}
-  {%- assign featured = posts | first -%}
-
-  {%- if featured -%}
-  <article class="featured">
-    {%- if featured.tags.size > 0 -%}
-    <div class="featured__tags">
-      {%- for tag in featured.tags limit:3 -%}
-        <span class="tag">{{ tag }}</span>
-      {%- endfor -%}
-    </div>
-    {%- endif -%}
-    <h2 class="featured__title">
-      <a href="{{ featured.url | relative_url }}">{{ featured.title | escape }}</a>
-    </h2>
-    <p class="featured__excerpt">{{ featured.content | strip_html | truncatewords: 90 }}</p>
-    <div class="featured__meta">
-      <time datetime="{{ featured.date | date_to_xmlschema }}">
-        {{ featured.date | date: "%b %-d, %Y" }}
-      </time>
-      <span class="dot">&middot;</span>
-      {%- assign words = featured.content | number_of_words -%}
-      {%- assign minutes = words | divided_by: 200 -%}
-      {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif -%}
-      <span>{{ minutes }} min read</span>
-      <span class="dot">&middot;</span>
-      <a class="featured__readmore" href="{{ featured.url | relative_url }}">Read more &rarr;</a>
-    </div>
-  </article>
-  {%- endif -%}
 
   <section class="post-list" aria-label="Posts">
-    <div class="post-list__head">
-      <h2 class="post-list__heading">Recent posts</h2>
-      <span class="post-list__count">{{ site.posts.size }} total</span>
-    </div>
-
-    {%- for post in posts offset:1 -%}
+    {%- for post in posts -%}
     <article class="post-row">
+      <h2 class="post-row__title">
+        <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+      </h2>
       <time class="post-row__date" datetime="{{ post.date | date_to_xmlschema }}">
-        {{ post.date | date: "%Y-%m-%d" }}
+        {{ post.date | date: "%-d %b %Y" }}
       </time>
-      <div class="post-row__main">
-        <h3 class="post-row__title">
-          <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-        </h3>
-        <p class="post-row__excerpt">{{ post.content | strip_html | truncatewords: 60 }}</p>
-      </div>
-      {%- if post.tags.size > 0 -%}
-      <div class="post-row__tags">
-        {%- for tag in post.tags limit:3 -%}
-          <span class="tag">{{ tag }}</span>
-        {%- endfor -%}
-      </div>
-      {%- endif -%}
     </article>
     {%- endfor -%}
   </section>
@@ -68,15 +37,15 @@ layout: default
   {%- if paginator.total_pages > 1 -%}
   <nav class="pagination" aria-label="Pagination">
     {%- if paginator.previous_page -%}
-      <a href="{{ paginator.previous_page_path | relative_url }}">&laquo; Newer</a>
+      <a href="{{ paginator.previous_page_path | relative_url }}">&larr; Newer</a>
     {%- else -%}
-      <span class="disabled">&laquo; Newer</span>
+      <span class="disabled">&larr; Newer</span>
     {%- endif -%}
     <span class="page-number">{{ paginator.page }} / {{ paginator.total_pages }}</span>
     {%- if paginator.next_page -%}
-      <a href="{{ paginator.next_page_path | relative_url }}">Older &raquo;</a>
+      <a href="{{ paginator.next_page_path | relative_url }}">Older &rarr;</a>
     {%- else -%}
-      <span class="disabled">Older &raquo;</span>
+      <span class="disabled">Older &rarr;</span>
     {%- endif -%}
   </nav>
   {%- endif -%}

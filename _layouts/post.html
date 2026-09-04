@@ -2,35 +2,30 @@
 layout: default
 ---
 
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-layout">
+  <aside class="post-toc" aria-label="Table of contents">
+    <nav class="toc-sidebar"></nav>
+  </aside>
+
+<article class="post container" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
-    <a class="post-header__back" href="{{ '/' | relative_url }}">&larr; Back to posts</a>
-    {%- if page.tags.size > 0 -%}
-    <div class="post-header__tags">
-      {%- for tag in page.tags -%}
-        <span class="tag">{{ tag }}</span>
-      {%- endfor -%}
-    </div>
-    {%- endif -%}
     <h1 class="post-header__title" itemprop="name headline">{{ page.title | escape }}</h1>
     <div class="post-header__meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {{ page.date | date: "%b %-d, %Y" }}
-      </time>
+      <span itemprop="author">{{ page.author | default: site.author.name }}</span>
       <span class="dot">&middot;</span>
+      <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+        {{ page.date | date: "%-d %B %Y" }}
+      </time>
       {%- assign words = content | number_of_words -%}
       {%- assign minutes = words | divided_by: 200 -%}
       {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif -%}
+      <span class="dot">&middot;</span>
       <span>{{ minutes }} min read</span>
-      {%- if page.author -%}
-        <span class="dot">&middot;</span>
-        <span itemprop="author">{{ page.author }}</span>
-      {%- endif -%}
     </div>
   </header>
 
   <details class="toc-mobile">
-    <summary>On this page</summary>
+    <summary>Contents</summary>
     <nav aria-label="Table of contents (mobile)"></nav>
   </details>
 
@@ -77,3 +72,4 @@ layout: default
     })();
   </script>
 </article>
+</div>
