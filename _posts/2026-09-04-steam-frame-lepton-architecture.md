@@ -2,7 +2,7 @@
 layout: post
 title: "Steam Frame's Lepton Architecture"
 date: 2026-09-04 00:00 +0800
-tags: [valve, steam, android, waydroid, openxr, vulkan, podman, steamvr]
+tags: [valve, steam, android, waydroid, openxr, vulkan, podman, steamvr, ai-assist]
 mermaid: true
 ---
 

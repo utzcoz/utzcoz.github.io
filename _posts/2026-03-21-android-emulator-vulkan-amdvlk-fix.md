@@ -2,7 +2,7 @@
 layout: post
 title: "Android emulator won't boot on AMD GPU? It's your Vulkan driver."
 date: 2026-03-21 00:00 +0800
-tags: [android, emulator, vulkan, amd, linux]
+tags: [android, emulator, vulkan, amd, linux, ai-assist]
 ---
 
 I lost days to this. The Android emulator would launch, show the boot animation, and just sit there. No error dialog in Android Studio, no crash popup, nothing. An infinite boot loop with zero indication of what went wrong.

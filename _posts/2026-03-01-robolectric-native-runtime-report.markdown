@@ -2,7 +2,7 @@
 layout: post
 title:  "Robolectric Native Runtime: Architecture & Implementation Report"
 date:   2026-03-01 16:00 +0800
-tags: [robolectric, native-runtime, jni, testing]
+tags: [robolectric, native-runtime, jni, testing, ai-assist]
 ---
 
 ## 1. Introduction

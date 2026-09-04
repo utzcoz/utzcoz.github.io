@@ -2,7 +2,7 @@
 layout: post
 title: "Building a Custom Jekyll Theme with Claude Code"
 date: 2026-03-05 20:00 +0800
-tags: [claude-code, jekyll, frontend, material3, mermaid]
+tags: [claude-code, jekyll, frontend, material3, mermaid, ai-assist]
 mermaid: true
 ---
 

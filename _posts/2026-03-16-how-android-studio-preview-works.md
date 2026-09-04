@@ -2,7 +2,7 @@
 layout: post
 title: "How Android Studio's @Preview Actually Works: Extension Points, ViewAdapters, and LayoutLib"
 date: 2026-03-16 00:00 +0800
-tags: [android-studio, aosp, compose, intellij]
+tags: [android-studio, aosp, compose, intellij, ai-assist]
 mermaid: true
 ---
 

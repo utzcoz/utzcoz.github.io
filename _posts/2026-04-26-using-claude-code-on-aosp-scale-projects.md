@@ -2,7 +2,7 @@
 layout: post
 title: "Using Claude Code on AOSP-scale projects"
 date: 2026-04-26 22:00 +0800
-tags: [claude-code, aosp, android, systems]
+tags: [claude-code, aosp, android, systems, ai-assist]
 ---
 
 I've been using [Claude Code](https://docs.anthropic.com/en/docs/claude-code) on four

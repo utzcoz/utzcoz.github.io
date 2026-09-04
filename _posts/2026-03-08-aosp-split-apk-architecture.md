@@ -2,7 +2,7 @@
 layout: post
 title: "AOSP Split APK Architecture - Comprehensive Analysis Report"
 date: 2026-03-08 00:00 +0800
-tags: [aosp, split-apk, android]
+tags: [aosp, split-apk, android, ai-assist]
 mermaid: true
 ---
 

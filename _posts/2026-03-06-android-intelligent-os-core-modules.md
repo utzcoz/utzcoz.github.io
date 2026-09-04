@@ -2,7 +2,7 @@
 layout: post
 title: "The Intelligent OS: How AppFunctions and ComputerControl Power Android's AI Agent Ecosystem"
 date: 2026-03-06 00:22 +0800
-tags: [aosp, appfunctions, computercontrol]
+tags: [aosp, appfunctions, computercontrol, ai-assist]
 mermaid: true
 ---
 

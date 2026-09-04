@@ -2,7 +2,7 @@
 layout: post
 title: "Diffing AOSP Releases"
 date: 2026-06-20 00:00 +0800
-tags: [aosp, android, tooling, git, manifest]
+tags: [aosp, android, tooling, git, manifest, ai-assist]
 ---
 
 Every time a new Android version lands I want the same narrow thing: which

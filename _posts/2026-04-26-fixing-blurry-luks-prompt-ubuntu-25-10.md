@@ -2,7 +2,7 @@
 layout: post
 title: "Fixing the blurry LUKS password screen after upgrading to Ubuntu 25.10"
 date: 2026-04-26 00:00 +0800
-tags: [ubuntu, linux, plymouth, luks, grub]
+tags: [ubuntu, linux, plymouth, luks, grub, ai-assist]
 ---
 
 After upgrading from Ubuntu 25.04 to 25.10, I noticed something annoying: the disk-encryption password screen that appears right after the firmware logo had become noticeably low-resolution. The motherboard logo was fuzzy, the password field looked like it had been stretched from 800×600, and the whole thing felt like a regression from the crisp screen I had on 25.04.
