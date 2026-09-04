@@ -9,8 +9,9 @@ mermaid: true
 ## Overview
 
 Lepton is Valve's compatibility tool for running unmodified Android APKs as
-Steam titles on Linux. It was released on Steam on 2026-08-04 for the Steam
-Frame headset, and also runs on desktop SteamOS and Linux.
+Steam titles on Linux. It appeared on Steam on 2026-08-02, alongside the FEX
+x86 translator, as part of the Steam Frame headset's software stack, and it
+also runs on desktop SteamOS and Linux.
 
 Lepton boots a Waydroid-derived Android 11 image in a rootless podman
 container, bridges graphics, audio, input, and networking to the host, and
@@ -196,15 +197,20 @@ sequenceDiagram
     C->>C: boot Android, zygote inherits VR/Steam env
     C-->>L: /data/lepton-onboot appears
     L->>C: first run: adb install (hooked by cmd wrapper)
-    L->>C: am start -S pkg/activity
+    L->>C: setprop ro.lepton.app_baked 1
+    C->>C: init runs am start -S pkg/activity
     C->>G: fork from zygote
     G->>S: libsteamclient to 169.254.233.1:57343
-    G-->>L: exit, podman stop, collect logs
+    C-->>L: lepton-on-app-exit file appears
+    L->>C: reboot -p, then podman stop
 ```
 
-The boot handshake is a file. `lepton_onboot.rc` writes `/data/lepton-onboot`
+Both handshakes are files. `lepton_onboot.rc` writes `/data/lepton-onboot`
 on `sys.boot_completed=1`, and the host waits for it in the upperdir while a
-`podman wait` watchdog races it in case boot dies.
+`podman wait` watchdog races it in case boot dies. The app itself is started
+by init, from the generated `lepton_app_launch.rc`, once `ro.lepton.app_baked`
+is set. When the app exits, a system service writes `lepton-on-app-exit`, and
+the host answers with Android's own `reboot -p` followed by `podman stop`.
 
 ## SteamVR as the Android OpenXR runtime
 
@@ -477,7 +483,7 @@ multi-window UX. Lepton keeps the first and replaces the second.
 | `hwcomposer.waydroid`, audio bridge, minigbm | kept unmodified |
 | LXC + Python host tool | replaced by podman + bash |
 | Multi-window UX, clipboard, notifications | dropped |
-| Sensors, camera bridging | stubbed |
+| Sensors HAL | stubbed |
 | ARM translation (libhoudini/libndk) | dropped |
 | LXC bridge networking | replaced by pasta |
 
