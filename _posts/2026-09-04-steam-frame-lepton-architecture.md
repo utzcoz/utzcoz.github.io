@@ -18,9 +18,10 @@ container, bridges graphics, audio, input, and networking to the host, and
 makes SteamVR the container's OpenXR runtime. Android VR games built for
 Quest-class headsets render through the host compositor without a port.
 
-This post describes the tool as shipped in v2.8.9 (tool) and v2.8.3 (image),
-the builds from 2026-08-30, with earlier versions back to v2.7.7 noted where
-they differ.
+This post describes the tool as shipped in v2.8.10 (tool, 2026-09-06) and
+v2.8.3 (image, 2026-08-30), with earlier versions back to v2.7.7 noted where
+they differ. v2.8.10 changed three scripts by a few bytes each and regenerated
+the baked `/data` tree. Nothing described below moved.
 
 The README is a page long, so the analysis comes from the depot itself. The
 launcher and its library are plain bash, and the overlay files are init
@@ -138,7 +139,7 @@ Steam-verifiable. Each launch composes its own view of the system out of mounts.
 
 ### Per-file bind mounts
 
-Rather than layering the rootfs, `mounting.sh:78-91` walks
+Rather than layering the rootfs, `setup_mounts` in `mounting.sh` walks
 `images/rootfs_overlay/` and the host's `/usr/share/guestos/android/` and
 bind-mounts every file in them, one by one, read-only, over the rootfs.
 
@@ -168,7 +169,7 @@ A few files are generated per launch and mounted over image paths:
 Incompatible HAL services are switched off by mounting empty `.rc` files (and
 an empty VINTF manifest) over their definitions, chosen by GPU mode. One image
 serves Turnip, the Qualcomm Adreno blob, and software rendering
-(`mounting.sh:367-388`).
+(the `disable_*` helpers in `mounting.sh`).
 
 ### Content mounts
 
@@ -253,18 +254,18 @@ establishes this much.
 
 - `xrCreateSwapchain` is answered by `vrclient.so` inside the game process, so
   the swapchain images are Vulkan images created on the game's own `VkDevice`.
-- The game talks to the GPU directly. `mounting.sh:434-441` mounts the host's
+- The game talks to the GPU directly. `setup_podman_mounts` mounts the host's
   `/dev/dri/renderD128` and `card0` into the container, and mounts `renderD128`
   a second time as `/dev/kgsl-3d0` for the Qualcomm blob path. The image ships
   no Vulkan ICD of its own; the driver comes from the host overlay. Game,
   `vrclient.so`, and the host compositor share one DRM device.
-- The container is `--ipc=private` and `--pid=private` (`mounting.sh:176`), but
+- The container is `--ipc=private` and `--pid=private` (`setup_podman_base`), but
   the host's `/dev/shm` is bind-mounted read-write. Neither `/tmp` nor the
   host's `XDG_RUNTIME_DIR` is mounted, so SteamVR's IPC endpoint has to live in
   `/dev/shm`, the read-write runtime directory, or the read-write logs
   directory.
 - Zygote passes two vrclient debugging knobs, `EnableFrameEndMarkers` and
-  `DisableTimelineSemaphoreWait` (`mounting.sh:320-325`), so frame hand-off is
+  `DisableTimelineSemaphoreWait` (`generate_zygote_launch_rc`), so frame hand-off is
   synchronized with Vulkan timeline semaphores.
 
 The Android `vrclient.so` itself was not available for inspection. The rest is
@@ -336,7 +337,7 @@ settings put global gpu_debug_layers VK_LAYER_fossilize:VK_LAYER_fdm_injection
 
 Foveation also has an OpenXR half, an implicit API layer manifest named
 `XrApiLayer_VALVE_fdm_injection.json` in the host overlay. The overlay walk
-mounts it only when the Vulkan half is enabled (`mounting.sh:84`). One without the other either does nothing or
+mounts it only when the Vulkan half is enabled (a filter inside the overlay walk). One without the other either does nothing or
 crashes the swapchain.
 
 ### The `cmd` wrapper
@@ -360,7 +361,7 @@ One typo: the `adb install` fallback saves the package name under
 ### Graphics
 
 SurfaceFlinger runs on Zink: `mesa.loader.driver.override=zink`, and
-`properties.sh:94-97` forces `service.sf.present_timestamp=0` with the comment
+`properties.sh` forces `service.sf.present_timestamp=0` with the comment
 "Our SurfaceFlinger is run using Zink. Thus, set this ourselves to avoid a
 deadlock."
 
@@ -632,7 +633,7 @@ The README states the split in prose too: the root filesystem "is therefore
 released under a GPL-3.0 license", while the compatibility tool "is released
 under the MIT license". That second half is a slip; `LICENSE.lepton` is BSD-3-Clause.
 
-Three things remain open as of v2.8.9. The GPL-3 text is not shipped, only
+Three things remain open as of v2.8.10. The GPL-3 text is not shipped, only
 named and linked. No source repository URL appears anywhere, although the README
 describes an `image` and `compat_tool` repository split. And the MIT/BSD
 mislabel is unfixed.
