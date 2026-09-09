@@ -18,10 +18,11 @@ container, bridges graphics, audio, input, and networking to the host, and
 makes SteamVR the container's OpenXR runtime. Android VR games built for
 Quest-class headsets render through the host compositor without a port.
 
-This post describes the tool as shipped in v2.8.10 (tool, 2026-09-06) and
-v2.8.3 (image, 2026-08-30), with earlier versions back to v2.7.7 noted where
-they differ. v2.8.10 changed three scripts by a few bytes each and regenerated
-the baked `/data` tree. Nothing described below moved.
+This post describes the tool as shipped in v2.8.11, from 2026-09-09, with
+earlier versions back to v2.7.7 noted where they differ. The tool and the image
+carry the same version number again in this release. v2.8.11 moved the
+container off its link-local address and added a software Vulkan driver to the
+image, both noted below.
 
 The README is a page long, so the analysis comes from the depot itself. The
 launcher and its library are plain bash, and the overlay files are init
@@ -79,7 +80,7 @@ graph LR
     game --> steamclient
     game -->|OpenXR loader| vrclient
     game --> hwc
-    steamclient -->|"TCP 169.254.233.1:57343"| steam
+    steamclient -->|"TCP gateway:57343"| steam
     sysserver -->|"FIFO steam.pipe"| steam
     vrclient -->|"dma-buf via /data/steamvr"| steamvr
     hwc -->|"wayland-0 socket"| gamescope
@@ -128,7 +129,7 @@ strings across releases finds them.
   mounted at `/lepton/steam.pipe`. The container has no browser, so this is how
   an EULA link ends up in the Steam overlay.
 
-The v2.8.3 image's framework jars still carry their v2.7.15 timestamps
+The v2.8.11 image's framework jars still carry their v2.7.15 timestamps
 (`framework.jar` from 2026-08-01, `services.jar` from 2026-08-19), and Steam
 only rewrites changed files, so neither patch has moved since.
 
@@ -201,7 +202,7 @@ sequenceDiagram
     L->>C: setprop ro.lepton.app_baked 1
     C->>C: init runs am start -S pkg/activity
     C->>G: fork from zygote
-    G->>S: libsteamclient to 169.254.233.1:57343
+    G->>S: libsteamclient to gateway:57343
     C-->>L: lepton-on-app-exit file appears
     L->>C: reboot -p, then podman stop
 ```
@@ -320,6 +321,7 @@ describes the problem and wishes for "the actual Linux loader's semantics".
 | `VALVE_fdm_injection` | `ENABLE_VULKAN_FDM_INJECTION_LAYER` | injects `VK_EXT_fragment_density_map` for foveated rendering |
 | `VALVE_rpo` | `ENABLE_VULKAN_RPO_LAYER` | renderpass optimization |
 | `khronos_validation` | `ENABLE_VULKAN_VALIDATION_LAYER` | validation |
+| `gfxreconstruct` | `ENABLE_VULKAN_GFXRECONSTRUCT_LAYER` | API-level capture and replay, added in v2.8.11 |
 | `GLES_RenderDoc` | `ENABLE_VULKAN_RENDERDOC_CAPTURE` | frame capture, needs a companion APK |
 
 Activating a layer takes two steps.
@@ -368,7 +370,13 @@ deadlock."
 The default driver is Turnip (`ro.hardware.vulkan=freedreno`) with minigbm
 gralloc. `LEPTON_USE_QCOM_DRIVER=true` switches to Qualcomm's Adreno blob
 (`ro.hardware.vulkan=adreno`, ANGLE for GLES) with the QTI gralloc and display
-stack, and `LEPTON_FORCE_SOFTWARE=true` uses SwiftShader. `_TU_DEBUG`, `ZINK_DEBUG`,
+stack, and `LEPTON_FORCE_SOFTWARE=true` uses SwiftShader. That branch used to
+name a software driver for GLES only. v2.8.11 adds a Vulkan one and ships it in
+the image: `vulkan.pastel.so`, selected by `ro.hardware.vulkan=pastel`. It is
+16 MB of SwiftShader with an LLVM JIT that calls itself "Swiftshader Pastel",
+and the line that selects it is commented "tests on gitlab", so it is there for
+continuous integration rather than for headsets.
+`_TU_DEBUG`, `ZINK_DEBUG`,
 `MESA_SHADER_CACHE_MAX_SIZE`, and two dozen other Turnip and Zink variables pass
 from the host environment into zygote. Because
 gralloc buffers are dma-bufs, both display paths are zero-copy.
@@ -544,9 +552,12 @@ for one game.
 - A subtractive seccomp profile: default allow, 22 syscalls blocked, namely
   `open_by_handle_at`, clock setting, and module loading plus kexec. An
   allowlist is impractical against Android's syscall surface.
-- Networking since v2.8 is pasta on link-local `169.254.233.0/24`, with a static
-  per-container IP kept as a podman label, IPv4-only, and `--map-gw` so
-  `steamclient` reaches the host. There is no bridge device and no NAT rule.
+- Networking since v2.8 is pasta, IPv4-only, with no bridge device and no NAT
+  rule. Until v2.8.10 the container sat on a link-local `169.254.233.0/24`
+  subnet. v2.8.11 gives it the host's own address instead, read from the host's
+  default route, so that a game asking for its own IP gets one other machines
+  can reach. The gateway of that subnet is mapped to the host by `--map-gw`,
+  and that is the address `steamclient` connects to.
 
 ### Inside
 
@@ -633,7 +644,7 @@ The README states the split in prose too: the root filesystem "is therefore
 released under a GPL-3.0 license", while the compatibility tool "is released
 under the MIT license". That second half is a slip; `LICENSE.lepton` is BSD-3-Clause.
 
-Three things remain open as of v2.8.10. The GPL-3 text is not shipped, only
+Three things remain open as of v2.8.11. The GPL-3 text is not shipped, only
 named and linked. No source repository URL appears anywhere, although the README
 describes an `image` and `compat_tool` repository split. And the MIT/BSD
 mislabel is unfixed.
