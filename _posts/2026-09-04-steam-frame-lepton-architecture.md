@@ -18,11 +18,11 @@ container, bridges graphics, audio, input, and networking to the host, and
 makes SteamVR the container's OpenXR runtime. Android VR games built for
 Quest-class headsets render through the host compositor without a port.
 
-This post describes the tool as shipped in v2.8.11, from 2026-09-09, with
-earlier versions back to v2.7.7 noted where they differ. The tool and the image
-carry the same version number again in this release. v2.8.11 moved the
-container off its link-local address and added a software Vulkan driver to the
-image, both noted below.
+This post describes tool v2.8.14, from 2026-09-14, running image v2.8.11, from
+2026-09-09, with earlier versions back to v2.7.7 noted where they differ.
+v2.8.11 moved the container off its link-local address and added a software
+Vulkan driver to the image. v2.8.14 changed how the host's personal folders
+reach the guest. All three are noted below.
 
 The README is a page long, so the analysis comes from the depot itself. The
 launcher and its library are plain bash, and the overlay files are init
@@ -179,9 +179,11 @@ the SteamVR runtime at `/data/steamvr/*`, the Wayland and Pulse sockets, and the
 Steam pipe.
 
 The Steam client's install directory and every Steam library root are mounted
-read-write at their host paths, and since v2.8 so are the host's
-`~/Documents`, `~/Videos`, and `~/Downloads`, which appear as the guest's
-external storage.
+read-write at their host paths. Since v2.8 the host's `~/Documents`, `~/Videos`,
+and `~/Downloads` also appear in the guest's external storage. Through v2.8.11
+they were bind-mounted straight onto `Documents`, `Movies`, and `Download`
+there. v2.8.14 mounts them at their own host paths instead and leaves symlinks
+in external storage pointing at those paths.
 
 ### Launch sequence
 
@@ -200,6 +202,7 @@ sequenceDiagram
     C-->>L: /data/lepton-onboot appears
     L->>C: first run: adb install (hooked by cmd wrapper)
     L->>C: setprop ro.lepton.app_baked 1
+    C->>C: init waits for MEDIA_MOUNTED
     C->>C: init runs am start -S pkg/activity
     C->>G: fork from zygote
     G->>S: libsteamclient to gateway:57343
@@ -211,7 +214,9 @@ Both handshakes are files. `lepton_onboot.rc` writes `/data/lepton-onboot`
 on `sys.boot_completed=1`, and the host waits for it in the upperdir while a
 `podman wait` watchdog races it in case boot dies. The app itself is started
 by init, from the generated `lepton_app_launch.rc`, once `ro.lepton.app_baked`
-is set. When the app exits, a system service writes `lepton-on-app-exit`, and
+is set. Since v2.8.14 init first waits up to ten seconds for Android to log that
+shared storage is mounted, so a game does not start before its external storage
+exists. When the app exits, a system service writes `lepton-on-app-exit`, and
 the host answers with Android's own `reboot -p` followed by `podman stop`.
 
 ## SteamVR as the Android OpenXR runtime
@@ -575,7 +580,9 @@ shared one, the disabled Android controls would matter again.
   the guest can send `steam://` commands to the host client.
 - v2.8 mounts the host's `~/Documents`, `~/Videos`, `~/Downloads`, and every
   Steam library read-write into the guest, on top of the blanket storage
-  permission grants.
+  permission grants. Since v2.8.14 the three personal folders also sit at their
+  real host paths inside the container, so a game can see the host user's home
+  path.
 
 Both are deliberate trade-offs in favour of usability, and the second is the
 largest so far.
@@ -644,7 +651,7 @@ The README states the split in prose too: the root filesystem "is therefore
 released under a GPL-3.0 license", while the compatibility tool "is released
 under the MIT license". That second half is a slip; `LICENSE.lepton` is BSD-3-Clause.
 
-Three things remain open as of v2.8.11. The GPL-3 text is not shipped, only
+Three things remain open as of v2.8.14. The GPL-3 text is not shipped, only
 named and linked. No source repository URL appears anywhere, although the README
 describes an `image` and `compat_tool` repository split. And the MIT/BSD
 mislabel is unfixed.
