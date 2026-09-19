@@ -18,29 +18,22 @@ container, bridges graphics, audio, input, and networking to the host, and
 makes SteamVR the container's OpenXR runtime. Android VR games built for
 Quest-class headsets render through the host compositor without a port.
 
-This post describes tool v2.8.14, from 2026-09-14, running image v2.8.11, from
-2026-09-09, with earlier versions back to v2.7.7 noted where they differ.
-v2.8.11 moved the container off its link-local address and added a software
-Vulkan driver to the image. v2.8.14 changed how the host's personal folders
-reach the guest. All three are noted below.
+This post was first written from the Steam depot alone, reading the bash
+directly and the Android image through `strings`. Valve has since published
+the source at `gitlab.steamos.cloud/frame-public/lepton`. Its public history
+starts with a squashed v3.0.0 release commit dated 2026-09-11, and everything
+below has been checked against v3.0.2 from 2026-09-17. Where the binaries
+misled, the text now follows the source and says what changed.
 
-The README is a page long, so the analysis comes from the depot itself. The
-launcher and its library are plain bash, and the overlay files are init
-scripts and JSON, so those were read directly. The image was examined with
-`strings` on the HAL binaries, `unzip` plus `strings` on the dex files inside
-the framework jars, and the build and vendor property files. Changes between
-releases were found by file timestamps, since Steam rewrites only the files
-that changed, and then by diffing the dex strings of the jars that moved.
-Provenance was settled by comparing the shipped HALs against the upstream
-Waydroid repositories, as the last section of the Waydroid comparison shows.
+Steam at the time of writing ships tool v2.8.14 on image v2.8.11. The compat
+tool in v3.0.2 differs from it only in small ways, apart from support for an
+Android 14 image that CI builds, bakes, and tests alongside the Android 11
+one. Steam still ships Android 11, and this post describes that image.
 
-Two things could not be checked directly.
-
-- The `steamvr` host CLI and the `/usr/share/guestos/android` overlay live in
-  the device OS, not the depot. Statements about them come from how the scripts
-  use them.
-- The Steam Frame link is inferred from a `deckard-steamvr-(main|rel)` package
-  check in `liblepton/debug.sh`.
+Two pieces sit outside the repository. The `steamvr` host CLI and the
+`/usr/share/guestos/android` overlay, which carries Mesa and Valve's Vulkan
+layers, come from the device OS. Statements about them come from how the
+scripts use them.
 
 ## The depot
 
@@ -53,7 +46,11 @@ Two things could not be checked directly.
 | `sysbake.xattrs` | The `user.*` xattrs of `sysbake/`, restored at launch because Steam depots cannot carry xattrs |
 | `version.txt`, `images/version.txt` | Tool and image versions; since v2.8 a change to either invalidates app bakes |
 
-`system/build.prop` still says `device/waydroid/waydroid`.
+In the repository, `compat_tool/` holds the launcher, its library, and the
+overlay. `image/` holds the recipe for the root filesystem, and CI produces the
+sysbake.
+`system/build.prop` still says `device/waydroid/waydroid`, because the device
+tree is Valve's fork of Waydroid's, kept at the same path.
 
 ## Architecture
 
@@ -106,32 +103,68 @@ the unprivileged host user. Binder still comes from the kernel, but an overlay
 init file mounts binderfs and renames `anbox-binder` and friends to the standard
 names inside the container, so nothing on the host has to provision the nodes.
 
+### One Linux user, faked Android UIDs
+
+Every process in the container runs as the same Linux user, the host user
+mapped to root. Android still expects one UID per app and uses it to decide
+which app is doing what, so Valve fakes the UIDs in libc.
+
+A bionic patch replaces `getuid`, `setuid`, and the rest of the family. The
+current IDs live in `PARENT_UID` and `PARENT_GID` environment variables, which
+survive `execve`, and `setuid` only updates them. Once a process holds an app
+UID, 10000 or above, it cannot change it again. Two more patches send the fake
+UID along with every binder and hwbinder call, and installd is patched to
+expect files owned by the host user.
+
+The fake covers only libc. A TODO in the patch notes that a direct syscall,
+or a read of `/proc/<pid>/status`, still reports 0. v3.0 adds `chown`, `setuid`,
+`setgid`, and `setgroups` to the seccomp profile's fake-success group, so
+those calls made directly now succeed without doing anything.
+
 ### The image is Waydroid's guest
 
-It is built from Waydroid's tree as a `lepton_arm64_only` Lineage 18.1 device:
-`vendor/waydroid.prop`, `hwcomposer.waydroid.so`, minigbm gralloc, plus a QTI
-display and gralloc stack for Adreno that upstream lacks.
+It is built from Waydroid's LineageOS 18.1 tree as a `lepton_arm64_only`
+product. The build pulls Waydroid's vendor repository unchanged and swaps in
+Valve's forks of Waydroid's device and hardware repositories, which carry 36
+and 6 Valve commits. Waydroid has no Adreno display stack, so Valve patches
+Qualcomm's `sm8150` display code to build only its gralloc, on MSM DRM GEM
+buffers instead of ION, with UBWC compression off.
 
-Waydroid's `base-patches-30` framework patches are compiled in. The markers
-are all in the shipped binaries: `BoringdroidManager` and
-`getPackageOverlayWindowingMode` in `framework.jar` and `services.jar`,
-`back_window` and `decor_back_button` in `framework-res.apk`, and
-`boring_config_navBarLayout` in `SystemUI.apk`. Those are the Boringdroid
-freeform-window patches, and in Lepton they serve the flatscreen path.
+Waydroid's own 177 patches are compiled in, including its freeform window
+series. Its markers are in the shipped binaries: `BoringdroidManager`
+in `framework.jar` and `services.jar`, `decor_back_button` in
+`framework-res.apk`, and `boring_config_navBarLayout` in `SystemUI.apk`. The
+Boringdroid SystemUI app itself is not shipped, since it is on the device
+tree's removal list.
 
-Valve added exactly two patches on top, both in `services.jar`. Diffing the dex
-strings across releases finds them.
+### Valve's patch set
 
-- Since v2.7.14, system_server reads the host's `HTTP_PROXY` and `HTTPS_PROXY`,
-  passed through zygote, into Android's proxy settings.
-- Since v2.7.15, system_server intercepts web-URL `ACTION_VIEW` intents and
-  writes `steam://openurl/<url>` into the host Steam client's command FIFO,
-  mounted at `/lepton/steam.pipe`. The container has no browser, so this is how
-  an EULA link ends up in the Steam overlay.
+The depot suggested Valve had added only two framework patches, because only
+two changed between public releases. The source shows 101 patches on top of
+Waydroid's for the Android 11 image.
 
-The v2.8.11 image's framework jars still carry their v2.7.15 timestamps
-(`framework.jar` from 2026-08-01, `services.jar` from 2026-08-19), and Steam
-only rewrites changed files, so neither patch has moved since.
+- Forty are reverts, mostly of Waydroid's host integration. They take out the
+  clipboard and power services, host hwbinder support, and the WayDroid service
+  in the Lineage SDK. A few undo LineageOS and AOSP changes instead.
+- The fake UIDs described above touch bionic, binder, installd, and init.
+- About thirty system services are commented out of `SystemServer`, among them
+  camera, backup, clipboard, accessibility, printing, Android's own VR manager,
+  and boot-time dexopt. lmkd, tombstoned, bpfloader, and minijail are off, and
+  adbd has no USB access.
+- A new `LeptonProcessObserver` service reports the app's exit. If
+  SurfaceFlinger or zygote fails, the container reboots, which ends the
+  session.
+- vold and MediaProvider accept `/storage/emulated/0` as a symlink, which the
+  host-folder mounts depend on.
+- Android 11's Vulkan loader is backported to Vulkan 1.3 and built against 1.3
+  headers.
+- Two patches hook into Steam, and they are the only ones that changed between
+  public releases. Since v2.7.14 system_server reads the host's `HTTP_PROXY`
+  and `HTTPS_PROXY`, passed through zygote, into Android's proxy settings.
+  Since v2.7.15 it intercepts web-URL `ACTION_VIEW` intents and writes
+  `steam://openurl/<url>` into the host Steam client's command FIFO at
+  `/lepton/steam.pipe`. The container has no browser, so this is how an EULA
+  link ends up in the Steam overlay.
 
 ## Launch-time composition
 
@@ -216,8 +249,11 @@ on `sys.boot_completed=1`, and the host waits for it in the upperdir while a
 by init, from the generated `lepton_app_launch.rc`, once `ro.lepton.app_baked`
 is set. Since v2.8.14 init first waits up to ten seconds for Android to log that
 shared storage is mounted, so a game does not start before its external storage
-exists. When the app exits, a system service writes `lepton-on-app-exit`, and
-the host answers with Android's own `reboot -p` followed by `podman stop`.
+exists. When the app exits, `LeptonProcessObserver` in system_server creates
+`/data/lepton-on-app-exit`, and the host answers with Android's own `reboot -p`
+followed by `podman stop`. The observer also creates the file if the app has
+not started within `lepton.active_app_launch_timeout` seconds, 20 by default,
+so a failed launch does not leave an empty container behind.
 
 ## SteamVR as the Android OpenXR runtime
 
@@ -262,9 +298,10 @@ establishes this much.
   the swapchain images are Vulkan images created on the game's own `VkDevice`.
 - The game talks to the GPU directly. `setup_podman_mounts` mounts the host's
   `/dev/dri/renderD128` and `card0` into the container, and mounts `renderD128`
-  a second time as `/dev/kgsl-3d0` for the Qualcomm blob path. The image ships
-  no Vulkan ICD of its own; the driver comes from the host overlay. Game,
-  `vrclient.so`, and the host compositor share one DRM device.
+  a second time as `/dev/kgsl-3d0` for the Qualcomm blob path. The image
+  carries no hardware GPU driver. A device-tree commit drops Mesa from the
+  build, and the driver comes from the host overlay. Game, `vrclient.so`, and the host
+  compositor share one DRM device.
 - The container is `--ipc=private` and `--pid=private` (`setup_podman_base`), but
   the host's `/dev/shm` is bind-mounted read-write. Neither `/tmp` nor the
   host's `XDG_RUNTIME_DIR` is mounted, so SteamVR's IPC endpoint has to live in
@@ -319,6 +356,8 @@ sequenceDiagram
 Android's Vulkan loader has no manifests and no environment variables, only a
 `settings`-based GPU debug mechanism meant for developers. A comment in `vulkan_layers.sh`
 describes the problem and wishes for "the actual Linux loader's semantics".
+The loader itself is not stock either, since Valve backports Android 11's
+`libvulkan` to Vulkan 1.3.
 
 | Layer | When | Purpose |
 | --- | --- | --- |
@@ -349,19 +388,23 @@ crashes the swapchain.
 
 ### The `cmd` wrapper
 
-The guest-side hook is `rootfs_overlay/system/bin/cmd`, which shadows the real
-`cmd` so every install path goes through it. It unmounts the layer binds before
-`pm install` and restores them after, so a game update cannot trip over live
-mounts in its own lib directory.
+The guest-side hook is `rootfs_overlay/system/bin/cmd`. Two image patches make
+room for it. One builds the real binary as `cmd_real` behind a one-line shell
+`cmd`, so the overlay can replace that script. The other turns off adbd's
+`abb_exec`, which would otherwise let `adb install` bypass `cmd`. The wrapper
+unmounts the layer binds before `pm install` and restores them after, so a
+game update cannot trip over live mounts in its own lib directory.
 
 The same wrapper runs `pm compile -m speed-profile` at install time, fixes the
 OBB directory, and copies `steam_appid.txt` and Unreal's `UECommandLine.txt`
 next to the APK. It also grants every dangerous permission plus external
 storage, with the reason given in the source: a single-app container has nobody
-else's data to protect.
+else's data to protect. A framework patch removes the check in
+`grantRuntimePermission`, so even `MANAGE_EXTERNAL_STORAGE` can be granted
+this way.
 
-One typo: the `adb install` fallback saves the package name under
-`letpon.active_app_id`, so it never sticks.
+One typo, still in the public source: the `adb install` fallback saves the
+package name under `letpon.active_app_id`, so it never sticks.
 
 ## Graphics, audio, input
 
@@ -379,8 +422,9 @@ stack, and `LEPTON_FORCE_SOFTWARE=true` uses SwiftShader. That branch used to
 name a software driver for GLES only. v2.8.11 adds a Vulkan one and ships it in
 the image: `vulkan.pastel.so`, selected by `ro.hardware.vulkan=pastel`. It is
 16 MB of SwiftShader with an LLVM JIT that calls itself "Swiftshader Pastel",
-and the line that selects it is commented "tests on gitlab", so it is there for
-continuous integration rather than for headsets.
+built by a device-tree commit titled "Build vulkan swiftshader". The line that
+selects it is commented "tests on gitlab", and CI runs its test suite in
+software, so it is there for continuous integration rather than for headsets.
 `_TU_DEBUG`, `ZINK_DEBUG`,
 `MESA_SHADER_CACHE_MAX_SIZE`, and two dozen other Turnip and Zink variables pass
 from the host environment into zygote. Because
@@ -388,9 +432,13 @@ gralloc buffers are dma-bufs, both display paths are zero-copy.
 
 ### Audio
 
-Audio is Waydroid's Pulse bridge with one Valve change. `z_audio.rc` overrides
-the HAL service to run as root, which under the rootless mapping means the host
-user, so it can open the host socket. The comment reads "`# Lepton: We run this
+Audio is Waydroid's Pulse bridge with retuned buffers. Valve's fork of the HAL sets
+playback and capture periods of 480 frames at 48 kHz, 10 ms each, to match
+PipeWire. Upstream used 1024-frame playback periods and 16 kHz capture. The
+audio policy allows 48 kHz only.
+
+`z_audio.rc` overrides the HAL service to run as root, which under the rootless
+mapping means the host user, so it can open the host socket. The comment reads "`# Lepton: We run this
 as root:root which maps to the host user`". It also sets `ioprio rt 4` and high-performance task profiles.
 
 ### Input
@@ -416,9 +464,10 @@ For flat games there is no screen-casting or nested display server. Android's
 Hardware Composer HAL is itself a Wayland client of gamescope, and the host
 window's input devices are Android's input devices.
 
-This is Waydroid's design, shipped unmodified. The `hwcomposer.waydroid.so` in
-the image reads the same 11 `persist.waydroid.*` properties as upstream source
-and links the same protocols.
+This is Waydroid's design, with four Valve patches in the HAL. It accepts
+Qualcomm gralloc buffers, handles an unspecified pixel format, guards against a
+null framebuffer handle during early boot, and starts its Wayland thread only
+after display calibration, to avoid a deadlock in `wl_display_dispatch`.
 
 ```mermaid
 sequenceDiagram
@@ -494,9 +543,9 @@ multi-window UX. Lepton keeps the first and replaces the second.
 | Waydroid piece | In Lepton |
 | --- | --- |
 | Image recipe, framework patches | kept, as `lepton_arm64_only` |
-| `hwcomposer.waydroid`, audio bridge, minigbm | kept unmodified |
+| `hwcomposer.waydroid`, audio bridge, minigbm | kept, with Valve patches |
 | LXC + Python host tool | replaced by podman + bash |
-| Multi-window UX, clipboard, notifications | dropped |
+| Multi-window UX, clipboard, notifications | dropped, their framework patches reverted |
 | Sensors HAL | stubbed |
 | ARM translation (libhoudini/libndk) | dropped |
 | LXC bridge networking | replaced by pasta |
@@ -510,40 +559,18 @@ The reasons follow from what Steam needs.
 - A Steam-shipped product needs deterministic content. A fixed rootfs plus a
   pre-baked `/data` gives that; a stateful first boot does not.
 
-Compared against upstream `android_hardware_waydroid`, the shipped guest HALs
-are stock. None of them contains a `lepton`, `valve`, or `steam` string. Valve's
-own code is the launcher, `sysbake`, the OpenXR and OpenVR redirection, the FDM
-and RPO layers and the layer system, the Steamworks bridge, and the overlay
-contents.
+An earlier version of this post compared the shipped HALs against upstream
+Waydroid source and concluded they were stock. The source shows otherwise, and
+so do the binaries. The shipped `hwcomposer.waydroid.so` links
+`android.hardware.graphics.mapper@4.0` and `libgralloctypes`, which only
+Valve's build file adds. It also carries Valve's log messages, such as "cannot
+create a wayland buffer for a null handle". The shipped audio policy lists
+48 kHz only.
 
-### Checking that the HAL is stock
-
-A rebuild is never byte-identical, so "unmodified" has to be shown by
-comparing content rather than hashes. The shipped `hwcomposer.waydroid.so`
-was compared against upstream `android_hardware_waydroid` at the
-`lineage-18.1` tip (commit `d520fcb`, 2026-03-02):
-
-- The set of `persist.waydroid.*` properties the binary reads is identical to
-  the set the source reads, 11 of 11.
-- Every Wayland protocol interface named in the binary is bound in the
-  source, and the reverse holds.
-- The binary's `DT_NEEDED` list matches the `shared_libs` in the upstream
-  `Android.bp` entry for entry, down to the three `vendor.waydroid.window`
-  versions.
-- Of 58 `ALOG` message strings in the source, 54 are in the binary. The four
-  that are not all sit behind `if (new ... == nullptr)` checks, which the
-  compiler removes as dead code. Log strings in the binary that are not in the
-  source all belong to the statically linked `libxkbcommon` and
-  `libwayland_client`, which `Android.bp` lists as `static_libs`.
-- There is no `lepton`, `valve`, or `steam` string anywhere in the file.
-
-A patch of any size almost always adds or changes a log message, a property,
-a protocol, or a dependency, so this is strong evidence of a stock build. It
-does not rule out a silent logic change with no new strings. Two things would
-close that gap: diffing symbol tables and disassembly against Waydroid's own
-prebuilt `lineage-18.1` `waydroid_arm64` vendor image from SourceForge, which
-comes from the same tree, or a public source tree for the image, which the
-README says exists.
+Valve's own code is therefore larger than the depot suggested. Besides the
+launcher, `sysbake`, the OpenXR and OpenVR redirection, the FDM and RPO layers
+and the layer system, the Steamworks bridge, and the overlay contents, it
+includes the patch set over Waydroid's tree.
 
 ## Security model
 
@@ -554,9 +581,13 @@ for one game.
 
 - Rootless user namespaces, `--read-only --rootfs "$ROOTFS":O`,
   `--env-host=false`, and `/dev/kmsg` replaced by `/dev/null`.
-- A subtractive seccomp profile: default allow, 22 syscalls blocked, namely
-  `open_by_handle_at`, clock setting, and module loading plus kexec. An
-  allowlist is impractical against Android's syscall surface.
+- A subtractive seccomp profile, default allow, in three groups. Module
+  loading, kexec, `_sysctl`, and `reboot` fail with `EPERM`, and
+  `open_by_handle_at` with `ENOSYS`. The third group returns success without
+  doing anything: setting the clock, the kernel keyring, swap, and
+  `setpriority` and `nice`. That is 22 syscalls in v2.8.14. v3.0 adds the
+  `chown` and `setuid` families to the fake-success group. An allowlist is
+  impractical against Android's syscall surface.
 - Networking since v2.8 is pasta, IPv4-only, with no bridge device and no NAT
   rule. Until v2.8.10 the container sat on a link-local `169.254.233.0/24`
   subnet. v2.8.11 gives it the host's own address instead, read from the host's
@@ -566,10 +597,13 @@ for one game.
 
 ### Inside
 
-Android's own controls are switched off on purpose. SELinux policy is in the
-image but a rootless container cannot load it. Permissions are granted
-wholesale by the `cmd` wrapper. Camera, OTA dexopt, and network time are
-disabled.
+Android's own controls are switched off on purpose. Waydroid's patches
+already disable SELinux checks in installd, vold, the service managers, and
+parts of the framework, and a rootless container could not load the policy
+anyway. Every app shares one
+Linux user, with UIDs faked in libc. Permissions are granted wholesale by the
+`cmd` wrapper, and the framework check that would stop some of those grants is
+patched out.
 
 This division only holds because one game gets one container. If two apps
 shared one, the disabled Android controls would matter again.
@@ -593,7 +627,8 @@ largest so far.
   CryptKeeper on a timeout. The other restarts any service logged as "Forcing
   bringing down service", except its name-extraction pipeline ends in
   `head -n0 >/dev/null`, so it always runs `am start -n ""`. The wait-for-match
-  idiom was pasted where a capture belonged.
+  idiom was pasted where a capture belonged. v3.0 rewrote the wait as a
+  `grep -q` conditional but kept the broken capture.
 - `system/apex/` holds directories, not `.apex` images. There is no `apexd` in
   the container. `start_early_debug_container` relies on this: it symlinks
   `com.android.runtime` so `/system/bin/sh` runs before Android boots.
@@ -611,21 +646,24 @@ The harder question was `android_vendor_waydroid`, whose patches are in the
 shipped framework and which is GPL-3.0 with a commercial dual license. The first
 builds shipped no GPL-3 text, no attribution, and no source offer.
 
-v2.7.14 added three files at the top of the depot. `LICENSE.md` is the index:
+v2.7.14 added license files to the depot: an index, a BSD-3-Clause
+`LICENSE.lepton` for the tool, and `LICENSE.AOSP.image` for the image. The
+README called the tool MIT, which did not match. The public repository has
+settled that and moved the files. Its `LICENSE.md` now reads:
 
 ```
-Copyright (c) 2025, Valve Corporation
+Copyright (c) 2026, Valve Corporation
 All rights reserved.
 
 Redistribution and use of Lepton in source and binary forms is governed
 by a variety of licenses.
 
-Refer to the contents of `LICENSE.lepton` for the license for the top level contents of the Lepton project and the compat tool.
-Refer to the contents of `LICENSE.AOSP.image` for the license of the AOSP image.
+Refer to the contents of `LICENSES/compat_tool.md` for the license for the top level contents of the Lepton project and the compat tool.
+Refer to the contents of `LICENSES/image.md` for the license of the AOSP image.
 ```
 
-`LICENSE.lepton` is the BSD-3-Clause text with Valve's copyright. And
-`LICENSE.AOSP.image`, the one that matters for the image, reads in full:
+`LICENSES/compat_tool.md` is the MIT license text, so the README is now right.
+`LICENSES/image.md`, the one that matters for the image, reads in full:
 
 ```
 The Lepton AOSP image uses source code from the following opensource projects with their own licenses:
@@ -635,39 +673,46 @@ The Lepton AOSP image uses source code from the following opensource projects wi
     - https://github.com/waydroid/android_vendor_waydroid/tree/lineage-18.1/LICENSES
     - https://github.com/waydroid/android_hardware_waydroid http://www.apache.org/licenses/LICENSE-2.0
     - https://github.com/waydroid/android_device_waydroid_waydroid/tree/lineage-18.1 http://www.apache.org/licenses/LICENSE-2.0
+    - Lepton includes patches from Waydroid which originate from the Anbox, Halium or Hybris projects.
 * Boringdroid: https://github.com/boringdroid/boringdroid/blob/master/LICENSE
+* LineageOS: Licenses can be found in the individual repositories under: https://github.com/LineageOS
 
 The AOSP image, as a product of the combination of these opensource projects, is released under a GPL-3.0 license.
+The GPL-3.0 license text can be read here: https://www.gnu.org/licenses/gpl-3.0.html
 ```
 
-Valve took the GPL path, then. The last bullet deserves attention on its own:
-**Boringdroid is credited by name, with a link to its license**, next to the
-three Waydroid repos. The credit matches the binaries. The freeform-window patch series that Waydroid
-carries as `base-patches-30` came from Boringdroid, and its markers
+Valve took the GPL path. Next to the three Waydroid repos,
+**Boringdroid is credited by name, with a link to its license**. The credit
+matches the build. Waydroid's freeform-window patch series, which came from
+Boringdroid, is compiled into the image, and its markers
 (`BoringdroidManager`, `boring_config_navBarLayout`, `decor_back_button`) are
-present in the shipped `framework.jar`, `services.jar`, and `SystemUI.apk`.
+in the shipped `framework.jar`, `services.jar`, and `SystemUI.apk`. Compared
+with the depot's file, the repository adds the LineageOS line, the Anbox,
+Halium, and Hybris line, and the link to the GPL-3.0 text.
 
-The README states the split in prose too: the root filesystem "is therefore
-released under a GPL-3.0 license", while the compatibility tool "is released
-under the MIT license". That second half is a slip; `LICENSE.lepton` is BSD-3-Clause.
+Two commits made the moves, each saying in its subject line that it was an
+attempt "to defeat gitlab license detection".
 
-Three things remain open as of v2.8.14. The GPL-3 text is not shipped, only
-named and linked. No source repository URL appears anywhere, although the README
-describes an `image` and `compat_tool` repository split. And the MIT/BSD
-mislabel is unfixed.
+Two of the three gaps the depot left are closed. The source is public, and
+the tool license matches the README. The GPL-3.0 text is still linked rather
+than included. The README still points at `LICENSE.AOSP.image` and
+`LICENSE.lepton`, which the repository no longer has, and Steam's v2.8.14 depot
+still carries the old BSD file until the next release reaches it.
 
-It reads like a source release in progress. This is technical license analysis,
-not legal advice.
+This is technical license analysis, not legal advice.
 
 ## Closing
 
 Most of Lepton is reused. Waydroid's guest image already ran Android on
-mainline Linux graphics, and Lepton ships it with the community patches intact.
+mainline Linux graphics, and Lepton keeps its patches. Valve then reverts
+Waydroid's host integration, strips services, fakes Android's UIDs so one Linux
+user can stand in for every app, and retunes the display and audio HALs.
 
-Valve's own code is comparatively small: podman orchestration in bash,
-launch-time composition so the depot never changes, a pre-baked `/data`, a
-layer system built on Android's GPU debug settings, and the OpenXR runtime
-manifest that points every Android VR game at SteamVR.
+The depot showed the rest from the start. It is podman orchestration in bash, launch-time composition so the depot never
+changes, a pre-baked `/data`, a layer system built on Android's GPU debug
+settings, and the OpenXR runtime manifest that points every Android VR game at
+SteamVR. The
+same compat tool already boots an Android 14 image in Valve's CI.
 
 The composition model is the part that transfers to other projects. Nothing in
 the image is edited. Every host-specific or launch-specific difference is a
