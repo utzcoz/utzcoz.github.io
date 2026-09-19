@@ -212,6 +212,25 @@
     .dot { opacity: 0.5; }
   }
 
+  // Author and date stay together, as do edited date and reading time, so a
+  // wrapped line never starts or ends with a separator dot.
+  &__group {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $spacing-sm;
+  }
+
+  @media (max-width: $bp-mobile) {
+    &__meta--edited {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    &__meta--edited &__joint { display: none; }
+  }
+
   &__tags {
     display: flex;
     justify-content: center;
