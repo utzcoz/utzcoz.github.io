@@ -9,9 +9,7 @@ mermaid: true
 ## Overview
 
 Lepton is Valve's compatibility tool for running unmodified Android APKs as
-Steam titles on Linux. It appeared on Steam on 2026-08-02, alongside the FEX
-x86 translator, as part of the Steam Frame headset's software stack, and it
-also runs on desktop SteamOS and Linux.
+Steam titles on Linux.
 
 Lepton boots a Waydroid-derived Android 11 image in a rootless podman
 container, bridges graphics, audio, input, and networking to the host, and
