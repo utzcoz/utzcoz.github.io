@@ -126,8 +126,10 @@
   }
 }
 
-// Posts that number their own headings: no generated numbers in either TOC.
+// Posts with manual or disabled section numbers: no generated numbers in either TOC.
 .has-manual-numbers .toc-sidebar li a::before,
-.has-manual-numbers .toc-mobile li a::before {
+.has-manual-numbers .toc-mobile li a::before,
+.no-section-numbers .toc-sidebar li a::before,
+.no-section-numbers .toc-mobile li a::before {
   content: none;
 }

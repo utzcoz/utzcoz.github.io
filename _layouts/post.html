@@ -2,7 +2,7 @@
 layout: default
 ---
 
-<div class="post-layout">
+<div class="post-layout{% if page.unnumbered_sections %} no-section-numbers{% endif %}">
   <aside class="post-toc" aria-label="Table of contents">
     <nav class="toc-sidebar"></nav>
   </aside>

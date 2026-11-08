@@ -325,9 +325,10 @@
   }
 }
 
-// Posts that already number their own headings: no generated numbers.
+// Posts with manual or disabled section numbers: no generated numbers.
 // (The TOC overrides live at the end of mobile.scss so they win the cascade.)
-.has-manual-numbers .post .post-content {
+.has-manual-numbers .post .post-content,
+.no-section-numbers .post .post-content {
   h2::before, h3::before { content: none; }
 }
 
