@@ -19,7 +19,7 @@ VM guests and standalone macOS apps share the same `libgfxstream_backend` host r
 
 ```mermaid
 flowchart TB
-    subgraph vm["VM Guest (e.g. gbos-vm)"]
+    subgraph vm["VM Path (e.g. gbos-vm)"]
         direction TB
         AndApp["Android / Linux App<br/>Vulkan / ANGLE GLES"]
         AndGuest["Mesa gfxstream guest<br/>Vulkan ICD"]
@@ -51,7 +51,7 @@ flowchart TB
     Kumquat --> host
 ```
 
-- **VM guest:** A Linux or Android guest talks to `virtio-gpu`. QEMU's `virtio-gpu-rutabaga` device calls `rutabaga_gfx_ffi`, which sends commands straight to `libgfxstream_backend` without `virglrenderer`.
+- **VM path:** A Linux or Android guest talks to `virtio-gpu`. QEMU's `virtio-gpu-rutabaga` device calls `rutabaga_gfx_ffi`, which sends commands straight to `libgfxstream_backend` without `virglrenderer`.
 - **Standalone macOS loop (`kumquat`):** macOS has no kernel `virtio-gpu` driver, so Mesa's `gfxstream` guest defaults to `kumquat`. It talks to a local `kumquat_virtio` server over Mach ports and POSIX shared memory, then presents through Metal WSI.
 
 ## Upstream changes
@@ -97,7 +97,7 @@ sequenceDiagram
 
 [Rarasinhoo/gbos-vm](https://github.com/Rarasinhoo/gbos-vm/tree/main) runs unmodified Android 17 Googlebook OS system partitions on Apple Silicon at up to 120 Hz. The guest uses Cuttlefish kernel modules, vendor HALs, and a standalone build of AOSP Mesa's Android `gfxstream` Vulkan driver (`vulkan.ranchu.so`, with a small patch).
 
-The host runs UTM's QEMU 10.0.12 (HVF, built as a shared library) with upstream `rutabaga_gfx_ffi` and `libgfxstream_backend` over MoltenVK, enabling `VulkanAllocateHostMemory`, `VulkanVirtualQueue`, and `gbos-vm`'s own zero-copy Metal scanout patch.
+The host runs UTM's QEMU 10.0.12 (HVF, built as a shared library) with upstream `rutabaga_gfx_ffi` and `libgfxstream_backend` over MoltenVK, enabling `VulkanAllocateHostMemory` and `VulkanVirtualQueue`, plus `gbos-vm`'s own zero-copy Metal scanout patch.
 
 The full `gbos-vm` pipeline looks like this:
 
@@ -163,7 +163,7 @@ Running the shareware `pak0.pak` through `kumquat_virtio` in a 1280×720 window 
 
 ### `vkcube`, `dEQP-VK`, and Sascha Willems Vulkan samples
 
-`vkcube` works on both host drivers. The `dEQP-VK` smoke and Metal WSI subset (`dEQP-VK.api.smoke.*` and `dEQP-VK.wsi.metal.*`) has zero failures: 32 of 45 pass on KosmicKrisp and 33 of 45 on MoltenVK, while the rest report not supported. Before the extension update below, I also ran 99 of [Sascha Willems' Vulkan samples](https://github.com/SaschaWillems/Vulkan) (300 frames each) natively and through `gfxstream`:
+`vkcube` works on both host drivers. The `dEQP-VK` smoke and Metal WSI subset (`dEQP-VK.api.smoke.*`, `dEQP-VK.wsi.metal.surface.*`, and basic `swapchain` create, acquire, and render cases) has zero failures: 32 of 45 pass on KosmicKrisp and 33 of 45 on MoltenVK, while the rest report not supported. Before the extension update below, I also ran 99 of [Sascha Willems' Vulkan samples](https://github.com/SaschaWillems/Vulkan) (300 frames each) natively and through `gfxstream`:
 
 | Mode | Passing (of 99) |
 | --- | --- |
@@ -172,7 +172,7 @@ Running the shareware `pak0.pak` through `kumquat_virtio` in a 1280×720 window 
 | Native MoltenVK | 73 |
 | `gfxstream` → MoltenVK | 64 |
 
-The 25–26 native failures come from features Metal lacks, such as ray tracing and mesh shaders. The extra `gfxstream` failures came from extension filtering, since the host only advertises extensions its generated decoder knows. Mesa [!44894](https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/44894) exposed six KHR extensions that both KosmicKrisp and MoltenVK already support: `VK_KHR_timeline_semaphore`, `VK_KHR_push_descriptor`, `VK_KHR_depth_stencil_resolve`, `VK_KHR_dynamic_rendering_local_read`, `VK_KHR_device_group_creation`, and `VK_KHR_device_group`. With the matching host decoder update (now in `google/gfxstream`), KosmicKrisp passes rose from 64 to 70 of 99.
+The 25–26 native failures come from features Metal lacks, such as ray tracing and mesh shaders. Most of the extra `gfxstream` failures came from extension filtering, since the host only advertises extensions its generated decoder knows. Mesa [!44894](https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/44894) exposed six KHR extensions that both KosmicKrisp and MoltenVK already support: `VK_KHR_timeline_semaphore`, `VK_KHR_push_descriptor`, `VK_KHR_depth_stencil_resolve`, `VK_KHR_dynamic_rendering_local_read`, `VK_KHR_device_group_creation`, and `VK_KHR_device_group`. With the matching host decoder update (now in `google/gfxstream`), KosmicKrisp passes rose from 64 to 70 of 99.
 
 Captured on an Apple M2 Pro through `kumquat_virtio` and KosmicKrisp:
 
@@ -186,13 +186,14 @@ Captured on an Apple M2 Pro through `kumquat_virtio` and KosmicKrisp:
 
 ## Running it locally
 
-Build `kumquat_virtio` from `google/gfxstream` and the guest and host drivers from Mesa. KosmicKrisp needs Homebrew `llvm`, `spirv-llvm-translator`, and `libclc`; drop `kosmickrisp` from `-Dvulkan-drivers` if you use MoltenVK on the host:
+Build `kumquat_virtio` from `google/gfxstream` and the guest and host drivers from Mesa. KosmicKrisp needs Homebrew `llvm`, `spirv-llvm-translator`, and `spirv-tools`, with keg-only `llvm` on `PATH`; drop `kosmickrisp` from `-Dvulkan-drivers` if you use MoltenVK on the host:
 
 ```bash
 # In google/gfxstream
 bazel build @rutabaga//:rutabaga_gfx_kumquat_server
 
 # In mesa
+PATH="$(brew --prefix llvm)/bin:$PATH" \
 meson setup build \
   -Dvulkan-drivers=gfxstream,kosmickrisp \
   -Dgallium-drivers= \
@@ -224,7 +225,7 @@ On November 13, 2026, Meta Reality Labs published [Cuttlefish on Mac](https://en
 
 Most of their changes are in the VMM and Cuttlefish host tools. They enabled QEMU's `vhost-user` frontends, `libvhost-user`, and `contrib/vhost-user-blk` on macOS. For Cuttlefish daemons such as `vhost-device-vsock`, they added a Rust `epoll`-over-`kqueue` shim and C++ `kqueue` replacements. In QEMU 9.2, they raised HVF memory-region slots from 32 to 512 ([`92be519d5f97`](https://github.com/facebookincubator/qemu-wearables/commit/92be519d5f97)), updated the Cocoa display (BGRA, click-as-touch, `-g` geometry, window resize), and added JIT code signing.
 
-For graphics, Meta built on AOSP Android 16's `external/crosvm` and `hardware/google/gfxstream`, which already had Apple CMake support. [crosvm/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/external/crosvm/0001-Fix-rutabaga-gfx-FFI-Path-build-errors.patch) fixed a Cargo build error in `rutabaga_gfx_ffi`, [gfxstream/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/hardware/google/gfxstream/0001-Add-graphics-detection-to-mac-and-verbose-logging-fl.patch) ported `gfxstream_graphics_detector` by probing `/opt/homebrew/lib/libMoltenVK.dylib`, and [mesa3d/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/external/mesa3d/0001-make-mesa3d-darwin-compatible.patch) got Lavapipe compiling on macOS. In `qemu-wearables`, [`605dafded0dc`](https://github.com/facebookincubator/qemu-wearables/commit/605dafded0dc) defined `RUTABAGA_GFX_FFI_UNSTABLE` in `virtio-gpu-rutabaga.c` to match the Rust FFI's GPU fence fields. [cuttlefish/0028](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/device/google/cuttlefish/0028-Enable-MoltenVK-graphics-with-rutabaga.patch) removed macOS guards so Cuttlefish uses AOSP's `virtio-gpu-rutabaga` config (`hostmem=256M`, `x-gfxstream-composer=on`) and points `VK_DRIVER_FILES` at `MoltenVK_icd.json` or `lvp_icd.aarch64.json`.
+For graphics, Meta built on AOSP Android 16's `external/crosvm` and `hardware/google/gfxstream`, where `gfxstream` already had Apple CMake support. [crosvm/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/external/crosvm/0001-Fix-rutabaga-gfx-FFI-Path-build-errors.patch) fixed a Cargo build error in `rutabaga_gfx_ffi`, [gfxstream/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/hardware/google/gfxstream/0001-Add-graphics-detection-to-mac-and-verbose-logging-fl.patch) ported `gfxstream_graphics_detector` by probing `/opt/homebrew/lib/libMoltenVK.dylib`, and [mesa3d/0001](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/external/mesa3d/0001-make-mesa3d-darwin-compatible.patch) got Lavapipe compiling on macOS. In `qemu-wearables`, [`605dafded0dc`](https://github.com/facebookincubator/qemu-wearables/commit/605dafded0dc) defined `RUTABAGA_GFX_FFI_UNSTABLE` in `virtio-gpu-rutabaga.c` to match the Rust FFI's GPU fence fields. [cuttlefish/0028](https://github.com/facebookincubator/cuttlefish-wearables/blob/main/patches/device/google/cuttlefish/0028-Enable-MoltenVK-graphics-with-rutabaga.patch) removed macOS guards so Cuttlefish uses AOSP's `virtio-gpu-rutabaga` config (`hostmem=256M`, `x-gfxstream-composer=on`) and points `VK_DRIVER_FILES` at `MoltenVK_icd.json` or `lvp_icd.aarch64.json`.
 
 `cuttlefish-wearables` documents how to build the Soong host package (`cvd-host_package.tar.gz`) and points to `qemu-wearables`, a publish-only mirror without a standalone macOS build script for QEMU and `rutabaga_gfx_ffi`.
 
