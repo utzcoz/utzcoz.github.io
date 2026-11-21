@@ -4,6 +4,18 @@
 
 ### Install dependencies
 
+#### macOS (Homebrew)
+
+Install Ruby with Homebrew and install the gems from `Gemfile` (no `sudo` needed):
+
+```shell
+brew install ruby
+export PATH="$(brew --prefix ruby)/bin:$PATH"
+bundle install
+```
+
+#### Linux
+
 ```shell
 source install-dependencies.sh
 ```
