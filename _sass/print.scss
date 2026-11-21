@@ -39,7 +39,10 @@
   .mermaid-zoom-overlay,
   .post-toc,
   .toc-mobile,
-  .toc-sidebar {
+  .toc-sidebar,
+  .skip-link,
+  .code-copy,
+  .heading-anchor {
     display: none !important;
   }
 
@@ -71,13 +74,13 @@
   // ---------------------------------------------------------------------------
   // Typography adjustments for A4
   // ---------------------------------------------------------------------------
-  .post-title,
+  .post-header__title,
   .page-title {
     font-size: 18pt;
     line-height: 1.3;
   }
 
-  .post-meta {
+  .post-header__meta {
     font-size: 9pt;
     color: #555555;
   }

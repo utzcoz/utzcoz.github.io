@@ -13,9 +13,11 @@
 // Color Tokens as CSS Custom Properties
 // =============================================================================
 :root {
+  color-scheme: light;
   --color-primary: #{$light-primary};
   --color-on-primary: #{$light-on-primary};
   --color-primary-hover: #{$light-primary-hover};
+  --color-link-underline: #{$light-link-underline};
   --color-accent-bg: #{$light-accent-bg};
   --color-accent-bg-hover: #{$light-accent-bg-hover};
   --color-surface: #{$light-surface};
@@ -24,6 +26,7 @@
   --color-surface-container: #{$light-surface-container};
   --color-surface-container-high: #{$light-surface-container-high};
   --color-surface-container-highest: #{$light-surface-container-highest};
+  --color-code-bg: #{$light-code-bg};
   --color-outline: #{$light-outline};
   --color-outline-variant: #{$light-outline-variant};
   --color-error: #{$light-error};
@@ -32,9 +35,11 @@
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --color-primary: #{$dark-primary};
   --color-on-primary: #{$dark-on-primary};
   --color-primary-hover: #{$dark-primary-hover};
+  --color-link-underline: #{$dark-link-underline};
   --color-accent-bg: #{$dark-accent-bg};
   --color-accent-bg-hover: #{$dark-accent-bg-hover};
   --color-surface: #{$dark-surface};
@@ -43,6 +48,7 @@
   --color-surface-container: #{$dark-surface-container};
   --color-surface-container-high: #{$dark-surface-container-high};
   --color-surface-container-highest: #{$dark-surface-container-highest};
+  --color-code-bg: #{$dark-code-bg};
   --color-outline: #{$dark-outline};
   --color-outline-variant: #{$dark-outline-variant};
   --color-error: #{$dark-error};
@@ -57,15 +63,22 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
 body {
   font-family: $font-family;
   font-size: $font-size-base;
   font-weight: $font-weight-regular;
   line-height: $line-height-base;
+  font-optical-sizing: auto;
   color: var(--color-on-surface);
   background-color: var(--color-surface);
-  transition: background-color $duration-normal $easing-standard,
-              color $duration-normal $easing-standard;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern", "liga", "calt";
@@ -73,36 +86,68 @@ body {
 }
 
 // =============================================================================
-// Typography — page-title style on h1/h2
+// Accessibility: skip link and focus rings
+// =============================================================================
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: $spacing-sm;
+  z-index: 1000;
+  padding: $spacing-sm $spacing-md;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: $radius-sm;
+  font-family: $font-family-sans;
+  font-size: $font-size-sm;
+  font-weight: 500;
+
+  &:focus {
+    left: $spacing-md;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: $radius-xs;
+}
+
+// =============================================================================
+// Typography
 // =============================================================================
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-on-surface);
   font-family: $font-family-serif;
   font-weight: $heading-weight;
-  letter-spacing: 0;
-  margin-top: 1.8em;
-  margin-bottom: 0.5em;
+  font-optical-sizing: auto;
+  margin-top: 2em;
+  margin-bottom: 0.55em;
   line-height: $line-height-tight;
   text-wrap: balance;
 }
 
-h1 { font-size: 1.9rem; }
-h2 { font-size: 1.35rem; }
-h3 { font-size: 1.1rem; }
-h4 { font-size: 1rem; }
-h5 { font-size: 0.95rem; }
-h6 { font-size: 0.9rem; }
+h1 { font-size: 2.125rem; letter-spacing: -0.018em; }
+h2 { font-size: 1.45rem;  letter-spacing: -0.012em; }
+h3 { font-size: 1.15rem;  letter-spacing: -0.008em; }
+h4 { font-size: 1.02rem;  letter-spacing: -0.004em; }
+h5 { font-size: 0.96rem; }
+h6 { font-size: 0.92rem; }
 
 // =============================================================================
-// Links — blue, underline on hover, visited purple
+// Links
 // =============================================================================
 a {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color $duration-fast $easing-standard;
+  transition: color $duration-fast $easing-standard,
+              text-decoration-color $duration-fast $easing-standard;
 
   &:hover {
+    color: var(--color-primary-hover);
     text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
   }
 
   &:visited {
@@ -114,16 +159,16 @@ a {
 // Body text
 // =============================================================================
 p {
-  margin-bottom: 1.2em;
+  margin-bottom: 1.15em;
 }
 
 ul, ol {
   padding-left: 1.5em;
-  margin-bottom: 1.2em;
+  margin-bottom: 1.15em;
 }
 
 li {
-  margin-bottom: 0.3em;
+  margin-bottom: 0.35em;
 }
 
 // =============================================================================
@@ -139,8 +184,8 @@ img {
 // Blockquotes
 // =============================================================================
 blockquote {
-  border-left: 2px solid var(--color-outline);
-  padding: $spacing-sm $spacing-lg;
+  border-left: 3px solid var(--color-outline);
+  padding: $spacing-xs $spacing-lg;
   margin: $spacing-lg 0;
   color: var(--color-on-surface-variant);
 
@@ -150,26 +195,25 @@ blockquote {
 }
 
 // =============================================================================
-// Code — thin border + soft fill panel for blocks; tinted inline code
+// Code — quiet soft tint for inline code; clean bordered panel for blocks
 // =============================================================================
 code {
   font-family: $font-family-mono;
-  font-size: 0.88em;
-  background: var(--color-surface-container);
-  border: 1px solid var(--color-outline-variant);
-  padding: 1px 4px;
-  border-radius: $radius-xs;
+  font-size: 0.81em;
+  background: var(--color-code-bg);
+  padding: 0.13em 0.36em;
+  border-radius: $radius-sm;
   color: var(--color-on-surface);
 }
 
 pre {
   background: var(--color-surface-container);
   border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-xs;
-  padding: $spacing-md $spacing-md + 2;
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-md + 4;
   overflow-x: auto;
   margin: 1.5em 0;
-  line-height: 1.55;
+  line-height: 1.62;
   font-size: $font-size-sm;
   font-family: $font-family-mono;
 
@@ -177,6 +221,7 @@ pre {
     background: none;
     border: 0;
     padding: 0;
+    border-radius: 0;
     font-size: inherit;
     color: inherit;
   }
@@ -186,11 +231,13 @@ pre {
 // Scrollbar styling
 // =============================================================================
 pre,
-.table-wrapper {
-  scrollbar-color: var(--color-outline) var(--color-surface-container);
+.table-wrapper,
+.mermaid {
+  scrollbar-color: var(--color-outline) transparent;
+  scrollbar-width: thin;
 
   &::-webkit-scrollbar {
-    height: 8px;
+    height: 7px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -199,7 +246,7 @@ pre,
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--color-surface-container);
+    background: transparent;
   }
 }
 
@@ -208,30 +255,53 @@ pre,
 // =============================================================================
 .table-wrapper {
   overflow-x: auto;
-  margin-bottom: 1.5em;
+  margin: 1.5em 0;
 
-  table { margin-bottom: 0; }
+  table { margin: 0; }
 }
 
-// Booktabs-style tables: rules above and below the header, and at the foot.
+// Booktabs-style tables: crisp top/bottom rules + quiet row hairlines.
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0 auto 1.5em;
+  margin: 1.5em auto;
   border-top: 1.5px solid var(--color-on-surface);
   border-bottom: 1.5px solid var(--color-on-surface);
-  font-size: $font-size-sm;
-  line-height: 1.45;
+  font-family: $font-family-sans;
+  font-size: 13.5px;
+  line-height: 1.5;
 
   th, td {
-    padding: 6px 10px;
+    padding: 9px 10px;
     text-align: left;
     vertical-align: top;
+
+    &:first-child { padding-left: 4px; }
+    &:last-child { padding-right: 4px; }
+  }
+
+  code {
+    font-size: 0.84em;
+    padding: 0.1em 0.3em;
+    overflow-wrap: anywhere;
   }
 
   th {
     font-weight: 600;
     border-bottom: 1px solid var(--color-on-surface);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--color-outline-variant);
+    transition: background-color $duration-fast $easing-standard;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &:hover {
+      background-color: var(--color-surface-container);
+    }
   }
 }
 
@@ -253,10 +323,18 @@ hr {
 }
 
 // =============================================================================
-// Mermaid diagram click-to-zoom
+// Mermaid diagrams + click-to-zoom
 // =============================================================================
 .mermaid {
   cursor: zoom-in;
+  overflow-x: auto;
+  overflow-wrap: normal;
+  word-break: normal;
+
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 .mermaid-zoom-overlay {
@@ -291,22 +369,25 @@ hr {
     position: fixed;
     top: 1rem;
     right: 1rem;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid var(--color-outline);
-    border-radius: $radius-sm;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--color-outline-variant);
+    border-radius: $radius-md;
     background: var(--color-surface);
     color: var(--color-on-surface);
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     line-height: 1;
     cursor: pointer;
     z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color $duration-fast $easing-standard,
+                border-color $duration-fast $easing-standard;
 
     &:hover {
       background: var(--color-surface-container);
+      border-color: var(--color-outline);
     }
   }
 
@@ -315,8 +396,14 @@ hr {
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--color-surface-container);
+    border: 1px solid var(--color-outline-variant);
     color: var(--color-on-surface-variant);
+    font-family: $font-family-sans;
     font-size: $font-size-xs;
+    white-space: nowrap;
     pointer-events: none;
     z-index: 10000;
   }

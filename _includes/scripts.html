@@ -5,24 +5,31 @@
 
   function updateIcons() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
     for (var i = 0; i < toggles.length; i++) {
       var sun  = toggles[i].querySelector('.icon-sun');
       var moon = toggles[i].querySelector('.icon-moon');
-      if (sun)  sun.style.display  = isDark ? 'none'  : 'block';
-      if (moon) moon.style.display = isDark ? 'block' : 'none';
+      if (sun)  sun.style.display  = isDark ? 'block' : 'none';
+      if (moon) moon.style.display = isDark ? 'none'  : 'block';
+      toggles[i].setAttribute('aria-label', label);
+      toggles[i].setAttribute('title', label);
     }
   }
 
   function flipTheme() {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-    } else {
+    var nextDark = !isDark;
+    if (nextDark) {
       document.documentElement.setAttribute('data-theme', 'dark');
       localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
     }
     updateIcons();
+    if (typeof window.__rerenderMermaid === 'function') {
+      window.__rerenderMermaid(nextDark);
+    }
   }
 
   updateIcons();
@@ -44,13 +51,14 @@
 })();
 </script>
 <script>
-// Article TOC — populate desktop sidebar and mobile <details> from one builder
+// Article TOC, heading hover anchors, and scrollspy
 (function() {
+  var tocAside = document.querySelector('.post-toc');
   var sidebar = document.querySelector('.toc-sidebar');
-  var mobile  = document.querySelector('.toc-mobile nav');
+  var mobileDetails = document.querySelector('.toc-mobile');
+  var mobile = document.querySelector('.toc-mobile nav');
   var content = document.querySelector('.post-content');
   if (!content) return;
-  if (!sidebar && !mobile) return;
 
   var headings = content.querySelectorAll('h2, h3');
 
@@ -62,81 +70,134 @@
     layout.classList.add('has-manual-numbers');
   }
 
-  if (headings.length < 2) return;
-
   for (var i = 0; i < headings.length; i++) {
     if (!headings[i].id) {
       headings[i].id = 'heading-' + i;
     }
   }
 
-  var listHtml = '<ol>';
-  for (var i = 0; i < headings.length; i++) {
-    var h = headings[i];
-    var cls = h.tagName === 'H3' ? ' class="toc-h3"' : '';
-    listHtml += '<li' + cls + '><a href="#' + h.id + '">' + h.textContent + '</a></li>';
-  }
-  listHtml += '</ol>';
-
-  if (sidebar) sidebar.innerHTML = '<div class="toc-title">On this page</div>' + listHtml;
-  if (mobile)  mobile.innerHTML  = listHtml;
-
-  var allLinks = document.querySelectorAll('.toc-sidebar a, .toc-mobile nav a');
-  var headingMap = {};
-  for (var i = 0; i < allLinks.length; i++) {
-    var id = allLinks[i].getAttribute('href').slice(1);
-    if (!headingMap[id]) headingMap[id] = [];
-    headingMap[id].push(allLinks[i]);
-  }
-
-  var currentActive = null;
-
-  var observer = new IntersectionObserver(function(entries) {
-    var visible = [];
-    for (var i = 0; i < entries.length; i++) {
-      if (entries[i].isIntersecting) {
-        visible.push(entries[i]);
+  // Build TOC before appending heading anchor icons so labels stay clean.
+  if (headings.length >= 2 && (sidebar || mobile)) {
+    function buildList() {
+      var ol = document.createElement('ol');
+      for (var j = 0; j < headings.length; j++) {
+        var h = headings[j];
+        var li = document.createElement('li');
+        if (h.tagName === 'H3') li.className = 'toc-h3';
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent.trim();
+        li.appendChild(a);
+        ol.appendChild(li);
       }
+      return ol;
     }
 
-    if (visible.length > 0) {
-      visible.sort(function(a, b) {
-        return a.boundingClientRect.top - b.boundingClientRect.top;
-      });
-      var id = visible[0].target.id;
-      if (currentActive !== id) {
-        if (currentActive && headingMap[currentActive]) {
-          headingMap[currentActive].forEach(function(a) { a.classList.remove('toc-active'); });
-        }
-        currentActive = id;
-        if (headingMap[id]) {
-          headingMap[id].forEach(function(a) { a.classList.add('toc-active'); });
-          if (sidebar) {
-            var sidebarLink = sidebar.querySelector('a.toc-active');
-            if (sidebarLink) sidebarLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    if (sidebar) {
+      sidebar.innerHTML = '';
+      var title = document.createElement('div');
+      title.className = 'toc-title';
+      title.textContent = 'On this page';
+      sidebar.appendChild(title);
+      sidebar.appendChild(buildList());
+    }
+    if (mobile && mobileDetails) {
+      mobile.innerHTML = '';
+      mobile.appendChild(buildList());
+      mobileDetails.classList.add('is-ready');
+    }
+
+    var allLinks = document.querySelectorAll('.toc-sidebar a, .toc-mobile nav a');
+    var headingMap = {};
+    for (var k = 0; k < allLinks.length; k++) {
+      var id = allLinks[k].getAttribute('href').slice(1);
+      if (!headingMap[id]) headingMap[id] = [];
+      headingMap[id].push(allLinks[k]);
+    }
+
+    var currentActive = null;
+    function setActive(id) {
+      if (currentActive === id) return;
+      if (currentActive && headingMap[currentActive]) {
+        headingMap[currentActive].forEach(function(a) { a.classList.remove('toc-active'); });
+      }
+      currentActive = id;
+      if (id && headingMap[id]) {
+        headingMap[id].forEach(function(a) { a.classList.add('toc-active'); });
+        if (tocAside && sidebar && tocAside.scrollHeight > tocAside.clientHeight) {
+          var sidebarLink = sidebar.querySelector('a.toc-active');
+          if (sidebarLink) {
+            var asideRect = tocAside.getBoundingClientRect();
+            var linkRect = sidebarLink.getBoundingClientRect();
+            if (linkRect.top < asideRect.top) {
+              tocAside.scrollTop -= (asideRect.top - linkRect.top + 16);
+            } else if (linkRect.bottom > asideRect.bottom) {
+              tocAside.scrollTop += (linkRect.bottom - asideRect.bottom + 16);
+            }
           }
         }
       }
     }
-  }, {
-    rootMargin: '-' + 64 + 'px 0px -60% 0px',
-    threshold: 0
-  });
 
-  for (var i = 0; i < headings.length; i++) {
-    observer.observe(headings[i]);
+    var scrollTick = false;
+    function updateActiveHeading() {
+      scrollTick = false;
+      var activeId = headings[0].id;
+      var nearBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 24);
+      if (nearBottom) {
+        activeId = headings[headings.length - 1].id;
+      } else {
+        for (var m = 0; m < headings.length; m++) {
+          if (headings[m].getBoundingClientRect().top <= 100) {
+            activeId = headings[m].id;
+          } else {
+            break;
+          }
+        }
+      }
+      setActive(activeId);
+    }
+
+    window.__updateTocActive = updateActiveHeading;
+    window.addEventListener('scroll', function() {
+      if (!scrollTick) {
+        scrollTick = true;
+        requestAnimationFrame(updateActiveHeading);
+      }
+    }, { passive: true });
+    window.addEventListener('resize', updateActiveHeading, { passive: true });
+    window.addEventListener('load', updateActiveHeading);
+    window.addEventListener('hashchange', updateActiveHeading);
+    updateActiveHeading();
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('.toc-sidebar a, .toc-mobile nav a');
+      if (!link) return;
+      e.preventDefault();
+      var target = document.getElementById(link.getAttribute('href').slice(1));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', link.getAttribute('href'));
+        if (mobileDetails && link.closest('.toc-mobile')) {
+          mobileDetails.removeAttribute('open');
+        }
+      }
+    });
+  } else if (tocAside) {
+    tocAside.classList.add('is-empty');
   }
 
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('.toc-sidebar a, .toc-mobile nav a');
-    if (!link) return;
-    e.preventDefault();
-    var target = document.getElementById(link.getAttribute('href').slice(1));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      history.replaceState(null, '', link.getAttribute('href'));
+  // Subtle hover anchor links on post headings
+  if (content.closest('.post')) {
+    for (var n = 0; n < headings.length; n++) {
+      var anchor = document.createElement('a');
+      anchor.className = 'heading-anchor';
+      anchor.href = '#' + headings[n].id;
+      anchor.setAttribute('aria-label', 'Link to section ' + headings[n].textContent.trim());
+      anchor.textContent = '#';
+      headings[n].appendChild(anchor);
     }
-  });
+  }
 })();
 </script>
 {% if page.mermaid %}
@@ -151,6 +212,7 @@
     var pre = code.parentElement;
     var div = document.createElement('div');
     div.className = 'mermaid';
+    div.setAttribute('data-mermaid-src', code.textContent);
     div.textContent = code.textContent;
     pre.parentElement.replaceChild(div, pre);
   }
@@ -159,18 +221,32 @@
 // Wait for deferred mermaid.js + theme.js to be available.
 // Deferred scripts execute after parsing but before DOMContentLoaded.
 document.addEventListener('DOMContentLoaded', function() {
-  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'base',
-    themeVariables: mermaidWhisper.getTheme(isDark)
-  });
-  mermaid.run();
+  function renderMermaid(isDark) {
+    if (typeof mermaid === 'undefined' || typeof mermaidWhisper === 'undefined') return;
+    var containers = document.querySelectorAll('.mermaid[data-mermaid-src]');
+    for (var i = 0; i < containers.length; i++) {
+      containers[i].removeAttribute('data-processed');
+      containers[i].textContent = containers[i].getAttribute('data-mermaid-src');
+    }
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: mermaidWhisper.getTheme(isDark)
+    });
+    var runResult = mermaid.run();
+    if (runResult && typeof runResult.then === 'function') {
+      runResult.then(function() {
+        if (typeof window.__updateTocActive === 'function') {
+          window.__updateTocActive();
+        }
+      });
+    }
+  }
+
+  window.__rerenderMermaid = renderMermaid;
+  renderMermaid(document.documentElement.getAttribute('data-theme') === 'dark');
 
   // Mermaid print: strip inline size constraints so SVGs scale to A4.
-  // Mermaid renders SVGs with hardcoded width/height attributes and
-  // inline style="max-width: NNNpx" that prevent CSS from scaling them.
-  // We also need to ensure each SVG has a viewBox so it scales properly.
   var printBackups = [];
   window.addEventListener('beforeprint', function() {
     printBackups = [];
@@ -190,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
       };
       printBackups.push(backup);
 
-      // Ensure viewBox exists so the SVG can scale
       if (!svg.getAttribute('viewBox')) {
         var w = svg.width.baseVal.value || svg.getBoundingClientRect().width;
         var h = svg.height.baseVal.value || svg.getBoundingClientRect().height;
@@ -200,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
 
-      // Strip all inline sizing from the SVG
       svg.removeAttribute('width');
       svg.removeAttribute('height');
       svg.removeAttribute('style');
@@ -208,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
       svg.style.height = 'auto';
       svg.style.maxWidth = 'none';
 
-      // Also clear any max-width on the container div
       div.style.maxWidth = 'none';
       div.style.width = '100%';
       div.style.overflow = 'visible';
@@ -217,13 +290,11 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('afterprint', function() {
     for (var i = 0; i < printBackups.length; i++) {
       var b = printBackups[i];
-      // Restore SVG
       b.svg.removeAttribute('style');
       if (b.svgStyle) b.svg.setAttribute('style', b.svgStyle);
       if (b.svgWidth) b.svg.setAttribute('width', b.svgWidth);
       if (b.svgHeight) b.svg.setAttribute('height', b.svgHeight);
       if (b.addedViewBox) b.svg.removeAttribute('viewBox');
-      // Restore container
       b.div.removeAttribute('style');
       if (b.divStyle) b.div.setAttribute('style', b.divStyle);
     }
@@ -256,10 +327,6 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.appendChild(hint);
     document.body.appendChild(overlay);
 
-    // Zoom resizes the SVG directly rather than using CSS transform: scale().
-    // Safari/WebKit rasterizes a transform: scale()'d element into a bitmap
-    // at its original size and re-samples it when scaling up, producing a
-    // blurry result. Resizing the SVG keeps it vector-rendered at every zoom.
     var svg = content.querySelector('svg');
     var origW = 0, origH = 0;
     if (svg) {
@@ -273,8 +340,6 @@ document.addEventListener('DOMContentLoaded', function() {
       svg.style.maxWidth = 'none';
     }
 
-    // Open at a scale that fits the browser window (never below 1:1 unless
-    // the diagram is larger than the viewport).
     var scale = 1;
     if (origW && origH) {
       var fitW = (window.innerWidth * 0.92) / origW;
@@ -283,7 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
       scale = Math.min(Math.max(scale, 0.1), 8);
     }
 
-    // State: tx/ty are pan offsets in px, (0,0) = centered via flexbox
     var tx = 0, ty = 0;
     var dragging = false;
     var startX, startY, startTx, startTy;
@@ -308,12 +372,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     applyTransform();
 
-    // Wheel zoom — centered on viewport center
     overlay.addEventListener('wheel', function(e) {
       e.preventDefault();
       var delta = e.deltaY > 0 ? 0.9 : 1.1;
       var newScale = Math.min(Math.max(scale * delta, 0.1), 8);
-      // Scale pan offset so the center stays fixed
       var ratio = newScale / scale;
       tx = tx * ratio;
       ty = ty * ratio;
@@ -321,7 +383,6 @@ document.addEventListener('DOMContentLoaded', function() {
       scheduleTransform();
     }, { passive: false });
 
-    // Mouse drag to pan
     overlay.addEventListener('mousedown', function(e) {
       if (e.target === closeBtn) return;
       e.preventDefault();
@@ -348,7 +409,6 @@ document.addEventListener('DOMContentLoaded', function() {
       overlay.classList.remove('is-dragging');
     }
 
-    // Touch support for pan and pinch-zoom
     var lastTouchDist = 0;
     overlay.addEventListener('touchstart', function(e) {
       if (e.target === closeBtn) return;
@@ -391,7 +451,6 @@ document.addEventListener('DOMContentLoaded', function() {
       lastTouchDist = 0;
     });
 
-    // Close
     function closeOverlay() {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
@@ -402,7 +461,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     closeBtn.addEventListener('click', closeOverlay);
 
-    // Double-click to reset zoom
     overlay.addEventListener('dblclick', function(e) {
       if (e.target === closeBtn) return;
       scale = 1;
@@ -426,3 +484,40 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endif %}
+<script>
+// Subtle copy button on fenced code blocks
+(function() {
+  if (!navigator.clipboard) return;
+  var blocks = document.querySelectorAll('.post-content .highlight, .post-content > pre');
+  for (var i = 0; i < blocks.length; i++) {
+    var block = blocks[i];
+    if (block.tagName === 'PRE' && block.closest('.highlight')) continue;
+    var code = block.querySelector('code') || block;
+    var wrap = document.createElement('div');
+    wrap.className = 'code-block-wrap';
+    block.parentNode.insertBefore(wrap, block);
+    wrap.appendChild(block);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'code-copy';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code');
+    (function(targetCode, button) {
+      var timer = null;
+      button.addEventListener('click', function() {
+        navigator.clipboard.writeText(targetCode.textContent).then(function() {
+          button.textContent = 'Copied';
+          button.classList.add('is-copied');
+          clearTimeout(timer);
+          timer = setTimeout(function() {
+            button.textContent = 'Copy';
+            button.classList.remove('is-copied');
+          }, 1600);
+        });
+      });
+    })(code, btn);
+    wrap.appendChild(btn);
+  }
+})();
+</script>

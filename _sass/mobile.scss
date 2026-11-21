@@ -4,18 +4,21 @@
 // Small screens: collapsible table of contents and wrapped code.
 // =============================================================================
 
-// Hidden wherever the left TOC column is shown.
+// Hidden wherever the left TOC column is shown, or when a post has < 2 headings.
 .toc-mobile { display: none; }
 
 @media (max-width: $bp-toc-min - 1) {
-  .toc-mobile {
+  .toc-mobile.is-ready {
     display: block;
     margin: 0 0 $spacing-lg;
     border: 1px solid var(--color-outline-variant);
+    border-radius: $radius-md;
+    background: var(--color-surface-container);
+    font-family: $font-family-sans;
     font-size: $font-size-sm;
 
     summary {
-      padding: $spacing-sm $spacing-md;
+      padding: 10px $spacing-md;
       font-weight: 600;
       cursor: pointer;
       user-select: none;
@@ -35,13 +38,15 @@
     &[open] summary::before { content: "\25BE"; }
 
     nav {
-      padding: 0 $spacing-md $spacing-sm;
+      padding: $spacing-xs $spacing-md $spacing-sm + 4;
       border-top: 1px solid var(--color-outline-variant);
+      background: var(--color-surface);
+      border-radius: 0 0 $radius-md $radius-md;
     }
 
     ol {
       list-style: none;
-      margin: $spacing-sm 0 0;
+      margin: $spacing-xs 0 0;
       padding: 0;
       counter-reset: sec;
     }
@@ -50,12 +55,12 @@
 
     a {
       display: block;
-      padding: 3px 0;
+      padding: 4px 0;
       color: var(--color-on-surface-variant);
       text-decoration: none;
-      line-height: 1.4;
+      line-height: 1.45;
       &:hover { color: var(--color-on-surface); }
-      &.toc-active { color: var(--color-primary); }
+      &.toc-active { color: var(--color-primary); font-weight: 500; }
     }
 
     li:not(.toc-h3) {
@@ -73,12 +78,12 @@
 }
 
 @media (max-width: $bp-tablet) {
-  // Top bar wraps onto two lines: brand, then the links.
+  // Top bar wraps cleanly onto two lines: brand, then links.
   .site-header__inner {
     height: auto;
     flex-wrap: wrap;
-    padding: 10px $spacing-md;
-    gap: 4px $spacing-md;
+    padding: 12px $spacing-md;
+    gap: 6px $spacing-md;
   }
 
   .site-header__brand { flex: 1 0 100%; }
@@ -88,8 +93,12 @@
     gap: $spacing-md;
   }
 
-  body { font-size: 16px; }
-  .post-content, .prose { font-size: 16px; }
+  .site-footer__inner {
+    padding: $spacing-md;
+  }
+
+  body { font-size: 16.5px; }
+  .post-content, .prose { font-size: 16.5px; }
 
   // Tables scroll sideways inside their wrapper instead of breaking
   // identifiers mid-word.
@@ -99,10 +108,14 @@
     padding: 0 $spacing-md;
   }
 
+  table,
   table code {
-    white-space: nowrap;
     overflow-wrap: normal;
     word-break: normal;
+  }
+
+  table code {
+    white-space: nowrap;
   }
 
   // Wrap long lines instead of scrolling sideways on phones.
@@ -123,6 +136,15 @@
   .prose {
     overflow-wrap: anywhere;
     code { overflow-wrap: anywhere; }
+    table,
+    table code {
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+  }
+
+  .code-block-wrap .code-copy {
+    opacity: 0.85;
   }
 }
 

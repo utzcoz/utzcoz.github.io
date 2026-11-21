@@ -6,8 +6,8 @@
 .highlight {
   background: var(--color-surface-container);
   border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-sm;
-  margin-bottom: 1.5em;
+  border-radius: $radius-md;
+  margin: 1.5em 0;
 
   pre {
     border: none;
@@ -15,27 +15,27 @@
     background: transparent;
   }
 
-  // Comments
-  .c, .c1, .cm, .cs, .cp { color: #878787; font-style: italic; }
+  // Comments (WCAG AA on #f6f8fa)
+  .c, .c1, .cm, .cs, .cp { color: #6a737d; font-style: italic; }
   // Keywords
-  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #2F5EE9; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #2557b8; }
   // Strings
-  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #1A8A5E; }
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #16794f; }
   // Numbers
-  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #C75000; }
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #b84800; }
   // Names/base
-  .n, .nb, .ni, .nn, .no, .nv { color: #111111; }
+  .n, .nb, .ni, .nn, .no, .nv { color: #1f2328; }
   // Decorators/classes
-  .na, .nc, .nd, .ne, .nf { color: #7B3F9E; }
+  .na, .nc, .nd, .ne, .nf { color: #6f42c1; }
   // Tags
-  .nt { color: #2F5EE9; }
+  .nt { color: #2557b8; }
   // Operators
-  .o, .ow { color: #111111; }
+  .o, .ow { color: #1f2328; }
   // Punctuation
-  .p { color: #555555; }
+  .p { color: #59636e; }
   // Generic diff
-  .gd { color: #D32F2F; background: #FDECEA; }
-  .gi { color: #1A8A5E; background: #E8F5E9; }
+  .gd { color: #cf222e; background: #ffebe9; }
+  .gi { color: #16794f; background: #dafbe1; }
   .ge { font-style: italic; }
   .gs { font-weight: bold; }
 }
@@ -44,25 +44,25 @@
 // Dark mode syntax
 // =============================================================================
 [data-theme="dark"] .highlight {
-  // Comments
-  .c, .c1, .cm, .cs, .cp { color: #878787; }
+  // Comments (WCAG AA on #171c22)
+  .c, .c1, .cm, .cs, .cp { color: #8b949e; }
   // Keywords
-  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #7B9EF5; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #7aa2f7; }
   // Strings
-  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #5EC49E; }
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #65c99e; }
   // Numbers
-  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #E8915A; }
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #f09d65; }
   // Names/base
-  .n, .nb, .ni, .nn, .no, .nv { color: #E5E5E5; }
+  .n, .nb, .ni, .nn, .no, .nv { color: #e6edf3; }
   // Decorators/classes
-  .na, .nc, .nd, .ne, .nf { color: #C49EE8; }
+  .na, .nc, .nd, .ne, .nf { color: #c4a0f0; }
   // Tags
-  .nt { color: #7B9EF5; }
+  .nt { color: #7aa2f7; }
   // Operators
-  .o, .ow { color: #E5E5E5; }
+  .o, .ow { color: #e6edf3; }
   // Punctuation
-  .p { color: #999999; }
+  .p { color: #8b949e; }
   // Generic diff
-  .gd { color: #EF9A9A; background: #3D1A1A; }
-  .gi { color: #5EC49E; background: #1A3D2A; }
+  .gd { color: #f87171; background: #3b1c20; }
+  .gi { color: #65c99e; background: #163327; }
 }
