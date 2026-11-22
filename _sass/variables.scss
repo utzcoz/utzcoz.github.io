@@ -1,78 +1,72 @@
 // =============================================================================
-// Editorial design tokens — clean reading theme
+// Technical Report design tokens — sober, classic, zero decoration
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Light)
 // -----------------------------------------------------------------------------
-$light-primary: #2557b8;                          // Editorial link blue
+$light-primary: #0000cc;                          // Classic link blue
 $light-on-primary: #ffffff;
-$light-primary-hover: #1b408c;
-$light-link-underline: rgba(37, 87, 184, 0.32);
-$light-accent-bg: #eef4ff;
-$light-accent-bg-hover: #dce8ff;
-$light-surface: #ffffff;                          // bg
-$light-on-surface: #1f2328;                       // ink
-$light-on-surface-variant: #59636e;               // ink-mute
-$light-surface-container: #f6f8fa;                // bg-soft
-$light-surface-container-high: #eef1f4;
-$light-surface-container-highest: #e5e8ec;
-$light-code-bg: rgba(127, 138, 155, 0.12);        // soft inline code tint
-$light-outline: #b6bec7;                          // rule-strong
-$light-outline-variant: #e5e7eb;                  // rule (hairline)
-$light-error: #cf222e;
+$light-primary-hover: #000099;
+$light-surface: #ffffff;                          // Page bg
+$light-heading: #000000;                          // Pure black headings
+$light-on-surface: #111111;                       // Body ink
+$light-on-surface-variant: #4f4f4f;               // Muted metadata
+$light-surface-container: #f7f7f7;                // Code / note panel bg
+$light-surface-container-high: #efefef;
+$light-surface-container-highest: #e4e4e4;
+$light-rule-strong: #000000;                      // Booktabs / strong rules
+$light-outline: #cccccc;                          // Section & listing border
+$light-outline-variant: #e3e3e3;                  // Subtle row hairline
+$light-error: #b91c1c;
 $light-on-error: #ffffff;
-$light-visited: #6639ba;                          // Visited link
+$light-visited: #551a8b;                          // Classic visited purple
 
 // -----------------------------------------------------------------------------
 // Color Tokens (Dark)
 // -----------------------------------------------------------------------------
-$dark-primary: #7aa2f7;                           // Dark-mode link blue
-$dark-on-primary: #101418;
-$dark-primary-hover: #a2beff;
-$dark-link-underline: rgba(122, 162, 247, 0.36);
-$dark-accent-bg: #182336;
-$dark-accent-bg-hover: #21304a;
-$dark-surface: #101418;
-$dark-on-surface: #e6edf3;
-$dark-on-surface-variant: #8b949e;
-$dark-surface-container: #171c22;
-$dark-surface-container-high: #1d232b;
-$dark-surface-container-highest: #262e38;
-$dark-code-bg: rgba(139, 148, 158, 0.16);
-$dark-outline: #48525e;
-$dark-outline-variant: #252b33;
+$dark-primary: #6ea8fe;
+$dark-on-primary: #111111;
+$dark-primary-hover: #9ec5fe;
+$dark-surface: #111111;
+$dark-heading: #ffffff;
+$dark-on-surface: #e2e2e2;
+$dark-on-surface-variant: #9a9a9a;
+$dark-surface-container: #1a1a1a;
+$dark-surface-container-high: #222222;
+$dark-surface-container-highest: #2c2c2c;
+$dark-rule-strong: #d4d4d4;
+$dark-outline: #383838;
+$dark-outline-variant: #262626;
 $dark-error: #f87171;
-$dark-on-error: #101418;
-$dark-visited: #b392f0;
+$dark-on-error: #111111;
+$dark-visited: #bb88ff;
 
 // -----------------------------------------------------------------------------
-// Typography — Source Serif 4 for serious academic/editorial reading;
-// IBM Plex Sans for technical UI chrome, TOC, metadata, and data tables;
-// IBM Plex Mono for code blocks and inline identifiers.
+// Typography — Helvetica Neue headings/UI, STIX Two Text prose,
+// Source Code Pro code/metadata.
 // -----------------------------------------------------------------------------
-$font-family-serif: "Source Serif 4", "Charter", "Iowan Old Style", Georgia, serif;
-$font-family-sans:  "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-$font-family-mono:  "IBM Plex Mono", "SF Mono", ui-monospace, "Menlo", "Consolas", monospace;
+$font-family-sans:  "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+$font-family-serif: "STIX Two Text", Georgia, "Times New Roman", serif;
+$font-family-mono:  "Source Code Pro", Menlo, Consolas, monospace;
 
 $font-family: $font-family-serif;
 
-$font-size-base: 18px;     // serif prose body
-$font-size-ui:   14.5px;   // UI chrome (top bar, TOC)
-$font-size-sm:   13.5px;
+$font-size-base: 17.5px;     // STIX Two Text prose
+$font-size-ui:   14px;
+$font-size-sm:   13px;
 $font-size-xs:   12px;
-$font-size-lg:   20px;
+$font-size-lg:   19px;
 
-$font-weight-light: 300;
+$font-weight-body:    460;   // Medium-full variable weight (no spindly strokes)
+$font-weight-code:    480;
 $font-weight-regular: 400;
-$font-weight-medium: 500;
+$font-weight-medium:  500;
+$heading-weight:      700;
 
-$line-height-base:  1.72;
-$line-height-tight: 1.24;
-$line-height-loose: 1.85;
-
-// Headings
-$heading-weight: 600;
+$line-height-base:  1.66;
+$line-height-tight: 1.22;
+$line-height-loose: 1.8;
 
 // -----------------------------------------------------------------------------
 // Spacing
@@ -81,36 +75,37 @@ $spacing-xs: 4px;
 $spacing-sm: 8px;
 $spacing-md: 16px;
 $spacing-lg: 24px;
-$spacing-xl: 40px;
-$spacing-2xl: 64px;
-$spacing-3xl: 96px;
+$spacing-xl: 36px;
+$spacing-2xl: 56px;
+$spacing-3xl: 80px;
 
 // -----------------------------------------------------------------------------
 // Layout
 // -----------------------------------------------------------------------------
-$max-width: 760px;          // unified reading column (header, body, footer)
-$max-width-wide: 760px;     // aligned with reading column
-$toc-width: 220px;          // left table of contents (posts, wide screens)
-$header-height: 56px;       // top bar
+$max-width-report: 1120px;   // Article 2-column grid (790px prose + 230px right TOC)
+$max-width:        840px;    // Home, About, generic pages
+$post-col-width:   790px;
+$toc-width:        230px;
+$header-height:    46px;
 
 // -----------------------------------------------------------------------------
-// Shape
+// Shape — sharp technical-report edges
 // -----------------------------------------------------------------------------
-$radius-xs: 3px;
-$radius-sm: 4px;
-$radius-md: 6px;
+$radius-xs: 0;
+$radius-sm: 0;
+$radius-md: 0;
 
 // -----------------------------------------------------------------------------
 // Motion
 // -----------------------------------------------------------------------------
-$easing-standard: cubic-bezier(0.2, 0, 0, 1);
-$duration-fast: 120ms;
-$duration-normal: 200ms;
+$easing-standard: ease;
+$duration-fast:   100ms;
+$duration-normal: 150ms;
 
 // -----------------------------------------------------------------------------
 // Breakpoints
 // -----------------------------------------------------------------------------
-$bp-mobile: 576px;
-$bp-tablet: 768px;
-$bp-toc-min: 1220px;        // when the left TOC is shown cleanly in the margin
+$bp-mobile:  576px;
+$bp-tablet:  768px;
+$bp-toc-min: 960px;
 $bp-desktop: 1024px;

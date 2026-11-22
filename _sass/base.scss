@@ -17,16 +17,14 @@
   --color-primary: #{$light-primary};
   --color-on-primary: #{$light-on-primary};
   --color-primary-hover: #{$light-primary-hover};
-  --color-link-underline: #{$light-link-underline};
-  --color-accent-bg: #{$light-accent-bg};
-  --color-accent-bg-hover: #{$light-accent-bg-hover};
   --color-surface: #{$light-surface};
+  --color-heading: #{$light-heading};
   --color-on-surface: #{$light-on-surface};
   --color-on-surface-variant: #{$light-on-surface-variant};
   --color-surface-container: #{$light-surface-container};
   --color-surface-container-high: #{$light-surface-container-high};
   --color-surface-container-highest: #{$light-surface-container-highest};
-  --color-code-bg: #{$light-code-bg};
+  --color-rule-strong: #{$light-rule-strong};
   --color-outline: #{$light-outline};
   --color-outline-variant: #{$light-outline-variant};
   --color-error: #{$light-error};
@@ -39,16 +37,14 @@
   --color-primary: #{$dark-primary};
   --color-on-primary: #{$dark-on-primary};
   --color-primary-hover: #{$dark-primary-hover};
-  --color-link-underline: #{$dark-link-underline};
-  --color-accent-bg: #{$dark-accent-bg};
-  --color-accent-bg-hover: #{$dark-accent-bg-hover};
   --color-surface: #{$dark-surface};
+  --color-heading: #{$dark-heading};
   --color-on-surface: #{$dark-on-surface};
   --color-on-surface-variant: #{$dark-on-surface-variant};
   --color-surface-container: #{$dark-surface-container};
   --color-surface-container-high: #{$dark-surface-container-high};
   --color-surface-container-highest: #{$dark-surface-container-highest};
-  --color-code-bg: #{$dark-code-bg};
+  --color-rule-strong: #{$dark-rule-strong};
   --color-outline: #{$dark-outline};
   --color-outline-variant: #{$dark-outline-variant};
   --color-error: #{$dark-error};
@@ -74,14 +70,10 @@ html {
 body {
   font-family: $font-family;
   font-size: $font-size-base;
-  font-weight: $font-weight-regular;
+  font-weight: $font-weight-body;
   line-height: $line-height-base;
-  font-optical-sizing: auto;
   color: var(--color-on-surface);
   background-color: var(--color-surface);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "kern", "liga", "calt";
   text-rendering: optimizeLegibility;
 }
 
@@ -97,10 +89,9 @@ body {
   background: var(--color-surface);
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
-  border-radius: $radius-sm;
   font-family: $font-family-sans;
   font-size: $font-size-sm;
-  font-weight: 500;
+  font-weight: 600;
 
   &:focus {
     left: $spacing-md;
@@ -110,44 +101,37 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  border-radius: $radius-xs;
 }
 
 // =============================================================================
 // Typography
 // =============================================================================
 h1, h2, h3, h4, h5, h6 {
-  color: var(--color-on-surface);
-  font-family: $font-family-serif;
+  color: var(--color-heading);
+  font-family: $font-family-sans;
   font-weight: $heading-weight;
-  font-optical-sizing: auto;
-  margin-top: 2em;
-  margin-bottom: 0.55em;
+  margin-top: 1.55rem;
+  margin-bottom: 0.5rem;
   line-height: $line-height-tight;
-  text-wrap: balance;
 }
 
-h1 { font-size: 2.125rem; letter-spacing: -0.018em; }
-h2 { font-size: 1.45rem;  letter-spacing: -0.012em; }
-h3 { font-size: 1.15rem;  letter-spacing: -0.008em; }
-h4 { font-size: 1.02rem;  letter-spacing: -0.004em; }
-h5 { font-size: 0.96rem; }
-h6 { font-size: 0.92rem; }
+h1 { font-size: 1.95rem; letter-spacing: -0.015em; }
+h2 { font-size: 1.32rem; letter-spacing: -0.01em; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; }
+h5 { font-size: 0.94rem; }
+h6 { font-size: 0.88rem; }
 
 // =============================================================================
-// Links
+// Links — classic underlined HTML links
 // =============================================================================
 a {
   color: var(--color-primary);
-  text-decoration: none;
-  transition: color $duration-fast $easing-standard,
-              text-decoration-color $duration-fast $easing-standard;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 
   &:hover {
     color: var(--color-primary-hover);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
   }
 
   &:visited {
@@ -159,16 +143,16 @@ a {
 // Body text
 // =============================================================================
 p {
-  margin-bottom: 1.15em;
+  margin-bottom: 0.9rem;
 }
 
 ul, ol {
   padding-left: 1.5em;
-  margin-bottom: 1.15em;
+  margin-bottom: 0.9rem;
 }
 
 li {
-  margin-bottom: 0.35em;
+  margin-bottom: 0.3em;
 }
 
 // =============================================================================
@@ -181,13 +165,15 @@ img {
 }
 
 // =============================================================================
-// Blockquotes
+// Blockquotes — formal note box
 // =============================================================================
 blockquote {
-  border-left: 3px solid var(--color-outline);
-  padding: $spacing-xs $spacing-lg;
-  margin: $spacing-lg 0;
-  color: var(--color-on-surface-variant);
+  border-left: 2px solid var(--color-rule-strong);
+  background: var(--color-surface-container);
+  padding: 8px 14px;
+  margin: 0.95rem 0;
+  color: var(--color-on-surface);
+  font-size: 0.95em;
 
   p:last-child {
     margin-bottom: 0;
@@ -195,34 +181,33 @@ blockquote {
 }
 
 // =============================================================================
-// Code — quiet soft tint for inline code; clean bordered panel for blocks
+// Code — unboxed inline monospace; sharp left-ruled technical listing blocks
 // =============================================================================
 code {
   font-family: $font-family-mono;
-  font-size: 0.81em;
-  background: var(--color-code-bg);
-  padding: 0.13em 0.36em;
-  border-radius: $radius-sm;
-  color: var(--color-on-surface);
+  font-size: 0.84em;
+  font-weight: $font-weight-code;
+  color: inherit;
 }
 
 pre {
   background: var(--color-surface-container);
-  border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-md;
-  padding: $spacing-md $spacing-md + 4;
+  border: 1px solid var(--color-outline);
+  border-left: 3px solid var(--color-on-surface-variant);
+  padding: 10px 14px;
   overflow-x: auto;
-  margin: 1.5em 0;
-  line-height: 1.62;
+  margin: 0.95rem 0;
+  line-height: 1.5;
   font-size: $font-size-sm;
+  font-weight: $font-weight-code;
   font-family: $font-family-mono;
 
   code {
     background: none;
     border: 0;
     padding: 0;
-    border-radius: 0;
     font-size: inherit;
+    font-weight: inherit;
     color: inherit;
   }
 }
@@ -242,7 +227,6 @@ pre,
 
   &::-webkit-scrollbar-thumb {
     background: var(--color-outline);
-    border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
@@ -251,56 +235,51 @@ pre,
 }
 
 // =============================================================================
-// Tables
+// Tables — formal booktabs technical report tables
 // =============================================================================
 .table-wrapper {
   overflow-x: auto;
-  margin: 1.5em 0;
+  margin: 1.05rem 0;
 
   table { margin: 0; }
 }
 
-// Booktabs-style tables: crisp top/bottom rules + quiet row hairlines.
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5em auto;
-  border-top: 1.5px solid var(--color-on-surface);
-  border-bottom: 1.5px solid var(--color-on-surface);
+  margin: 1.05rem auto;
+  border-top: 1.5px solid var(--color-rule-strong);
+  border-bottom: 1.5px solid var(--color-rule-strong);
   font-family: $font-family-sans;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: $font-size-sm;
+  line-height: 1.45;
 
   th, td {
-    padding: 9px 10px;
+    padding: 7px 9px;
     text-align: left;
     vertical-align: top;
+    font-weight: 400;
 
     &:first-child { padding-left: 4px; }
     &:last-child { padding-right: 4px; }
   }
 
   code {
-    font-size: 0.84em;
-    padding: 0.1em 0.3em;
+    font-size: 0.88em;
     overflow-wrap: anywhere;
   }
 
   th {
-    font-weight: 600;
-    border-bottom: 1px solid var(--color-on-surface);
+    font-weight: 700;
+    color: var(--color-heading);
+    border-bottom: 1px solid var(--color-rule-strong);
   }
 
   tbody tr {
     border-bottom: 1px solid var(--color-outline-variant);
-    transition: background-color $duration-fast $easing-standard;
 
     &:last-child {
       border-bottom: 0;
-    }
-
-    &:hover {
-      background-color: var(--color-surface-container);
     }
   }
 }
@@ -310,8 +289,8 @@ table {
 // =============================================================================
 hr {
   border: none;
-  border-top: 1px solid var(--color-outline-variant);
-  margin: $spacing-xl 0;
+  border-top: 1px solid var(--color-outline);
+  margin: $spacing-lg 0;
 }
 
 // =============================================================================
@@ -371,10 +350,9 @@ hr {
     right: 1rem;
     width: 2.25rem;
     height: 2.25rem;
-    border: 1px solid var(--color-outline-variant);
-    border-radius: $radius-md;
+    border: 1px solid var(--color-outline);
     background: var(--color-surface);
-    color: var(--color-on-surface);
+    color: var(--color-heading);
     font-size: 1.25rem;
     line-height: 1;
     cursor: pointer;
@@ -382,12 +360,9 @@ hr {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color $duration-fast $easing-standard,
-                border-color $duration-fast $easing-standard;
 
     &:hover {
       background: var(--color-surface-container);
-      border-color: var(--color-outline);
     }
   }
 
@@ -397,9 +372,8 @@ hr {
     left: 50%;
     transform: translateX(-50%);
     padding: 4px 12px;
-    border-radius: 999px;
     background: var(--color-surface-container);
-    border: 1px solid var(--color-outline-variant);
+    border: 1px solid var(--color-outline);
     color: var(--color-on-surface-variant);
     font-family: $font-family-sans;
     font-size: $font-size-xs;

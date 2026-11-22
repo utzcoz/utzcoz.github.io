@@ -1,113 +1,111 @@
 @use "variables" as *;
 
 // =============================================================================
-// Paper-style layout: slim top bar, unified reading column, optional left TOC
-// on wide screens.
+// Technical Report layout: slim top bar, 2-column article + right sticky TOC,
+// archive index table on home.
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 // Top bar
 // -----------------------------------------------------------------------------
 .site-header {
-  border-bottom: 1px solid var(--color-outline-variant);
+  border-bottom: 1px solid var(--color-outline);
   background: var(--color-surface);
 
   &__inner {
-    max-width: $max-width-wide;
+    max-width: $max-width;
     margin: 0 auto;
-    padding: 0 $spacing-lg;
+    padding: 0 20px;
     height: $header-height;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: $spacing-lg;
+    gap: $spacing-md;
+    font-family: $font-family-sans;
   }
 
   &__brand {
-    font-family: $font-family-serif;
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--color-on-surface);
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--color-heading);
     text-decoration: none;
     white-space: nowrap;
 
+    &:visited { color: var(--color-heading); }
     &:hover { color: var(--color-primary); text-decoration: none; }
-    &:visited { color: var(--color-on-surface); }
   }
 
   &__nav {
-    font-family: $font-family-sans;
     display: flex;
     align-items: center;
-    gap: $spacing-md + 4;
+    gap: 18px;
 
     a {
-      font-size: $font-size-sm;
+      font-size: 13.5px;
+      font-weight: 400;
       color: var(--color-on-surface-variant);
       text-decoration: none;
 
-      &:hover {
-        color: var(--color-on-surface);
-        text-decoration: none;
-      }
       &:visited { color: var(--color-on-surface-variant); }
+      &:hover {
+        color: var(--color-heading);
+        text-decoration: underline;
+      }
       &[aria-current="page"] {
-        color: var(--color-on-surface);
-        font-weight: 600;
+        color: var(--color-heading);
+        font-weight: 700;
       }
     }
   }
 }
 
+.layout-post .site-header__inner,
+.layout-post .site-footer__inner {
+  max-width: $max-width-report;
+}
+
 .theme-toggle {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   background: none;
   border: 0;
-  border-radius: $radius-md;
   cursor: pointer;
   color: var(--color-on-surface-variant);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  margin-right: -6px;
-  transition: color $duration-fast $easing-standard,
-              background-color $duration-fast $easing-standard;
+  margin-right: -4px;
 
   &:hover {
-    color: var(--color-on-surface);
-    background: var(--color-surface-container);
+    color: var(--color-heading);
   }
-  svg { width: 16px; height: 16px; }
+  svg { width: 15px; height: 15px; }
 }
 
 // -----------------------------------------------------------------------------
-// Main column and footer
+// Main & Footer
 // -----------------------------------------------------------------------------
 .site-main {
-  min-height: calc(100vh - #{$header-height} - 84px);
+  min-height: calc(100vh - #{$header-height} - 52px);
 }
 
-.container {
+.container,
+.home-wrap {
   max-width: $max-width;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg $spacing-2xl;
-
-  @media (max-width: $bp-mobile) {
-    padding: $spacing-lg $spacing-md $spacing-xl;
-  }
+  padding: $spacing-lg 20px $spacing-2xl;
 }
 
 .site-footer {
-  border-top: 1px solid var(--color-outline-variant);
+  border-top: 1px solid var(--color-outline);
+  margin-top: $spacing-md;
 
   &__inner {
-    max-width: $max-width-wide;
+    max-width: $max-width;
     margin: 0 auto;
-    padding: $spacing-lg $spacing-lg;
-    font-family: $font-family-sans;
+    padding: 12px 20px;
+    font-family: $font-family-mono;
     font-size: $font-size-xs;
     color: var(--color-on-surface-variant);
     display: flex;
@@ -117,229 +115,173 @@
 
     a {
       color: var(--color-on-surface-variant);
+      text-decoration: underline;
       &:visited { color: var(--color-on-surface-variant); }
-      &:hover { color: var(--color-primary); }
+      &:hover { color: var(--color-heading); }
     }
   }
 
-  &__sep { opacity: 0.45; }
+  &__sep { opacity: 0.55; }
 }
 
 // -----------------------------------------------------------------------------
-// Home: quiet intro and clean scannable post index
+// Home: Technical Reports Archive Index
 // -----------------------------------------------------------------------------
 .home-intro {
-  margin-bottom: $spacing-xl - 8;
-  padding-bottom: $spacing-lg;
-  border-bottom: 1px solid var(--color-outline-variant);
+  padding: 0 0 12px;
+  margin-bottom: $spacing-md;
+  color: var(--color-on-surface-variant);
+  font-size: 0.96em;
 
-  p {
-    margin: 0;
-    color: var(--color-on-surface-variant);
-    font-size: 16.5px;
-    line-height: 1.68;
-    text-wrap: pretty;
-  }
+  p { margin: 0; }
 
   a {
-    color: var(--color-on-surface);
+    color: var(--color-primary);
     text-decoration: underline;
-    text-decoration-color: var(--color-outline);
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-
-    &:visited { color: var(--color-on-surface); }
-    &:hover {
-      color: var(--color-primary);
-      text-decoration-color: var(--color-primary);
-    }
+    &:visited { color: var(--color-visited); }
+    &:hover { color: var(--color-primary-hover); }
   }
 }
 
-.post-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.post-year {
+.idx-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  border-top: 0;
+  border-bottom: 0;
   font-family: $font-family-sans;
-  font-size: $font-size-xs;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-on-surface-variant);
-  font-variant-numeric: tabular-nums;
-  margin: $spacing-lg 0 $spacing-xs;
 
-  &:first-child {
-    margin-top: 0;
+  th {
+    font-family: $font-family-mono;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-on-surface-variant);
+    text-align: left;
+    padding: 6px 10px 6px 0;
+    border-bottom: 1px solid var(--color-rule-strong);
   }
-}
 
-.post-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: $spacing-lg;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-outline-variant);
+  td {
+    padding: 8px 10px 8px 0;
+    border-bottom: 1px solid var(--color-outline-variant);
+    vertical-align: baseline;
+  }
 
-  &:last-child,
-  &:has(+ .post-year) {
+  tbody tr:last-child td {
     border-bottom: 0;
   }
 
-  &__title {
-    font-family: $font-family-serif;
-    font-size: 17.5px;
-    font-weight: 500;
-    line-height: 1.42;
-    letter-spacing: -0.006em;
-    margin: 0;
-    padding: 0;
-    border: 0;
+  .col-dt {
+    font-family: $font-family-mono;
+    font-size: 12.5px;
+    font-weight: $font-weight-code;
+    color: var(--color-on-surface-variant);
+    white-space: nowrap;
+    width: 115px;
+    padding-left: 0;
+  }
+
+  .col-title {
+    padding-right: 0;
 
     a {
-      color: var(--color-on-surface);
+      color: var(--color-heading);
+      font-weight: 400;
       text-decoration: none;
-      transition: color $duration-fast $easing-standard;
+      font-size: 15.5px;
+      line-height: 1.4;
 
-      &:visited { color: var(--color-on-surface); }
+      &:visited { color: var(--color-heading); }
       &:hover {
         color: var(--color-primary);
-        text-decoration: none;
+        text-decoration: underline;
       }
     }
-  }
-
-  &__date {
-    flex: none;
-    font-family: $font-family-sans;
-    font-size: 13px;
-    color: var(--color-on-surface-variant);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  @media (max-width: $bp-mobile) {
-    flex-direction: column;
-    gap: 3px;
-    padding: 13px 0;
   }
 }
 
 .pagination {
-  font-family: $font-family-sans;
+  font-family: $font-family-mono;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: $spacing-xl;
-  padding-top: $spacing-md;
-  border-top: 1px solid var(--color-outline-variant);
+  margin-top: $spacing-lg;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-outline);
   font-size: $font-size-sm;
   color: var(--color-on-surface-variant);
 
   a {
-    color: var(--color-on-surface);
-    font-weight: 500;
+    color: var(--color-heading);
+    font-weight: 600;
     text-decoration: none;
-    padding: 4px 8px;
-    margin: -4px -8px;
-    border-radius: $radius-sm;
-    transition: color $duration-fast $easing-standard,
-                background-color $duration-fast $easing-standard;
 
-    &:visited { color: var(--color-on-surface); }
+    &:visited { color: var(--color-heading); }
     &:hover {
       color: var(--color-primary);
-      background: var(--color-surface-container);
-      text-decoration: none;
+      text-decoration: underline;
     }
   }
   .disabled { opacity: 0.35; }
-  .page-number { font-variant-numeric: tabular-nums; }
 }
 
 // -----------------------------------------------------------------------------
-// Post: centered title block, left TOC on wide screens
+// Post: 2-column technical report grid + right-side sticky CONTENTS TOC
 // -----------------------------------------------------------------------------
 .post-layout {
-  position: relative;
+  max-width: $max-width-report;
+  margin: 0 auto;
+  padding: $spacing-lg 20px $spacing-2xl;
+  display: grid;
+  grid-template-columns: minmax(0, $post-col-width) $toc-width;
+  justify-content: space-between;
+  gap: $spacing-xl;
+  align-items: start;
+
+  @media (max-width: $bp-toc-min - 1) {
+    grid-template-columns: minmax(0, $post-col-width);
+    justify-content: center;
+  }
+}
+
+.post {
+  min-width: 0;
 }
 
 .post-header {
-  text-align: center;
-  margin-bottom: $spacing-xl;
+  padding: 0;
+  margin-bottom: 18px;
 
   &__title {
-    font-size: 2.15rem;
-    font-weight: 600;
+    font-family: $font-family-sans;
+    font-size: 1.95rem;
+    font-weight: $heading-weight;
     line-height: 1.2;
-    letter-spacing: -0.018em;
-    margin: $spacing-xs 0 $spacing-md;
-    padding: 0;
-    border: 0;
-    text-wrap: balance;
+    letter-spacing: -0.015em;
+    color: var(--color-heading);
+    margin: 0 0 8px;
 
-    @media (max-width: $bp-mobile) { font-size: 1.6rem; }
+    @media (max-width: $bp-mobile) {
+      font-size: 1.55rem;
+    }
   }
 
   &__meta {
-    font-family: $font-family-sans;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: $spacing-sm;
-    font-size: $font-size-sm;
+    font-family: $font-family-mono;
+    font-size: 12.5px;
+    font-weight: $font-weight-code;
+    line-height: 1.55;
     color: var(--color-on-surface-variant);
-
-    .dot { opacity: 0.45; }
-  }
-
-  // Author and date stay together, as do edited date and reading time, so a
-  // wrapped line never starts or ends with a separator dot.
-  &__group {
-    display: inline-flex;
-    align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: $spacing-sm;
-  }
-
-  @media (max-width: $bp-mobile) {
-    &__meta--edited {
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    &__meta--edited &__joint { display: none; }
   }
 
   &__tags {
-    font-family: $font-family-sans;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: $spacing-md - 2;
-    font-size: 12px;
-    color: var(--color-on-surface-variant);
+    margin-top: 2px;
   }
 }
 
-.tag {
-  background: var(--color-surface-container);
-  border-radius: $radius-sm;
-  padding: 2px 8px;
-  line-height: 1.45;
-
-  &::before {
-    content: "#";
-    opacity: 0.55;
-  }
-}
-
-// Left table of contents: sticky in the left margin on wide screens only.
+// Right-side sticky CONTENTS TOC (Lean #1 style, unnumbered)
 .post-toc {
   display: none;
 
@@ -347,10 +289,6 @@
     display: block;
     position: sticky;
     top: $spacing-lg;
-    float: left;
-    width: $toc-width;
-    margin-left: calc((100% - #{$max-width}) / 2 - #{$toc-width} - #{$spacing-xl});
-    padding-top: $spacing-xl + $spacing-sm;
     max-height: calc(100vh - #{$spacing-xl});
     overflow-y: auto;
     scrollbar-width: thin;
@@ -363,78 +301,52 @@
 
 .toc-sidebar {
   font-family: $font-family-sans;
-  font-size: 13px;
-  line-height: 1.45;
 
   .toc-title {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: var(--color-on-surface-variant);
-    margin: 0 0 $spacing-sm + 2;
+    margin: 0 0 10px;
   }
 
   ol {
     list-style: none;
     margin: 0;
-    padding: 0;
-    counter-reset: sec;
-    border-left: 1px solid var(--color-outline-variant);
+    padding: 0 0 0 14px;
+    border-left: 1px solid var(--color-outline);
   }
 
-  li { margin: 0; }
+  li {
+    margin: 0 0 7px;
+    font-size: 12.5px;
+    line-height: 1.38;
+
+    &:last-child { margin-bottom: 0; }
+  }
 
   a {
     display: block;
-    padding: 4px 0 4px 12px;
-    margin-left: -1px;
+    font-weight: 400;
     color: var(--color-on-surface-variant);
     text-decoration: none;
-    border-left: 2px solid transparent;
-    transition: color $duration-fast $easing-standard,
-                border-color $duration-fast $easing-standard;
 
-    &:hover { color: var(--color-on-surface); text-decoration: none; }
     &:visited { color: var(--color-on-surface-variant); }
+    &:hover {
+      color: var(--color-heading);
+      text-decoration: underline;
+    }
     &.toc-active {
-      color: var(--color-primary);
-      font-weight: 500;
-      border-left-color: var(--color-primary);
+      color: var(--color-heading);
+      font-weight: 700;
     }
   }
 
-  li:not(.toc-h3) {
-    counter-increment: sec;
-    counter-reset: sub;
-    a::before { content: counter(sec) "\2002"; }
-  }
-
   .toc-h3 {
-    counter-increment: sub;
-    a { padding-left: 24px; font-size: $font-size-xs; }
-    a::before { content: counter(sec) "." counter(sub) "\2002"; }
+    padding-left: 12px;
+    font-size: 12px;
   }
-}
-
-// Section numbers, posts only (the About page and 404 stay unnumbered).
-.post .post-content {
-  h2 {
-    counter-increment: sec;
-    counter-reset: sub;
-    &::before { content: counter(sec) "\2002"; }
-  }
-  h3 {
-    counter-increment: sub;
-    &::before { content: counter(sec) "." counter(sub) "\2002"; }
-  }
-}
-
-// Posts with manual or disabled section numbers: no generated numbers.
-// (The TOC overrides live at the end of mobile.scss so they win the cascade.)
-.has-manual-numbers .post .post-content,
-.no-section-numbers .post .post-content {
-  h2::before, h3::before { content: none; }
 }
 
 // -----------------------------------------------------------------------------
@@ -442,33 +354,30 @@
 // -----------------------------------------------------------------------------
 .post-content,
 .prose {
+  font-family: $font-family-serif;
   font-size: $font-size-base;
+  font-weight: $font-weight-body;
   line-height: $line-height-base;
   color: var(--color-on-surface);
-  counter-reset: sec;
-
-  > * + * { margin-top: 1.05em; }
 
   p {
-    margin: 1.05em 0 0;
-    text-wrap: pretty;
+    margin: 0.85rem 0;
     &:first-child { margin-top: 0; }
   }
 
   h1, h2, h3, h4, h5, h6 {
     position: relative;
+    scroll-margin-top: $spacing-md;
     &:first-child { margin-top: 0; }
-    scroll-margin-top: $spacing-lg;
 
     .heading-anchor {
       margin-left: 0.35em;
-      font-family: $font-family-sans;
+      font-family: $font-family-mono;
+      font-size: 0.8em;
       color: var(--color-on-surface-variant);
       text-decoration: none;
       font-weight: 400;
       opacity: 0;
-      transition: opacity $duration-fast $easing-standard,
-                  color $duration-fast $easing-standard;
 
       &:hover,
       &:focus-visible {
@@ -483,80 +392,67 @@
     }
   }
 
-  h2 { margin-top: 2.25em; }
-  h3 { margin-top: 1.75em; }
+  h2 {
+    margin: 1.55rem 0 0.5rem;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--color-outline);
+  }
+
+  h3 {
+    margin: 1.15rem 0 0.35rem;
+  }
 
   ul, ol {
     padding-left: 1.5em;
-    margin: 0.9em 0;
-    li { margin-bottom: 0.4em; }
+    margin: 0.85rem 0;
+    li { margin-bottom: 0.3em; }
   }
 
   a {
     color: var(--color-primary);
     text-decoration: underline;
-    text-decoration-color: var(--color-link-underline);
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
 
-    &:hover {
-      color: var(--color-primary-hover);
-      text-decoration-color: var(--color-primary-hover);
-    }
-    &:visited {
-      color: var(--color-visited);
-      text-decoration-color: color-mix(in srgb, var(--color-visited) 35%, transparent);
-    }
+    &:hover { color: var(--color-primary-hover); }
+    &:visited { color: var(--color-visited); }
   }
 
-  strong { font-weight: 600; }
+  strong { font-weight: 700; }
 
   img {
-    margin: $spacing-xl auto;
-    border-radius: $radius-md;
-  }
-
-  blockquote {
-    border-left: 3px solid var(--color-outline);
-    padding-left: 1.1em;
-    margin: 1.35em 0;
-    color: var(--color-on-surface-variant);
+    margin: $spacing-lg auto;
   }
 
   .mermaid {
-    margin: $spacing-xl 0;
+    margin: $spacing-lg 0;
     text-align: center;
   }
 }
 
 // -----------------------------------------------------------------------------
-// Code block copy button (subtle, fades in on hover/focus)
+// Code block copy button (subtle sharp corner, hover-only on desktop)
 // -----------------------------------------------------------------------------
 .code-block-wrap {
   position: relative;
 
   .code-copy {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 3px 8px;
-    font-family: $font-family-sans;
-    font-size: 11.5px;
+    top: 6px;
+    right: 6px;
+    padding: 2px 7px;
+    font-family: $font-family-mono;
+    font-size: 11px;
     font-weight: 500;
     line-height: 1.4;
     color: var(--color-on-surface-variant);
     background: var(--color-surface);
-    border: 1px solid var(--color-outline-variant);
-    border-radius: $radius-sm;
+    border: 1px solid var(--color-outline);
     cursor: pointer;
     opacity: 0;
-    transition: opacity $duration-fast $easing-standard,
-                color $duration-fast $easing-standard,
-                border-color $duration-fast $easing-standard;
 
     &:hover {
-      color: var(--color-on-surface);
-      border-color: var(--color-outline);
+      color: var(--color-heading);
+      border-color: var(--color-rule-strong);
     }
 
     &:focus-visible,
@@ -576,29 +472,29 @@
 }
 
 .giscus {
-  margin-top: $spacing-2xl;
-  padding-top: $spacing-xl;
-  border-top: 1px solid var(--color-outline-variant);
+  margin-top: $spacing-xl;
+  padding-top: $spacing-lg;
+  border-top: 1px solid var(--color-outline);
 }
 
 // -----------------------------------------------------------------------------
 // Generic pages and 404
 // -----------------------------------------------------------------------------
-.page-header { margin-bottom: $spacing-lg; }
+.page-header { margin-bottom: $spacing-md; }
 .page-title {
-  font-size: 1.85rem;
-  font-weight: 600;
+  font-family: $font-family-sans;
+  font-size: 1.75rem;
+  font-weight: $heading-weight;
   letter-spacing: -0.015em;
+  color: var(--color-heading);
   margin: 0;
-  padding: 0;
-  border: 0;
 }
 
 .not-found {
   text-align: center;
   padding-top: $spacing-3xl;
 
-  h1 { font-size: 3rem; font-weight: 600; border: 0; margin: 0 0 $spacing-md; }
+  h1 { font-size: 2.8rem; font-weight: 700; margin: 0 0 $spacing-md; }
   p { color: var(--color-on-surface-variant); }
-  a { display: inline-block; margin-top: $spacing-lg; }
+  a { display: inline-block; margin-top: $spacing-md; }
 }

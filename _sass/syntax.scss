@@ -1,13 +1,13 @@
 @use "variables" as *;
 
 // =============================================================================
-// Syntax highlighting — Whisper palette (Rouge highlighter)
+// Syntax highlighting — austere technical report palette (Rouge)
 // =============================================================================
 .highlight {
   background: var(--color-surface-container);
-  border: 1px solid var(--color-outline-variant);
-  border-radius: $radius-md;
-  margin: 1.5em 0;
+  border: 1px solid var(--color-outline);
+  border-left: 3px solid var(--color-on-surface-variant);
+  margin: 0.95rem 0;
 
   pre {
     border: none;
@@ -15,27 +15,27 @@
     background: transparent;
   }
 
-  // Comments (WCAG AA on #f6f8fa)
-  .c, .c1, .cm, .cs, .cp { color: #6a737d; font-style: italic; }
+  // Comments
+  .c, .c1, .cm, .cs, .cp { color: #5c5c5c; font-style: italic; }
   // Keywords
-  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #2557b8; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #000088; }
   // Strings
-  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #16794f; }
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #005500; }
   // Numbers
-  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #b84800; }
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #7a2e00; }
   // Names/base
-  .n, .nb, .ni, .nn, .no, .nv { color: #1f2328; }
+  .n, .nb, .ni, .nn, .no, .nv { color: #111111; }
   // Decorators/classes
-  .na, .nc, .nd, .ne, .nf { color: #6f42c1; }
+  .na, .nc, .nd, .ne, .nf { color: #4b2a82; }
   // Tags
-  .nt { color: #2557b8; }
+  .nt { color: #000088; }
   // Operators
-  .o, .ow { color: #1f2328; }
+  .o, .ow { color: #111111; }
   // Punctuation
-  .p { color: #59636e; }
-  // Generic diff
-  .gd { color: #cf222e; background: #ffebe9; }
-  .gi { color: #16794f; background: #dafbe1; }
+  .p { color: #4f4f4f; }
+  // Diff
+  .gd { color: #a40000; background: #ffecec; }
+  .gi { color: #005500; background: #e8f7e8; }
   .ge { font-style: italic; }
   .gs { font-weight: bold; }
 }
@@ -44,25 +44,15 @@
 // Dark mode syntax
 // =============================================================================
 [data-theme="dark"] .highlight {
-  // Comments (WCAG AA on #171c22)
-  .c, .c1, .cm, .cs, .cp { color: #8b949e; }
-  // Keywords
-  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #7aa2f7; }
-  // Strings
-  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #65c99e; }
-  // Numbers
-  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #f09d65; }
-  // Names/base
-  .n, .nb, .ni, .nn, .no, .nv { color: #e6edf3; }
-  // Decorators/classes
-  .na, .nc, .nd, .ne, .nf { color: #c4a0f0; }
-  // Tags
-  .nt { color: #7aa2f7; }
-  // Operators
-  .o, .ow { color: #e6edf3; }
-  // Punctuation
-  .p { color: #8b949e; }
-  // Generic diff
+  .c, .c1, .cm, .cs, .cp { color: #8e8e8e; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kt { color: #8ab4f8; }
+  .s, .s1, .s2, .sb, .sc, .sd, .sh, .sx { color: #a8d5a2; }
+  .m, .mb, .mf, .mh, .mi, .mo, .mx, .il { color: #f0b070; }
+  .n, .nb, .ni, .nn, .no, .nv { color: #e2e2e2; }
+  .na, .nc, .nd, .ne, .nf { color: #c8a8f0; }
+  .nt { color: #8ab4f8; }
+  .o, .ow { color: #e2e2e2; }
+  .p { color: #9a9a9a; }
   .gd { color: #f87171; background: #3b1c20; }
-  .gi { color: #65c99e; background: #163327; }
+  .gi { color: #86efac; background: #163327; }
 }

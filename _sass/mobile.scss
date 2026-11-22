@@ -1,31 +1,34 @@
 @use "variables" as *;
 
 // =============================================================================
-// Small screens: collapsible table of contents and wrapped code.
+// Small screens: collapsible TOC, responsive index table, wrapped code.
 // =============================================================================
 
-// Hidden wherever the left TOC column is shown, or when a post has < 2 headings.
+// Hidden wherever the right TOC column is shown, or when a post has < 2 headings.
 .toc-mobile { display: none; }
 
 @media (max-width: $bp-toc-min - 1) {
   .toc-mobile.is-ready {
     display: block;
-    margin: 0 0 $spacing-lg;
-    border: 1px solid var(--color-outline-variant);
-    border-radius: $radius-md;
+    margin: 0 0 $spacing-md;
+    border: 1px solid var(--color-outline);
     background: var(--color-surface-container);
     font-family: $font-family-sans;
     font-size: $font-size-sm;
 
     summary {
-      padding: 10px $spacing-md;
-      font-weight: 600;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-heading);
       cursor: pointer;
       user-select: none;
       list-style: none;
       display: flex;
       align-items: center;
-      gap: $spacing-sm;
+      gap: 6px;
 
       &::-webkit-details-marker { display: none; }
       &::before {
@@ -38,51 +41,45 @@
     &[open] summary::before { content: "\25BE"; }
 
     nav {
-      padding: $spacing-xs $spacing-md $spacing-sm + 4;
-      border-top: 1px solid var(--color-outline-variant);
+      padding: 8px 12px 10px;
+      border-top: 1px solid var(--color-outline);
       background: var(--color-surface);
-      border-radius: 0 0 $radius-md $radius-md;
     }
 
     ol {
       list-style: none;
-      margin: $spacing-xs 0 0;
+      margin: 0;
       padding: 0;
-      counter-reset: sec;
     }
 
-    li { margin: 0; }
+    li {
+      margin: 0 0 5px;
+      &:last-child { margin-bottom: 0; }
+    }
 
     a {
       display: block;
-      padding: 4px 0;
+      padding: 2px 0;
       color: var(--color-on-surface-variant);
       text-decoration: none;
-      line-height: 1.45;
-      &:hover { color: var(--color-on-surface); }
-      &.toc-active { color: var(--color-primary); font-weight: 500; }
-    }
-
-    li:not(.toc-h3) {
-      counter-increment: sec;
-      counter-reset: sub;
-      a::before { content: counter(sec) "\2002"; }
+      line-height: 1.4;
+      &:visited { color: var(--color-on-surface-variant); }
+      &:hover { color: var(--color-heading); text-decoration: underline; }
+      &.toc-active { color: var(--color-heading); font-weight: 700; }
     }
 
     .toc-h3 {
-      counter-increment: sub;
-      a { padding-left: 18px; font-size: $font-size-xs; }
-      a::before { content: counter(sec) "." counter(sub) "\2002"; }
+      padding-left: 14px;
+      font-size: 12px;
     }
   }
 }
 
 @media (max-width: $bp-tablet) {
-  // Top bar wraps cleanly onto two lines: brand, then links.
   .site-header__inner {
     height: auto;
     flex-wrap: wrap;
-    padding: 12px $spacing-md;
+    padding: 10px $spacing-md;
     gap: 6px $spacing-md;
   }
 
@@ -93,15 +90,23 @@
     gap: $spacing-md;
   }
 
-  .site-footer__inner {
-    padding: $spacing-md;
+  .container,
+  .home-wrap,
+  .post-layout {
+    padding: $spacing-md $spacing-md $spacing-xl;
   }
 
-  body { font-size: 16.5px; }
-  .post-content, .prose { font-size: 16.5px; }
+  .site-footer__inner {
+    padding: 12px $spacing-md;
+  }
 
-  // Tables scroll sideways inside their wrapper instead of breaking
-  // identifiers mid-word.
+  body,
+  .post-content,
+  .prose {
+    font-size: 16.5px;
+  }
+
+  // Tables scroll sideways inside their wrapper instead of breaking words.
   .table-wrapper {
     margin-left: -$spacing-md;
     margin-right: -$spacing-md;
@@ -118,7 +123,7 @@
     white-space: nowrap;
   }
 
-  // Wrap long lines instead of scrolling sideways on phones.
+  // Wrap long code block lines instead of scrolling sideways on phones.
   pre {
     white-space: pre-wrap;
     word-break: break-word;
@@ -148,10 +153,24 @@
   }
 }
 
-// Posts with manual or disabled section numbers: no generated numbers in either TOC.
-.has-manual-numbers .toc-sidebar li a::before,
-.has-manual-numbers .toc-mobile li a::before,
-.no-section-numbers .toc-sidebar li a::before,
-.no-section-numbers .toc-mobile li a::before {
-  content: none;
+@media (max-width: $bp-mobile) {
+  // Stack Date above Title cleanly on narrow phones.
+  .idx-table {
+    thead { display: none; }
+    tbody, tr, td { display: block; width: 100%; }
+    tr {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-outline-variant);
+      &:last-child { border-bottom: 0; }
+    }
+    td {
+      border-bottom: 0;
+      padding: 0;
+    }
+    .col-dt {
+      width: auto;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+  }
 }

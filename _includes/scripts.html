@@ -62,14 +62,6 @@
 
   var headings = content.querySelectorAll('h2, h3');
 
-  // Posts that number their own headings ("1. Introduction") keep them;
-  // everything else gets generated section numbers from CSS counters.
-  var firstH2 = content.querySelector('h2');
-  if (firstH2 && /^\s*(\d+|[IVX]+)[.)]?\s/.test(firstH2.textContent)) {
-    var layout = content.closest('.post-layout') || document.body;
-    layout.classList.add('has-manual-numbers');
-  }
-
   for (var i = 0; i < headings.length; i++) {
     if (!headings[i].id) {
       headings[i].id = 'heading-' + i;
@@ -97,7 +89,7 @@
       sidebar.innerHTML = '';
       var title = document.createElement('div');
       title.className = 'toc-title';
-      title.textContent = 'On this page';
+      title.textContent = 'Contents';
       sidebar.appendChild(title);
       sidebar.appendChild(buildList());
     }

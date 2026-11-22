@@ -2,97 +2,88 @@
 layout: default
 ---
 
-<div class="post-layout{% if page.unnumbered_sections %} no-section-numbers{% endif %}">
+<div class="post-layout">
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header class="post-header">
+      <h1 class="post-header__title" itemprop="name headline">{{ page.title | escape }}</h1>
+      {%- assign published_day = page.date | date: "%Y-%m-%d" -%}
+      {%- assign edited_day = page.last_modified_at | date: "%Y-%m-%d" -%}
+      {%- assign show_edited = false -%}
+      {%- if page.last_modified_at and edited_day > published_day -%}{%- assign show_edited = true -%}{%- endif -%}
+      {%- assign words = content | number_of_words -%}
+      {%- assign minutes = words | divided_by: 200 -%}
+      {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif %}
+      <div class="post-header__meta">
+        <div>
+          <span itemprop="author">{{ page.author | default: site.author.name }}</span>
+          <span> &middot; </span>
+          <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+            {{- page.date | date: "%Y-%m-%d" -}}
+          </time>
+          {%- if show_edited %}
+          <span> &middot; updated </span>
+          <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">
+            {{- page.last_modified_at | date: "%Y-%m-%d" -}}
+          </time>
+          {%- endif %}
+          <span> &middot; {{ minutes }} min read</span>
+        </div>
+        {%- if page.tags.size > 0 -%}
+        <div class="post-header__tags">{{ page.tags | join: ", " }}</div>
+        {%- endif -%}
+      </div>
+    </header>
+
+    <details class="toc-mobile">
+      <summary>Contents</summary>
+      <nav aria-label="Table of contents (mobile)"></nav>
+    </details>
+
+    <div class="post-content prose" itemprop="articleBody">
+      {{ content }}
+    </div>
+
+    <div class="giscus"></div>
+    <script src="https://giscus.app/client.js"
+        data-repo="utzcoz/utzcoz.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkxNTM4NzIyNTg="
+        data-category="Comments"
+        data-category-id="DIC_kwDOCSvngs4CPcNC"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+    </script>
+    <script>
+      (function() {
+        function setGiscusTheme(theme) {
+          var iframe = document.querySelector('iframe.giscus-frame');
+          if (iframe) {
+            iframe.contentWindow.postMessage(
+              { giscus: { setConfig: { theme: theme } } },
+              'https://giscus.app'
+            );
+          }
+        }
+        var observer = new MutationObserver(function() {
+          var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          setGiscusTheme(isDark ? 'dark' : 'light');
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        window.addEventListener('message', function(event) {
+          if (event.origin !== 'https://giscus.app') return;
+          var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          setGiscusTheme(isDark ? 'dark' : 'light');
+        }, { once: true });
+      })();
+    </script>
+  </article>
+
   <aside class="post-toc" aria-label="Table of contents">
     <nav class="toc-sidebar"></nav>
   </aside>
-
-<article class="post container" itemscope itemtype="http://schema.org/BlogPosting">
-  <header class="post-header">
-    <h1 class="post-header__title" itemprop="name headline">{{ page.title | escape }}</h1>
-    {%- assign published_day = page.date | date: "%Y-%m-%d" -%}
-    {%- assign edited_day = page.last_modified_at | date: "%Y-%m-%d" -%}
-    {%- assign show_edited = false -%}
-    {%- if page.last_modified_at and edited_day > published_day -%}{%- assign show_edited = true -%}{%- endif -%}
-    {%- assign words = content | number_of_words -%}
-    {%- assign minutes = words | divided_by: 200 -%}
-    {%- if minutes < 1 -%}{%- assign minutes = 1 -%}{%- endif %}
-    <div class="post-header__meta{% if show_edited %} post-header__meta--edited{% endif %}">
-      <span class="post-header__group">
-        <span itemprop="author">{{ page.author | default: site.author.name }}</span>
-        <span class="dot">&middot;</span>
-        <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-          {{- page.date | date: "%-d %B %Y" -}}
-        </time>
-      </span>
-      <span class="dot post-header__joint">&middot;</span>
-      <span class="post-header__group">
-        {%- if show_edited %}
-        <span>Last edited
-          <time datetime="{{ page.last_modified_at | date_to_xmlschema }}" itemprop="dateModified">
-            {{- page.last_modified_at | date: "%-d %B %Y" -}}
-          </time>
-        </span>
-        <span class="dot">&middot;</span>
-        {%- endif %}
-        <span>{{ minutes }} min read</span>
-      </span>
-    </div>
-    {%- if page.tags.size > 0 -%}
-    <div class="post-header__tags">
-      {%- for tag in page.tags -%}
-        <span class="tag">{{ tag }}</span>
-      {%- endfor -%}
-    </div>
-    {%- endif -%}
-  </header>
-
-  <details class="toc-mobile">
-    <summary>Contents</summary>
-    <nav aria-label="Table of contents (mobile)"></nav>
-  </details>
-
-  <div class="post-content prose" itemprop="articleBody">
-    {{ content }}
-  </div>
-
-  <div class="giscus"></div>
-  <script src="https://giscus.app/client.js"
-      data-repo="utzcoz/utzcoz.github.io"
-      data-repo-id="MDEwOlJlcG9zaXRvcnkxNTM4NzIyNTg="
-      data-category="Comments"
-      data-category-id="DIC_kwDOCSvngs4CPcNC"
-      data-mapping="pathname"
-      data-reactions-enabled="1"
-      data-emit-metadata="0"
-      data-input-position="top"
-      data-theme="preferred_color_scheme"
-      data-lang="en"
-      crossorigin="anonymous"
-      async>
-  </script>
-  <script>
-    (function() {
-      function setGiscusTheme(theme) {
-        var iframe = document.querySelector('iframe.giscus-frame');
-        if (iframe) {
-          iframe.contentWindow.postMessage(
-            { giscus: { setConfig: { theme: theme } } },
-            'https://giscus.app'
-          );
-        }
-      }
-      var observer = new MutationObserver(function() {
-        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        setGiscusTheme(isDark ? 'dark' : 'light');
-      });
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-      window.addEventListener('message', function(event) {
-        if (event.origin !== 'https://giscus.app') return;
-        var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        setGiscusTheme(isDark ? 'dark' : 'light');
-      }, { once: true });
-    })();
-  </script>
-</article>
 </div>
